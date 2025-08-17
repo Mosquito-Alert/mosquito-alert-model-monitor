@@ -1,0 +1,122 @@
+---
+title: "Job Details"
+format: html
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(shiny)
+library(DT)
+library(plotly)
+library(jsonlite)
+library(lubridate)
+library(dplyr)
+library(purrr)
+library(stringr)
+
+# Function to load detailed job information
+load_job_details <- function() {
+  status_dir <- "data/status"
+  details_dir <- "data/details"
+  
+  if (!dir.exists(status_dir)) {
+    return(list())
+  }
+  
+  json_files <- list.files(status_dir, pattern = "*.json", full.names = TRUE)
+  
+  job_details <- map(json_files, function(file) {
+    tryCatch({
+      data <- fromJSON(file)
+      
+      # Try to load additional details if available
+      detail_file <- file.path(details_dir, basename(file))
+      if (file.exists(detail_file)) {
+        detail_data <- fromJSON(detail_file)
+        data <- c(data, detail_data)
+      }
+      
+      return(data)
+    }, error = function(e) {
+      return(NULL)
+    })
+  })
+  
+  names(job_details) <- map_chr(json_files, function(f) {
+    data <- fromJSON(f)
+    return(data$job_name %||% tools::file_path_sans_ext(basename(f)))
+  })
+  
+  return(job_details[!map_lgl(job_details, is.null)])
+}
+```
+
+## Job Configuration
+
+This page provides detailed information about each monitored job, including configuration, logs, and performance metrics.
+
+```{r}
+#| label: job-details
+
+job_details <- load_job_details()
+
+if (length(job_details) == 0) {
+  cat("No job details available. Make sure job status files are present in `data/status/`.")
+} else {
+  # Create tabs for each job
+  for (job_name in names(job_details)) {
+    job_info <- job_details[[job_name]]
+    
+    cat("\n\n### ", job_name, "\n\n")
+    
+    # Job Status Summary
+    cat("**Status:** ", job_info$status %||% "Unknown", "\n\n")
+    cat("**Last Run:** ", job_info$last_run %||% "Unknown", "\n\n")
+    cat("**Next Scheduled:** ", job_info$next_scheduled_run %||% "Unknown", "\n\n")
+    cat("**Duration:** ", ifelse(!is.null(job_info$duration), 
+                                paste(job_info$duration, "seconds"), "Unknown"), "\n\n")
+    
+    # Configuration Details
+    if (!is.null(job_info$config)) {
+      cat("#### Configuration\n\n")
+      cat("```yaml\n")
+      cat(yaml::as.yaml(job_info$config))
+      cat("```\n\n")
+    }
+    
+    # Recent Logs
+    if (!is.null(job_info$log_entries)) {
+      cat("#### Recent Log Entries\n\n")
+      if (is.list(job_info$log_entries)) {
+        for (log_entry in tail(job_info$log_entries, 10)) {
+          cat("- ", log_entry, "\n")
+        }
+      } else {
+        cat(job_info$log_entries)
+      }
+      cat("\n\n")
+    }
+    
+    # Error Information
+    if (!is.null(job_info$last_error)) {
+      cat("#### Last Error\n\n")
+      cat("```\n")
+      cat(job_info$last_error)
+      cat("\n```\n\n")
+    }
+    
+    # Resource Usage
+    if (!is.null(job_info$cpu_usage) || !is.null(job_info$memory_usage)) {
+      cat("#### Resource Usage\n\n")
+      if (!is.null(job_info$cpu_usage)) {
+        cat("**CPU Usage:** ", job_info$cpu_usage, "%\n\n")
+      }
+      if (!is.null(job_info$memory_usage)) {
+        cat("**Memory Usage:** ", job_info$memory_usage, "MB\n\n")
+      }
+    }
+  }
+}
+```

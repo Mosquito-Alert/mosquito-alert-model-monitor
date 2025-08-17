@@ -1,0 +1,210 @@
+---
+title: "Historical Performance"
+format: html
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(shiny)
+library(DT)
+library(plotly)
+library(jsonlite)
+library(lubridate)
+library(dplyr)
+library(purrr)
+library(stringr)
+library(ggplot2)
+
+# Function to load historical data
+load_historical_data <- function() {
+  history_dir <- "data/history"
+  
+  if (!dir.exists(history_dir)) {
+    return(data.frame())
+  }
+  
+  # Look for daily history files
+  history_files <- list.files(history_dir, pattern = "*.json", full.names = TRUE)
+  
+  if (length(history_files) == 0) {
+    return(data.frame())
+  }
+  
+  historical_data <- map_dfr(history_files, function(file) {
+    tryCatch({
+      data <- fromJSON(file)
+      if (is.data.frame(data)) {
+        data$date <- tools::file_path_sans_ext(basename(file))
+        return(data)
+      } else {
+        return(NULL)
+      }
+    }, error = function(e) {
+      return(NULL)
+    })
+  })
+  
+  return(historical_data)
+}
+```
+
+## Performance History
+
+This page shows historical performance trends for your monitored jobs.
+
+```{r}
+#| label: historical-analysis
+
+historical_data <- load_historical_data()
+
+if (nrow(historical_data) == 0) {
+  cat("No historical data available. Historical data will be collected as jobs run.")
+} else {
+  cat("### Job Execution Trends\n\n")
+  cat("Historical data from", min(historical_data$date, na.rm = TRUE), 
+      "to", max(historical_data$date, na.rm = TRUE), "\n\n")
+}
+```
+
+```{r}
+#| label: execution-time-plot
+#| fig-width: 12
+#| fig-height: 6
+
+if (nrow(historical_data) > 0 && "duration" %in% names(historical_data)) {
+  
+  # Convert date strings to Date objects
+  historical_data$date <- as.Date(historical_data$date)
+  
+  # Plot execution time trends
+  p1 <- ggplot(historical_data, aes(x = date, y = duration, color = job_name)) +
+    geom_line(size = 1) +
+    geom_point(size = 2) +
+    labs(
+      title = "Job Execution Time Trends",
+      x = "Date",
+      y = "Duration (seconds)",
+      color = "Job Name"
+    ) +
+    theme_minimal() +
+    theme(legend.position = "bottom")
+  
+  ggplotly(p1)
+} else {
+  plot_ly() %>%
+    add_annotations(
+      text = "No execution time data available yet",
+      showarrow = FALSE,
+      x = 0.5, y = 0.5
+    ) %>%
+    layout(
+      title = "Job Execution Time Trends",
+      xaxis = list(visible = FALSE),
+      yaxis = list(visible = FALSE)
+    )
+}
+```
+
+```{r}
+#| label: success-rate-plot
+#| fig-width: 12
+#| fig-height: 6
+
+if (nrow(historical_data) > 0 && "status" %in% names(historical_data)) {
+  
+  # Calculate daily success rates
+  daily_success <- historical_data %>%
+    group_by(date, job_name) %>%
+    summarise(
+      total_runs = n(),
+      successful_runs = sum(status == "completed", na.rm = TRUE),
+      success_rate = (successful_runs / total_runs) * 100,
+      .groups = "drop"
+    )
+  
+  p2 <- ggplot(daily_success, aes(x = date, y = success_rate, color = job_name)) +
+    geom_line(size = 1) +
+    geom_point(size = 2) +
+    labs(
+      title = "Job Success Rate Trends",
+      x = "Date", 
+      y = "Success Rate (%)",
+      color = "Job Name"
+    ) +
+    ylim(0, 100) +
+    theme_minimal() +
+    theme(legend.position = "bottom")
+  
+  ggplotly(p2)
+} else {
+  plot_ly() %>%
+    add_annotations(
+      text = "No success rate data available yet",
+      showarrow = FALSE,
+      x = 0.5, y = 0.5
+    ) %>%
+    layout(
+      title = "Job Success Rate Trends",
+      xaxis = list(visible = FALSE),
+      yaxis = list(visible = FALSE)
+    )
+}
+```
+
+## Performance Summary Table
+
+```{r}
+#| label: performance-summary
+
+if (nrow(historical_data) > 0) {
+  
+  # Create performance summary
+  performance_summary <- historical_data %>%
+    group_by(job_name) %>%
+    summarise(
+      total_runs = n(),
+      successful_runs = sum(status == "completed", na.rm = TRUE),
+      failed_runs = sum(status == "failed", na.rm = TRUE),
+      success_rate = round((successful_runs / total_runs) * 100, 1),
+      avg_duration = round(mean(duration, na.rm = TRUE), 1),
+      min_duration = round(min(duration, na.rm = TRUE), 1),
+      max_duration = round(max(duration, na.rm = TRUE), 1),
+      last_run = max(date, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    arrange(desc(success_rate))
+  
+  # Display the table
+  DT::datatable(
+    performance_summary,
+    colnames = c(
+      "Job Name" = "job_name",
+      "Total Runs" = "total_runs", 
+      "Successful" = "successful_runs",
+      "Failed" = "failed_runs",
+      "Success Rate (%)" = "success_rate",
+      "Avg Duration (s)" = "avg_duration",
+      "Min Duration (s)" = "min_duration", 
+      "Max Duration (s)" = "max_duration",
+      "Last Run" = "last_run"
+    ),
+    options = list(
+      pageLength = 15,
+      dom = 'tip',
+      columnDefs = list(
+        list(className = 'dt-center', targets = c(1:7))
+      )
+    ),
+    class = "table table-striped table-hover"
+  ) %>%
+    DT::formatStyle(
+      "success_rate",
+      backgroundColor = DT::styleInterval(c(80, 95), c("#f8d7da", "#fff3cd", "#d4edda"))
+    )
+  
+} else {
+  cat("No performance data available for summary.")
+}
+```

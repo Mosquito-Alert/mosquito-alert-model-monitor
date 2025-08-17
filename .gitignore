@@ -18,6 +18,41 @@ lib/
 lib64/
 parts/
 sdist/
+
+# R and Quarto specific
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+/.quarto/
+_site/
+docs/
+*.html
+.httr-oauth
+
+# Don't ignore the docs/ folder if using GitHub Pages
+!docs/.gitkeep
+
+# Environment and config
+.env
+.env.local
+config/*_config.json
+!config/*_config.json.example
+
+# Temporary files
+*.tmp
+*.log
+*~
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
 var/
 wheels/
 share/python-wheels/
