@@ -10,5 +10,5 @@ format:
     scrolling: true
     
 execute:
-  freeze: auto
-  cache: true
+  freeze: false
+  cache: false
