@@ -83,9 +83,22 @@ Each job should create/update a JSON file in `data/status/` with this structure:
 
 ### Integration Examples
 
-#### Bash Script Integration
+#### Option 1: Using the Conda Wrapper Script
+```bash
+# Automatically activates conda environment and runs your script
+./scripts/run_with_conda.sh scripts/update_job_status.sh "my_job" "running" 60 50
+
+# Use in crontab
+30 8 * * * /path/to/mosquito-alert-model-monitor/scripts/run_with_conda.sh /path/to/your/model_script.sh
+```
+
+#### Option 2: Manual Conda Activation in Your Scripts
 ```bash
 #!/bin/bash
+# Activate conda environment
+source "$(conda info --base)/etc/profile.d/conda.sh"
+conda activate mosquito-alert-monitor
+
 JOB_NAME="my_model"
 ./scripts/update_job_status.sh "$JOB_NAME" "running" 0 0
 
@@ -97,6 +110,12 @@ if [ $? -eq 0 ]; then
 else
     ./scripts/update_job_status.sh "$JOB_NAME" "failed" $SECONDS 0
 fi
+```
+
+#### Option 3: Crontab with Conda Activation
+```bash
+# In your crontab
+30 8 * * * source /path/to/conda/etc/profile.d/conda.sh && conda activate mosquito-alert-monitor && /path/to/your/script.sh
 ```
 
 #### Python Integration

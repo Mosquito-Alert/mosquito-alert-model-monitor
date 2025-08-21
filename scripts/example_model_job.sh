@@ -3,11 +3,19 @@
 # Example cronjob script for species classification model
 # This should be adapted for your specific model/pipeline
 
-# Set up environment
-export PATH="/path/to/your/conda/bin:$PATH"
-source activate your-environment-name
+# Set up conda environment (adjust paths as needed)
+# Option 1: If conda is in PATH
+source "$(conda info --base)/etc/profile.d/conda.sh"
+conda activate mosquito-alert-monitor
 
-# Set working directory
+# Option 2: If you need specific conda path
+# source /path/to/your/conda/etc/profile.d/conda.sh
+# conda activate mosquito-alert-monitor
+
+# Option 3: If using a specific conda environment path
+# export PATH="/path/to/your/conda/envs/mosquito-alert-monitor/bin:$PATH"
+
+# Set working directory for your model
 cd /path/to/your/model/directory
 
 # Get script directory for status updates
