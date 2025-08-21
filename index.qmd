@@ -38,45 +38,64 @@ load_job_status <- function() {
     return(data.frame())
   }
   
-  jobs_data <- map_dfr(json_files, function(file) {
+  # Process each file individually to ensure consistent structure
+  jobs_list <- map(json_files, function(file) {
     tryCatch({
-      data <- fromJSON(file)
+      data <- fromJSON(file, simplifyDataFrame = FALSE)
       
-      # Ensure all required fields exist with default values
-      required_fields <- list(
-        job_name = NA_character_,
-        status = "unknown",
-        start_time = NA_character_,
-        end_time = NA_character_,
-        duration = NA_real_,
-        progress = NA_real_,
-        cpu_usage = NA_real_,
-        memory_usage = NA_real_,
-        next_scheduled_run = NA_character_,
-        log_entries = list(),
-        last_error = NA_character_,
-        config = list()
+      # Create a standardized record with all required fields
+      job_record <- list(
+        job_name = data$job_name %||% tools::file_path_sans_ext(basename(file)),
+        status = data$status %||% "unknown",
+        start_time = data$start_time %||% NA_character_,
+        end_time = data$end_time %||% NA_character_,
+        duration = as.numeric(data$duration %||% NA),
+        progress = as.numeric(data$progress %||% NA),
+        cpu_usage = as.numeric(data$cpu_usage %||% NA),
+        memory_usage = as.numeric(data$memory_usage %||% NA),
+        next_scheduled_run = data$next_scheduled_run %||% NA_character_,
+        last_error = data$last_error %||% NA_character_,
+        last_updated = file.info(file)$mtime,
+        config_file = basename(file)
       )
       
-      # Fill in missing fields with defaults
-      for (field in names(required_fields)) {
-        if (is.null(data[[field]])) {
-          data[[field]] <- required_fields[[field]]
+      # Handle log_entries as a single string (latest entry)
+      if (!is.null(data$log_entries) && length(data$log_entries) > 0) {
+        if (is.list(data$log_entries)) {
+          job_record$latest_log <- tail(data$log_entries, 1)[[1]]
+        } else {
+          job_record$latest_log <- as.character(data$log_entries)
         }
+      } else {
+        job_record$latest_log <- NA_character_
       }
       
-      # Add file metadata
-      data$last_updated <- file.info(file)$mtime
-      data$config_file <- basename(file)
+      # Handle config as a summary string
+      if (!is.null(data$config) && length(data$config) > 0) {
+        config_summary <- paste(names(data$config), collapse = ", ")
+        job_record$config_summary <- config_summary
+      } else {
+        job_record$config_summary <- NA_character_
+      }
       
-      return(data)
+      return(job_record)
     }, error = function(e) {
       warning(paste("Error reading", file, ":", e$message))
       return(NULL)
     })
   })
   
-  return(jobs_data)
+  # Remove NULL entries
+  jobs_list <- jobs_list[!map_lgl(jobs_list, is.null)]
+  
+  if (length(jobs_list) == 0) {
+    return(data.frame())
+  }
+  
+  # Convert to data frame
+  jobs_df <- do.call(rbind, map(jobs_list, function(x) as.data.frame(x, stringsAsFactors = FALSE)))
+  
+  return(jobs_df)
 }
 
 # Function to determine status color
@@ -212,22 +231,16 @@ if (nrow(jobs_data) == 0 || !"cpu_usage" %in% names(jobs_data)) {
 ```{r}
 #| label: recent-activity
 
-if (nrow(jobs_data) == 0 || !"log_entries" %in% names(jobs_data)) {
+if (nrow(jobs_data) == 0 || !"latest_log" %in% names(jobs_data)) {
   cat("No recent activity data available.")
 } else {
   # Extract recent log entries
   recent_logs <- jobs_data %>%
-    filter(!is.na(log_entries)) %>%
-    select(job_name, log_entries, last_updated) %>%
+    filter(!is.na(latest_log)) %>%
+    select(job_name, latest_log, last_updated) %>%
     mutate(
       timestamp = format(last_updated, "%H:%M:%S"),
-      message = map_chr(log_entries, function(x) {
-        if (is.list(x) && length(x) > 0) {
-          return(tail(x, 1)[[1]])
-        } else {
-          return("No recent activity")
-        }
-      })
+      message = latest_log
     ) %>%
     select(
       Time = timestamp,
@@ -295,7 +308,7 @@ if (nrow(jobs_data) > 0) {
     class = "table table-striped table-hover"
   ) %>%
     DT::formatStyle(
-      "current_status",
+      "Current Status",
       backgroundColor = DT::styleEqual(
         c("running", "completed", "failed", "pending"),
         c("#d1ecf1", "#d4edda", "#f8d7da", "#fff3cd")

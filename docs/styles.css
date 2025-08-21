@@ -1,0 +1,164 @@
+/* Custom styles for the Mosquito Alert Model Monitor Dashboard */
+
+/* Override default theme colors */
+:root {
+  --bs-primary: #2c3e50;
+  --bs-secondary: #95a5a6;
+  --bs-success: #27ae60;
+  --bs-danger: #e74c3c;
+  --bs-warning: #f39c12;
+  --bs-info: #3498db;
+}
+
+/* Dashboard layout improvements */
+.dashboard-page {
+  background-color: #f8f9fa;
+}
+
+/* Status badges */
+.status-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  color: white;
+  font-weight: bold;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.status-running {
+  background-color: #007bff;
+}
+
+.status-completed {
+  background-color: #28a745;
+}
+
+.status-failed {
+  background-color: #dc3545;
+}
+
+.status-pending {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.status-unknown {
+  background-color: #6c757d;
+}
+
+/* Overview stats styling */
+.overview-stat {
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background-color: #fff;
+  border-radius: 0.25rem;
+  border-left: 3px solid var(--bs-primary);
+}
+
+.overview-stat h5 {
+  margin-bottom: 0.25rem;
+  color: #6c757d;
+  font-size: 0.875rem;
+}
+
+/* Table improvements */
+.table-hover tbody tr:hover {
+  background-color: rgba(0, 123, 255, 0.075);
+}
+
+/* Alert badges */
+.badge-danger {
+  background-color: #dc3545;
+}
+
+.badge-warning {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.badge-info {
+  background-color: #17a2b8;
+}
+
+.badge-secondary {
+  background-color: #6c757d;
+}
+
+/* Card styling */
+.card {
+  border: none;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  margin-bottom: 1rem;
+}
+
+.card-header {
+  background-color: var(--bs-primary);
+  color: white;
+  border-bottom: none;
+}
+
+/* Navigation improvements */
+.navbar-brand {
+  font-weight: bold;
+}
+
+/* Progress bars */
+.progress {
+  height: 0.5rem;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .overview-stat h3 {
+    font-size: 1.5rem;
+  }
+  
+  .table-responsive {
+    font-size: 0.875rem;
+  }
+}
+
+/* Code blocks */
+pre code {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+}
+
+/* Plotly chart containers */
+.plotly {
+  background-color: white;
+  border-radius: 0.25rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Custom scrollbar for logs */
+.log-container {
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  padding: 0.75rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+}
+
+.log-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.log-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.log-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.log-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
