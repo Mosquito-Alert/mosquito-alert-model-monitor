@@ -7,20 +7,15 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
-# Set up conda (adjust path as needed)
-# Try to find conda installation
-if command -v conda >/dev/null 2>&1; then
-    # conda is in PATH
-    source "$(conda info --base)/etc/profile.d/conda.sh"
-elif [ -f "$HOME/miniconda3/etc/profile.d/conda.sh" ]; then
-    # Common miniconda location
-    source "$HOME/miniconda3/etc/profile.d/conda.sh"
-elif [ -f "$HOME/anaconda3/etc/profile.d/conda.sh" ]; then
-    # Common anaconda location
-    source "$HOME/anaconda3/etc/profile.d/conda.sh"
-else
-    echo "Error: Could not find conda installation."
-    echo "Please edit this script to set the correct conda path."
+# Set up conda for HPC environment
+# Load conda module (adjust module name/version as needed)
+module load Miniconda3/24.7.1-0
+
+if [ $? -ne 0 ]; then
+    echo "Error: Could not load Miniconda3 module."
+    echo "Available modules:"
+    module avail 2>&1 | grep -i conda || echo "No conda modules found"
+    echo "Please edit this script to use the correct module name."
     exit 1
 fi
 

@@ -13,19 +13,27 @@ A Quarto dashboard for monitoring automated data wrangling tasks and models runn
 
 ## Quick Start
 
-### 1. Setup Environment
+### 1. Setup Environment on HPC Cluster
 
 ```bash
 # Clone the repository
 git clone https://github.com/Mosquito-Alert/mosquito-alert-model-monitor.git
 cd mosquito-alert-model-monitor
 
+# Find available conda modules on your HPC system
+module avail 2>&1 | grep -i conda
+# or
+module avail 2>&1 | grep -i miniconda
+
+# Load conda module (adjust name/version to match your system)
+module load Miniconda3/24.7.1-0
+
 # Create conda environment
 conda env create -f environment.yml
 conda activate mosquito-alert-monitor
 
-# Or install dependencies manually
-conda install -c conda-forge r-base r-shiny r-dt r-plotly r-jsonlite r-lubridate r-dplyr r-purrr r-stringr r-ggplot2 quarto
+# Alternative: Install dependencies manually if needed
+# conda install -c conda-forge r-base r-dt r-plotly r-jsonlite r-lubridate r-dplyr r-purrr r-stringr r-ggplot2 quarto
 ```
 
 ### 2. Configure Your Jobs
@@ -83,21 +91,25 @@ Each job should create/update a JSON file in `data/status/` with this structure:
 
 ### Integration Examples
 
-#### Option 1: Using the Conda Wrapper Script
+#### Option 1: Using the HPC Module Wrapper Script
 ```bash
-# Automatically activates conda environment and runs your script
+# Automatically loads modules and activates conda environment
 ./scripts/run_with_conda.sh scripts/update_job_status.sh "my_job" "running" 60 50
 
 # Use in crontab
 30 8 * * * /path/to/mosquito-alert-model-monitor/scripts/run_with_conda.sh /path/to/your/model_script.sh
 ```
 
-#### Option 2: Manual Conda Activation in Your Scripts
+#### Option 2: Manual Module Loading in Your Scripts  
 ```bash
 #!/bin/bash
-# Activate conda environment
-source "$(conda info --base)/etc/profile.d/conda.sh"
+# Load required modules for HPC
+module load Miniconda3/24.7.1-0
 conda activate mosquito-alert-monitor
+
+# Optional: Load additional modules as needed
+# module load GCC/12.3.0
+# module load Python/3.11.3-GCCcore-12.3.0
 
 JOB_NAME="my_model"
 ./scripts/update_job_status.sh "$JOB_NAME" "running" 0 0
@@ -112,10 +124,10 @@ else
 fi
 ```
 
-#### Option 3: Crontab with Conda Activation
+#### Option 3: Crontab with Module Loading
 ```bash
-# In your crontab
-30 8 * * * source /path/to/conda/etc/profile.d/conda.sh && conda activate mosquito-alert-monitor && /path/to/your/script.sh
+# In your crontab (adjust module names to match your system)
+30 8 * * * module load Miniconda3/24.7.1-0 && conda activate mosquito-alert-monitor && /path/to/your/script.sh
 ```
 
 #### Python Integration

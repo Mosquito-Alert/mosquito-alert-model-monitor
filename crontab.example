@@ -1,22 +1,24 @@
 # Example crontab entries for Mosquito Alert model monitoring
-# Note: Adjust conda paths to match your system
+# Note: Adjust module names/versions to match your HPC system
 
-# Set conda path (adjust as needed)
-CONDA_PATH=/path/to/your/conda
+# Set environment for cron jobs
 SHELL=/bin/bash
 PATH=/usr/local/bin:/usr/bin:/bin
 
 # Run species classification model daily at 8:30 AM
-30 8 * * * source $CONDA_PATH/etc/profile.d/conda.sh && conda activate mosquito-alert-monitor && /path/to/mosquito-alert-model-monitor/scripts/example_model_job.sh
+30 8 * * * module load Miniconda3/24.7.1-0 && conda activate mosquito-alert-monitor && /path/to/mosquito-alert-model-monitor/scripts/example_model_job.sh
 
 # Run data preprocessing pipeline daily at 6:00 AM  
-0 6 * * * source $CONDA_PATH/etc/profile.d/conda.sh && conda activate mosquito-alert-monitor && /path/to/your/data_preprocessing_job.sh
+0 6 * * * module load Miniconda3/24.7.1-0 && conda activate mosquito-alert-monitor && /path/to/your/data_preprocessing_job.sh
 
 # Run risk prediction model twice daily at 10:00 AM and 4:00 PM
-0 10,16 * * * source $CONDA_PATH/etc/profile.d/conda.sh && conda activate mosquito-alert-monitor && /path/to/your/risk_prediction_job.sh
+0 10,16 * * * module load Miniconda3/24.7.1-0 && conda activate mosquito-alert-monitor && /path/to/your/risk_prediction_job.sh
 
-# Alternative: Create a wrapper script that handles conda activation
-# 30 8 * * * /path/to/mosquito-alert-model-monitor/scripts/run_with_conda.sh example_model_job.sh
+# Alternative: Use the wrapper script that handles module loading
+# 30 8 * * * /path/to/mosquito-alert-model-monitor/scripts/run_with_conda.sh /path/to/your/model_script.sh
+
+# For jobs requiring additional modules (adjust as needed):
+# 0 12 * * * module load GCC/12.3.0 && module load Python/3.11.3-GCCcore-12.3.0 && module load Miniconda3/24.7.1-0 && conda activate mosquito-alert-monitor && /path/to/your/compute_intensive_job.sh
 
 # Clean up old log files weekly
 0 2 * * 0 find /path/to/mosquito-alert-model-monitor/data/history -name "*.json" -mtime +30 -delete
