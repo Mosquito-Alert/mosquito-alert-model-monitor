@@ -41,10 +41,37 @@ load_job_status <- function() {
   jobs_data <- map_dfr(json_files, function(file) {
     tryCatch({
       data <- fromJSON(file)
+      
+      # Ensure all required fields exist with default values
+      required_fields <- list(
+        job_name = NA_character_,
+        status = "unknown",
+        start_time = NA_character_,
+        end_time = NA_character_,
+        duration = NA_real_,
+        progress = NA_real_,
+        cpu_usage = NA_real_,
+        memory_usage = NA_real_,
+        next_scheduled_run = NA_character_,
+        log_entries = list(),
+        last_error = NA_character_,
+        config = list()
+      )
+      
+      # Fill in missing fields with defaults
+      for (field in names(required_fields)) {
+        if (is.null(data[[field]])) {
+          data[[field]] <- required_fields[[field]]
+        }
+      }
+      
+      # Add file metadata
       data$last_updated <- file.info(file)$mtime
       data$config_file <- basename(file)
+      
       return(data)
     }, error = function(e) {
+      warning(paste("Error reading", file, ":", e$message))
       return(NULL)
     })
   })

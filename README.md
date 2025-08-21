@@ -5,7 +5,7 @@ A Quarto dashboard for monitoring automated data wrangling tasks and models runn
 ## Features
 
 - **Real-time Status Monitoring**: Track the status, progress, and performance of multiple jobs
-- **Interactive Dashboard**: Built with Quarto and Shiny for dynamic, real-time updates
+- **Static Dashboard**: Built with Quarto for fast, reliable GitHub Pages deployment
 - **Alert System**: Automatic detection of failed jobs, long-running tasks, and stale processes
 - **Historical Tracking**: Performance trends and success rate analysis over time
 - **Resource Monitoring**: CPU and memory usage tracking for each job

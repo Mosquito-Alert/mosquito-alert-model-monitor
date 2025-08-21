@@ -43,9 +43,9 @@ jobs:
     - name: Install R dependencies
       run: |
         install.packages(c(
-          "shiny", "DT", "plotly", "jsonlite", "lubridate", 
+          "DT", "plotly", "jsonlite", "lubridate", 
           "dplyr", "purrr", "stringr", "ggplot2", "yaml", 
-          "htmltools", "fresh", "knitr", "rmarkdown"
+          "htmltools", "knitr", "rmarkdown"
         ), repos = "https://cloud.r-project.org", dependencies = TRUE)
       shell: Rscript {0}
       
