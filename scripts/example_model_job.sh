@@ -20,12 +20,12 @@ cd /path/to/your/model/directory
 
 # Get script directory for status updates
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-STATUS_SCRIPT="$SCRIPT_DIR/update_job_status.sh"
+STATUS_SCRIPT="$SCRIPT_DIR/update_job_status_and_push.sh"
 
 JOB_NAME="species_classification_model"
 START_TIME=$(date +%s)
 
-# Update status to running
+# Update status to running (this will also push to git and trigger dashboard rebuild)
 $STATUS_SCRIPT "$JOB_NAME" "running" 0 0
 
 # Run your actual model/pipeline here
@@ -52,7 +52,7 @@ if [ $? -eq 0 ]; then
     END_TIME=$(date +%s)
     DURATION=$((END_TIME - START_TIME))
     
-    # Update status to completed
+    # Update status to completed (this will push to git and trigger dashboard rebuild)
     $STATUS_SCRIPT "$JOB_NAME" "completed" "$DURATION" 100
     
     echo "Model training completed successfully"
@@ -61,16 +61,11 @@ else
     END_TIME=$(date +%s)
     DURATION=$((END_TIME - START_TIME))
     
-    # Update status to failed
+    # Update status to failed (this will push to git and trigger dashboard rebuild)
     $STATUS_SCRIPT "$JOB_NAME" "failed" "$DURATION" 0
     
     echo "Model training failed"
     exit 1
 fi
 
-# Trigger dashboard rebuild (optional - only if rendering locally)
-# cd /path/to/mosquito-alert-model-monitor
-# quarto render
-# git add docs/
-# git commit -m "Update dashboard after $JOB_NAME completion"
-# git push
+# Dashboard will rebuild automatically via GitHub Actions - no manual steps needed!
