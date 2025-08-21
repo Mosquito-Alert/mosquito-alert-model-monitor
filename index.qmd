@@ -1,11 +1,11 @@
 ---
 title: "Mosquito Alert Model Monitor"
 format: 
-  dashboard:
+  html:
     theme: cosmo
-    nav-buttons: [github]
-    github: https://github.com/Mosquito-Alert/mosquito-alert-model-monitor
-    scrolling: true
+    css: styles.css
+    toc: true
+    code-fold: true
 execute:
   echo: false
   warning: false
@@ -16,14 +16,14 @@ execute:
 #| label: setup
 #| include: false
 
+library(DT)
+library(plotly)
 library(jsonlite)
 library(lubridate)
 library(dplyr)
 library(purrr)
-library(DT)
-library(plotly)
-library(knitr)
-library(htmltools)
+library(stringr)
+library(ggplot2)
 
 # Function to load job status from JSON files
 load_job_status <- function() {
@@ -38,312 +38,241 @@ load_job_status <- function() {
     return(data.frame())
   }
   
-  # Load each file individually and handle missing fields
-  jobs_list <- list()
-  
-  for (i in seq_along(json_files)) {
+  jobs_data <- map_dfr(json_files, function(file) {
     tryCatch({
-      data <- fromJSON(json_files[i])
-      
-      # Ensure all required fields exist with defaults
-      job_data <- data.frame(
-        job_name = data$job_name %||% "unknown",
-        status = data$status %||% "unknown",
-        start_time = data$start_time %||% Sys.time(),
-        end_time = data$end_time %||% NA,
-        duration = data$duration %||% 0,
-        progress = data$progress %||% 0,
-        cpu_usage = data$cpu_usage %||% 0,
-        memory_usage = data$memory_usage %||% 0,
-        next_scheduled_run = data$next_scheduled_run %||% NA,
-        file_modified = file.info(json_files[i])$mtime,
-        config_file = basename(json_files[i]),
-        stringsAsFactors = FALSE
-      )
-      
-      # Handle log entries
-      if (!is.null(data$log_entries) && length(data$log_entries) > 0) {
-        job_data$latest_log <- tail(data$log_entries, 1)
-      } else {
-        job_data$latest_log <- "No logs available"
-      }
-      
-      jobs_list[[i]] <- job_data
-      
+      data <- fromJSON(file)
+      data$last_updated <- file.info(file)$mtime
+      data$config_file <- basename(file)
+      return(data)
     }, error = function(e) {
-      warning(paste("Error reading", json_files[i], ":", e$message))
+      return(NULL)
     })
-  }
+  })
   
-  if (length(jobs_list) > 0) {
-    return(do.call(rbind, jobs_list))
-  } else {
-    return(data.frame())
-  }
+  return(jobs_data)
 }
 
-# Helper function for null coalescing
-`%||%` <- function(x, y) if (is.null(x)) y else x
-
-# Load current job data
-jobs <- load_job_status()
-
-# Create summary statistics
-if (nrow(jobs) > 0) {
-  jobs$last_updated <- as.POSIXct(jobs$start_time)
-  jobs$status_color <- case_when(
-    jobs$status == "completed" ~ "success",
-    jobs$status == "running" ~ "info", 
-    jobs$status == "failed" ~ "danger",
-    TRUE ~ "secondary"
+# Function to determine status color
+get_status_color <- function(status) {
+  case_when(
+    status == "running" ~ "blue",
+    status == "completed" ~ "green", 
+    status == "failed" ~ "red",
+    status == "pending" ~ "orange",
+    status == "unknown" ~ "gray",
+    TRUE ~ "gray"
   )
-  
-  total_jobs <- nrow(jobs)
-  completed_jobs <- sum(jobs$status == "completed")
-  running_jobs <- sum(jobs$status == "running")
-  failed_jobs <- sum(jobs$status == "failed")
-} else {
-  total_jobs <- completed_jobs <- running_jobs <- failed_jobs <- 0
 }
+
+# Function to format duration
+format_duration <- function(seconds) {
+  if (is.na(seconds)) return("Unknown")
+  
+  hours <- floor(seconds / 3600)
+  minutes <- floor((seconds %% 3600) / 60)
+  secs <- seconds %% 60
+  
+  if (hours > 0) {
+    return(sprintf("%02d:%02d:%02d", hours, minutes, secs))
+  } else {
+    return(sprintf("%02d:%02d", minutes, secs))
+  }
+}
+
+# Load current data
+jobs_data <- load_job_status()
 ```
-
-## {.sidebar}
-
-**Last Updated:** `r format(Sys.time(), "%Y-%m-%d %H:%M:%S")`
-
-### Job Summary
-
-- **Total Jobs:** `r total_jobs`
-- **Completed:** `r completed_jobs`
-- **Running:** `r running_jobs`  
-- **Failed:** `r failed_jobs`
-
-### Project Info
-
-**Mosquito Alert Model Monitor** tracks automated data processing jobs running on computational clusters.
-
-**Repository:** [mosquito_model_data_prep](https://github.com/Mosquito-Alert/mosquito_model_data_prep)
 
 ## Overview
 
-### Current Status
-
 ```{r}
-if (nrow(jobs) > 0) {
-  # Create status cards
-  status_cards <- map_chr(1:nrow(jobs), function(i) {
-    job <- jobs[i, ]
-    
-    status_icon <- case_when(
-      job$status == "completed" ~ "✅",
-      job$status == "running" ~ "🔄",
-      job$status == "failed" ~ "❌",
-      TRUE ~ "⏸️"
-    )
-    
-    duration_text <- if (job$duration > 0) {
-      paste0(round(job$duration / 60, 1), " min")
-    } else {
-      "..."
-    }
-    
-    paste0('<div class="card mb-3">',
-           '<div class="card-header">',
-           '<h5>', status_icon, ' ', job$job_name, '</h5>',
-           '</div>',
-           '<div class="card-body">',
-           '<p><strong>Status:</strong> ', job$status, '</p>',
-           '<p><strong>Progress:</strong> ', job$progress, '%</p>',
-           '<p><strong>Duration:</strong> ', duration_text, '</p>',
-           '<p><strong>Last Updated:</strong> ', format(job$last_updated, "%Y-%m-%d %H:%M"), '</p>',
-           '<div class="progress mb-2">',
-           '<div class="progress-bar" role="progressbar" style="width: ', job$progress, '%"></div>',
-           '</div>',
-           '</div></div>')
-  })
-  
-  HTML(paste(status_cards, collapse = ""))
+#| label: overview-stats
+
+if (nrow(jobs_data) == 0) {
+  cat("**No Jobs Configured**\n\nNo job status files found in data/status/")
 } else {
-  HTML('<div class="alert alert-warning">No job status data found.</div>')
+  total_jobs <- nrow(jobs_data)
+  running_jobs <- sum(jobs_data$status == "running", na.rm = TRUE)
+  failed_jobs <- sum(jobs_data$status == "failed", na.rm = TRUE)
+  completed_jobs <- sum(jobs_data$status == "completed", na.rm = TRUE)
+  
+  cat("### System Overview\n\n")
+  cat("- **Total Jobs:** ", total_jobs, "\n")
+  cat("- **Running:** ", running_jobs, "\n") 
+  cat("- **Completed:** ", completed_jobs, "\n")
+  cat("- **Failed:** ", failed_jobs, "\n\n")
+  cat("*Last updated:* ", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\n\n")
 }
 ```
 
-### Recent Activity
+## Job Status
 
 ```{r}
-if (nrow(jobs) > 0) {
-  # Show recent log entries
-  recent_logs <- jobs %>%
-    select(job_name, status, last_updated, latest_log) %>%
+#| label: job-status-table
+
+if (nrow(jobs_data) == 0) {
+  cat("No job data available.")
+} else {
+  # Prepare display data
+  display_data <- jobs_data %>%
     mutate(
-      time_ago = paste(round(as.numeric(difftime(Sys.time(), last_updated, units = "hours")), 1), "hours ago")
+      Status = toupper(status),
+      Duration = ifelse(!is.na(duration), format_duration(duration), "Unknown"),
+      Progress = ifelse(!is.na(progress), 
+                       paste0(progress, "%"), 
+                       "Unknown"),
+      `Last Updated` = format(last_updated, "%Y-%m-%d %H:%M:%S")
     ) %>%
-    select(job_name, status, latest_log, time_ago)
+    select(
+      `Job Name` = job_name,
+      Status,
+      Progress,
+      Duration,
+      `Start Time` = start_time,
+      `Last Updated`,
+      `Next Run` = next_scheduled_run
+    )
+  
+  DT::datatable(
+    display_data,
+    options = list(
+      pageLength = 15,
+      dom = 'tip',
+      columnDefs = list(
+        list(className = 'dt-center', targets = c(1, 2, 3))
+      )
+    ),
+    class = "table table-striped table-hover"
+  )
+}
+```
+
+## Resource Usage
+
+```{r}
+#| label: resource-usage
+#| fig-width: 10
+#| fig-height: 6
+
+if (nrow(jobs_data) == 0 || !"cpu_usage" %in% names(jobs_data)) {
+  cat("No resource usage data available.")
+} else {
+  # CPU Usage plot
+  cpu_plot <- plot_ly(
+    data = jobs_data,
+    x = ~job_name,
+    y = ~cpu_usage,
+    type = "bar",
+    name = "CPU %",
+    marker = list(color = "#007bff")
+  ) %>%
+    layout(
+      title = "CPU Usage by Job",
+      xaxis = list(title = "Job Name"),
+      yaxis = list(title = "CPU Usage (%)", range = c(0, 100)),
+      showlegend = FALSE
+    )
+  
+  cpu_plot
+}
+```
+
+## Recent Activity
+
+```{r}
+#| label: recent-activity
+
+if (nrow(jobs_data) == 0 || !"log_entries" %in% names(jobs_data)) {
+  cat("No recent activity data available.")
+} else {
+  # Extract recent log entries
+  recent_logs <- jobs_data %>%
+    filter(!is.na(log_entries)) %>%
+    select(job_name, log_entries, last_updated) %>%
+    mutate(
+      timestamp = format(last_updated, "%H:%M:%S"),
+      message = map_chr(log_entries, function(x) {
+        if (is.list(x) && length(x) > 0) {
+          return(tail(x, 1)[[1]])
+        } else {
+          return("No recent activity")
+        }
+      })
+    ) %>%
+    select(
+      Time = timestamp,
+      Job = job_name,
+      Message = message
+    ) %>%
+    arrange(desc(Time))
   
   DT::datatable(
     recent_logs,
-    colnames = c("Job", "Status", "Latest Log", "Time"),
     options = list(
       pageLength = 10,
       dom = 't',
+      order = list(list(0, 'desc'))
+    ),
+    class = "table table-sm"
+  )
+}
+```
+
+## Performance Summary
+
+```{r}
+#| label: performance-summary
+
+if (nrow(jobs_data) > 0) {
+  # Create performance summary
+  performance_summary <- jobs_data %>%
+    mutate(
+      status_numeric = case_when(
+        status == "completed" ~ 1,
+        status == "failed" ~ 0,
+        TRUE ~ NA_real_
+      )
+    ) %>%
+    group_by(job_name) %>%
+    summarise(
+      current_status = first(status),
+      avg_duration = round(mean(duration, na.rm = TRUE), 1),
+      cpu_usage = round(mean(cpu_usage, na.rm = TRUE), 1),
+      memory_usage = round(mean(memory_usage, na.rm = TRUE), 1),
+      last_updated = max(last_updated, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    arrange(desc(last_updated))
+  
+  # Display the table
+  DT::datatable(
+    performance_summary,
+    colnames = c(
+      "Job Name" = "job_name",
+      "Current Status" = "current_status",
+      "Avg Duration (s)" = "avg_duration",
+      "CPU Usage (%)" = "cpu_usage",
+      "Memory (MB)" = "memory_usage",
+      "Last Updated" = "last_updated"
+    ),
+    options = list(
+      pageLength = 15,
+      dom = 'tip',
       columnDefs = list(
-        list(width = '20%', targets = 0),
-        list(width = '15%', targets = 1),
-        list(width = '50%', targets = 2),
-        list(width = '15%', targets = 3)
+        list(className = 'dt-center', targets = c(1:4))
       )
     ),
-    rownames = FALSE
-  )
-} else {
-  HTML('<div class="alert alert-info">No recent activity to display.</div>')
-}
-```
-
-## Performance
-
-### Job Status Distribution
-
-```{r}
-if (nrow(jobs) > 0) {
-  status_summary <- jobs %>%
-    count(status) %>%
-    mutate(percentage = round(n / sum(n) * 100, 1))
-  
-  p <- plot_ly(
-    status_summary,
-    labels = ~status,
-    values = ~n,
-    type = 'pie',
-    textinfo = 'label+percent',
-    marker = list(
-      colors = c("completed" = "#28a745", "running" = "#17a2b8", "failed" = "#dc3545", "not_run" = "#6c757d")
-    )
+    class = "table table-striped table-hover"
   ) %>%
-    layout(
-      title = "Job Status Distribution",
-      showlegend = FALSE
-    )
-  
-  p
-} else {
-  HTML('<div class="alert alert-info">No data available for visualization.</div>')
-}
-```
-
-### Progress Overview
-
-```{r}
-if (nrow(jobs) > 0) {
-  progress_data <- jobs %>%
-    select(job_name, progress, status) %>%
-    mutate(
-      progress_color = case_when(
-        status == "completed" ~ "#28a745",
-        status == "running" ~ "#17a2b8",
-        status == "failed" ~ "#dc3545",
-        TRUE ~ "#6c757d"
+    DT::formatStyle(
+      "current_status",
+      backgroundColor = DT::styleEqual(
+        c("running", "completed", "failed", "pending"),
+        c("#d1ecf1", "#d4edda", "#f8d7da", "#fff3cd")
       )
     )
   
-  p <- plot_ly(
-    progress_data,
-    x = ~job_name,
-    y = ~progress,
-    type = 'bar',
-    marker = list(color = ~progress_color),
-    text = ~paste(progress, "%"),
-    textposition = 'auto'
-  ) %>%
-    layout(
-      title = "Job Progress",
-      xaxis = list(title = "Job"),
-      yaxis = list(title = "Progress (%)", range = c(0, 100)),
-      showlegend = FALSE
-    )
-  
-  p
 } else {
-  HTML('<div class="alert alert-info">No progress data available.</div>')
-}
-```
-
-## Log Files
-
-### Recent Log Output
-
-```{r}
-# Load and display recent log files
-log_dir <- "data/details"
-if (dir.exists(log_dir)) {
-  log_files <- list.files(log_dir, pattern = "*.log", full.names = TRUE)
-  
-  if (length(log_files) > 0) {
-    # Show a subset of most recent/relevant logs
-    key_logs <- log_files[grepl("mosquito_alert_cleaned_reports|user_locations|z4_bite", log_files)]
-    
-    if (length(key_logs) > 0) {
-      log_content <- map_chr(key_logs[1:min(3, length(key_logs))], function(log_file) {
-        file_name <- basename(log_file)
-        content <- readLines(log_file, n = 20, warn = FALSE)
-        content <- paste(content, collapse = "\n")
-        
-        paste0('<div class="card mb-3">',
-               '<div class="card-header"><strong>', file_name, '</strong></div>',
-               '<div class="card-body">',
-               '<pre style="max-height: 200px; overflow-y: auto; font-size: 0.8rem;">', 
-               htmlEscape(content), 
-               '</pre></div></div>')
-      })
-      
-      HTML(paste(log_content, collapse = ""))
-    } else {
-      HTML('<div class="alert alert-info">No key log files found.</div>')
-    }
-  } else {
-    HTML('<div class="alert alert-warning">No log files available.</div>')
-  }
-} else {
-  HTML('<div class="alert alert-warning">Log directory not found.</div>')
-}
-```
-
-### Available Log Files
-
-```{r}
-if (dir.exists(log_dir)) {
-  log_files <- list.files(log_dir, pattern = "*.log")
-  
-  if (length(log_files) > 0) {
-    # Create a table of available log files
-    log_table <- data.frame(
-      `Log File` = log_files,
-      `Last Modified` = map_chr(file.path(log_dir, log_files), function(f) {
-        format(file.info(f)$mtime, "%Y-%m-%d %H:%M")
-      }),
-      `Size (KB)` = map_dbl(file.path(log_dir, log_files), function(f) {
-        round(file.info(f)$size / 1024, 1)
-      }),
-      stringsAsFactors = FALSE
-    )
-    
-    DT::datatable(
-      log_table,
-      options = list(
-        pageLength = 10,
-        dom = 'tp',
-        columnDefs = list(
-          list(width = '60%', targets = 0),
-          list(width = '25%', targets = 1),
-          list(width = '15%', targets = 2)
-        )
-      ),
-      rownames = FALSE
-    )
-  } else {
-    HTML('<div class="alert alert-info">No log files to display.</div>')
-  }
-} else {
-  HTML('<div class="alert alert-warning">Log directory not found.</div>')
+  cat("No performance data available for summary.")
 }
 ```

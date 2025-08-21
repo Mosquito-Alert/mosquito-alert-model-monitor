@@ -1,13 +1,30 @@
 project:
-  type: default
+  type: website
   output-dir: docs
 
+website:
+  title: "Mosquito Alert Model Monitor"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Dashboard
+      - href: jobs.qmd
+        text: Job Details
+      - href: history.qmd
+        text: History
+      - href: alerts.qmd
+        text: Alerts
+    right:
+      - icon: github
+        href: https://github.com/Mosquito-Alert/mosquito-alert-model-monitor
+  
 format:
-  dashboard:
+  html:
     theme: cosmo
-    nav-buttons: [github]
-    github: https://github.com/Mosquito-Alert/mosquito-alert-model-monitor
-    scrolling: true
+    css: styles.css
+    toc: true
+    smooth-scroll: true
+    code-fold: true
     
 execute:
   freeze: false
