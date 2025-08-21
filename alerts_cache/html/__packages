@@ -1,0 +1,14 @@
+base
+methods
+datasets
+utils
+grDevices
+graphics
+stats
+shiny
+DT
+jsonlite
+lubridate
+dplyr
+purrr
+stringr
