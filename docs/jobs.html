@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Mosquito Alert Model Monitor</title>
+<title>jobs – Mosquito Alert Model Monitor</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -68,20 +68,6 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
-<link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
-<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
-<link href="site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
-<script src="site_libs/datatables-binding-0.33/datatables.js"></script>
-<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
-<link href="site_libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
-<link href="site_libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
-<script src="site_libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
-<link href="site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
-<script src="site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
-<script src="site_libs/plotly-binding-4.11.0/plotly.js"></script>
-<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
-<link href="site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
-<script src="site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
 
 
 <link rel="stylesheet" href="styles.css">
@@ -105,11 +91,11 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Dashboard</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./jobs.html"> 
+    <a class="nav-link active" href="./jobs.html" aria-current="page"> 
 <span class="menu-text">Job Details</span></a>
   </li>  
   <li class="nav-item">
@@ -138,94 +124,17 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
-  <li><a href="#job-status" id="toc-job-status" class="nav-link" data-scroll-target="#job-status">Job Status</a></li>
-  <li><a href="#resource-usage" id="toc-resource-usage" class="nav-link" data-scroll-target="#resource-usage">Resource Usage</a></li>
-  <li><a href="#recent-activity" id="toc-recent-activity" class="nav-link" data-scroll-target="#recent-activity">Recent Activity</a></li>
-  <li><a href="#performance-summary" id="toc-performance-summary" class="nav-link" data-scroll-target="#performance-summary">Performance Summary</a></li>
-  </ul>
-</nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Mosquito Alert Model Monitor</h1>
-</div>
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
 
 
 
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
 
 
-</header>
 
-
-<section id="overview" class="level2">
-<h2 class="anchored" data-anchor-id="overview">Overview</h2>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>### System Overview
-
-- **Total Jobs:**  15 
-- **Running:**  8 
-- **Completed:**  5 
-- **Failed:**  0 
-
-*Last updated:*  2025-08-21 22:52:47 </code></pre>
-</div>
-</div>
-</section>
-<section id="job-status" class="level2">
-<h2 class="anchored" data-anchor-id="job-status">Job Status</h2>
-<div class="cell">
-<div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-a9c4dc9deb002a07ecc4" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-a9c4dc9deb002a07ecc4">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"],["live_classification","live_classification","live_classification","live_classification","live_classification","model_training","model_training","prepare_malert_data","test_job","test-connection","weekly_report","weekly_report","weekly_report","weekly_report","weekly_report"],["RUNNING","RUNNING","RUNNING","RUNNING","RUNNING","PENDING","PENDING","RUNNING","RUNNING","RUNNING","COMPLETED","COMPLETED","COMPLETED","COMPLETED","COMPLETED"],["85%","85%","85%","85%","85%","0%","0%","75%","50%","50%","100%","100%","100%","100%","100%"],["02:00:00","02:00:00","02:00:00","02:00:00","02:00:00","Unknown","Unknown","20:00","01:00","00:00","30:00","30:00","30:00","30:00","30:00"],["2025-08-21T17:19:35Z","2025-08-21T17:19:35Z","2025-08-21T17:19:35Z","2025-08-21T17:19:35Z","2025-08-21T17:19:35Z",null,null,"2025-08-21T11:11:31Z",null,"2025-08-21T19:08:15Z","2025-08-21T18:19:35Z","2025-08-21T18:19:35Z","2025-08-21T18:19:35Z","2025-08-21T18:19:35Z","2025-08-21T18:19:35Z"],["2025-08-21 21:23:48","2025-08-21 21:23:48","2025-08-21 21:23:48","2025-08-21 21:23:48","2025-08-21 21:23:48","2025-08-21 21:23:25","2025-08-21 21:23:25","2025-08-21 21:05:57","2025-08-21 21:26:14","2025-08-21 21:08:00","2025-08-21 21:23:35","2025-08-21 21:23:35","2025-08-21 21:23:35","2025-08-21 21:23:35","2025-08-21 21:23:35"],["2025-08-22T17:19:35Z","2025-08-22T17:19:35Z","2025-08-22T17:19:35Z","2025-08-22T17:19:35Z","2025-08-22T17:19:35Z","2025-08-21T19:49:35Z","2025-08-21T19:49:35Z","2025-08-22T02:30:00Z","2025-08-22T19:26:30Z","2025-08-22T01:08:15Z","2025-08-27T19:19:35Z","2025-08-27T19:19:35Z","2025-08-27T19:19:35Z","2025-08-27T19:19:35Z","2025-08-27T19:19:35Z"]],"container":"<table class=\"table table-striped table-hover\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Job Name<\/th>\n      <th>Status<\/th>\n      <th>Progress<\/th>\n      <th>Duration<\/th>\n      <th>Start Time<\/th>\n      <th>Last Updated<\/th>\n      <th>Next Run<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":15,"dom":"tip","columnDefs":[{"className":"dt-center","targets":[1,2,3]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"Job Name","targets":1},{"name":"Status","targets":2},{"name":"Progress","targets":3},{"name":"Duration","targets":4},{"name":"Start Time","targets":5},{"name":"Last Updated","targets":6},{"name":"Next Run","targets":7}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,15,25,50,100]}},"evals":[],"jsHooks":[]}</script>
-</div>
-</div>
-</section>
-<section id="resource-usage" class="level2">
-<h2 class="anchored" data-anchor-id="resource-usage">Resource Usage</h2>
-<div class="cell">
-<div class="cell-output-display">
-<div class="plotly html-widget html-fill-item" id="htmlwidget-f47252f34c09c9ec9bd8" style="width:100%;height:390px;"></div>
-<script type="application/json" data-for="htmlwidget-f47252f34c09c9ec9bd8">{"x":{"visdat":{"631c0472ed047":["function () ","plotlyVisDat"]},"cur_data":"631c0472ed047","attrs":{"631c0472ed047":{"x":{},"y":{},"marker":{"color":"#007bff"},"name":"CPU %","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"CPU Usage by Job","xaxis":{"domain":[0,1],"automargin":true,"title":"Job Name","type":"category","categoryorder":"array","categoryarray":["live_classification","model_training","prepare_malert_data","test_job","test-connection","weekly_report"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"CPU Usage (%)","range":[0,100]},"showlegend":false,"hovermode":"closest"},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["live_classification","live_classification","live_classification","live_classification","live_classification","model_training","model_training","prepare_malert_data","test_job","test-connection","weekly_report","weekly_report","weekly_report","weekly_report","weekly_report"],"y":[92.299999999999997,92.299999999999997,92.299999999999997,92.299999999999997,92.299999999999997,0,0,0,198.80000000000001,0.10000000000000001,25.100000000000001,25.100000000000001,25.100000000000001,25.100000000000001,25.100000000000001],"marker":{"color":"#007bff","line":{"color":"rgba(31,119,180,1)"}},"name":"CPU %","type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-</div>
-</div>
-</section>
-<section id="recent-activity" class="level2">
-<h2 class="anchored" data-anchor-id="recent-activity">Recent Activity</h2>
-<div class="cell">
-<div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-4fe5608eab2adc5624c1" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-4fe5608eab2adc5624c1">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13"],["21:23:48","21:23:48","21:23:48","21:23:48","21:23:48","21:23:35","21:23:35","21:23:35","21:23:35","21:23:35","21:23:25","21:23:25","21:05:57"],["live_classification","live_classification","live_classification","live_classification","live_classification","weekly_report","weekly_report","weekly_report","weekly_report","weekly_report","model_training","model_training","prepare_malert_data"],["Starting live classification system","Loading trained model weights","Processing incoming image stream","Classified 8,500 images so far","Current accuracy: 89.2%","Starting weekly analysis report","Aggregating data from past 7 days","Generating visualizations","Report generation completed","Results saved to /reports/weekly_20250821.pdf","Job scheduled for next training cycle","Waiting for computational resources","Dashboard integration test - processing user locations"]],"container":"<table class=\"table table-sm\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Time<\/th>\n      <th>Job<\/th>\n      <th>Message<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"dom":"t","order":[[0,"desc"]],"columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"Time","targets":1},{"name":"Job","targets":2},{"name":"Message","targets":3}],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
-</div>
-</div>
-</section>
-<section id="performance-summary" class="level2">
-<h2 class="anchored" data-anchor-id="performance-summary">Performance Summary</h2>
-<div class="cell">
-<div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-6ded36e86510c419c489" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-6ded36e86510c419c489">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6"],["test_job","live_classification","weekly_report","model_training","test-connection","prepare_malert_data"],["running","running","completed","pending","running","running"],[60,7200,1800,null,0,1200],[198.8,92.3,25.1,0,0.1,0],[154.6,3072,1024,0,30.7,0],["2025-08-21T19:26:14Z","2025-08-21T19:23:48Z","2025-08-21T19:23:35Z","2025-08-21T19:23:25Z","2025-08-21T19:08:00Z","2025-08-21T19:05:57Z"]],"container":"<table class=\"table table-striped table-hover\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Job Name<\/th>\n      <th>Current Status<\/th>\n      <th>Avg Duration (s)<\/th>\n      <th>CPU Usage (%)<\/th>\n      <th>Memory (MB)<\/th>\n      <th>Last Updated<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":15,"dom":"tip","columnDefs":[{"className":"dt-center","targets":[1,2,3,4]},{"className":"dt-right","targets":5},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"job_name","targets":1},{"name":"current_status","targets":2},{"name":"avg_duration","targets":3},{"name":"cpu_usage","targets":4},{"name":"memory_usage","targets":5},{"name":"last_updated","targets":6}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,15,25,50,100],"rowCallback":"function(row, data, displayNum, displayIndex, dataIndex) {\nvar value=data[2]; $(this.api().cell(row, 2).node()).css({'background-color':value == \"running\" ? \"#d1ecf1\" : value == \"completed\" ? \"#d4edda\" : value == \"failed\" ? \"#f8d7da\" : value == \"pending\" ? \"#fff3cd\" : null});\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script>
-</div>
-</div>
-
-
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
