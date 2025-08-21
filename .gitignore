@@ -27,7 +27,7 @@ sdist/
 *.Rproj
 /.quarto/
 _site/
-docs/
+# docs/ - commented out for GitHub Pages deployment
 *.html
 .httr-oauth
 
