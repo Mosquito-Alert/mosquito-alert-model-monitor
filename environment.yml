@@ -5,7 +5,6 @@ channels:
 dependencies:
   - r-base>=4.1
   - r-essentials
-  - r-shiny
   - r-dt
   - r-plotly
   - r-jsonlite
@@ -16,5 +15,6 @@ dependencies:
   - r-ggplot2
   - r-yaml
   - r-htmltools
-  - r-fresh
+  - r-knitr
+  - r-rmarkdown
   - quarto>=1.3

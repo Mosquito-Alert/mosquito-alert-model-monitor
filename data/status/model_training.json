@@ -1,7 +1,7 @@
 {
   "job_name": "model_training",
   "status": "pending",
-  "next_scheduled_run": "",
+  "next_scheduled_run": "2025-08-21T19:49:35Z",
   "progress": 0,
   "cpu_usage": 0,
   "memory_usage": 0,

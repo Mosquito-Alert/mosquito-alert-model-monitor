@@ -1,12 +1,12 @@
 {
   "job_name": "live_classification",
   "status": "running",
-  "start_time": "",
+  "start_time": "2025-08-21T17:19:35Z",
   "duration": 7200,
   "progress": 85,
   "cpu_usage": 92.3,
   "memory_usage": 3072,
-  "next_scheduled_run": "",
+  "next_scheduled_run": "2025-08-22T17:19:35Z",
   "log_entries": [
     "Starting live classification system",
     "Loading trained model weights",
