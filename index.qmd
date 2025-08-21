@@ -267,3 +267,83 @@ if (nrow(jobs) > 0) {
   HTML('<div class="alert alert-info">No progress data available.</div>')
 }
 ```
+
+## Log Files
+
+### Recent Log Output
+
+```{r}
+# Load and display recent log files
+log_dir <- "data/details"
+if (dir.exists(log_dir)) {
+  log_files <- list.files(log_dir, pattern = "*.log", full.names = TRUE)
+  
+  if (length(log_files) > 0) {
+    # Show a subset of most recent/relevant logs
+    key_logs <- log_files[grepl("mosquito_alert_cleaned_reports|user_locations|z4_bite", log_files)]
+    
+    if (length(key_logs) > 0) {
+      log_content <- map_chr(key_logs[1:min(3, length(key_logs))], function(log_file) {
+        file_name <- basename(log_file)
+        content <- readLines(log_file, n = 20, warn = FALSE)
+        content <- paste(content, collapse = "\n")
+        
+        paste0('<div class="card mb-3">',
+               '<div class="card-header"><strong>', file_name, '</strong></div>',
+               '<div class="card-body">',
+               '<pre style="max-height: 200px; overflow-y: auto; font-size: 0.8rem;">', 
+               htmlEscape(content), 
+               '</pre></div></div>')
+      })
+      
+      HTML(paste(log_content, collapse = ""))
+    } else {
+      HTML('<div class="alert alert-info">No key log files found.</div>')
+    }
+  } else {
+    HTML('<div class="alert alert-warning">No log files available.</div>')
+  }
+} else {
+  HTML('<div class="alert alert-warning">Log directory not found.</div>')
+}
+```
+
+### Available Log Files
+
+```{r}
+if (dir.exists(log_dir)) {
+  log_files <- list.files(log_dir, pattern = "*.log")
+  
+  if (length(log_files) > 0) {
+    # Create a table of available log files
+    log_table <- data.frame(
+      `Log File` = log_files,
+      `Last Modified` = map_chr(file.path(log_dir, log_files), function(f) {
+        format(file.info(f)$mtime, "%Y-%m-%d %H:%M")
+      }),
+      `Size (KB)` = map_dbl(file.path(log_dir, log_files), function(f) {
+        round(file.info(f)$size / 1024, 1)
+      }),
+      stringsAsFactors = FALSE
+    )
+    
+    DT::datatable(
+      log_table,
+      options = list(
+        pageLength = 10,
+        dom = 'tp',
+        columnDefs = list(
+          list(width = '60%', targets = 0),
+          list(width = '25%', targets = 1),
+          list(width = '15%', targets = 2)
+        )
+      ),
+      rownames = FALSE
+    )
+  } else {
+    HTML('<div class="alert alert-info">No log files to display.</div>')
+  }
+} else {
+  HTML('<div class="alert alert-warning">Log directory not found.</div>')
+}
+```

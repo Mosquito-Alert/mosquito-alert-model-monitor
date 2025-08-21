@@ -1,15 +1,15 @@
 {
   "job_name": "prepare_malert_data",
-  "status": "completed",
-  "start_time": "2025-08-20T20:01:41Z",
-  "end_time": "2025-08-20T20:01:41Z",
-  "duration": 4500,
-  "progress": 100,
+  "status": "running",
+  "start_time": "2025-08-21T11:11:31Z",
+  
+  "duration": 1200,
+  "progress": 75,
   "cpu_usage": 0,
   "memory_usage": 0,
-  "next_scheduled_run": "2025-08-21T02:30:00Z",
+  "next_scheduled_run": "2025-08-22T02:30:00Z",
   "log_entries": [
-    "Test run completed successfully"
+    "Dashboard integration test - processing user locations"
   ],
   "config": {
     "script": "prepare_malert_data.sh",
