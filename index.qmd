@@ -66,17 +66,20 @@ get_status_color <- function(status) {
 
 # Function to format duration
 format_duration <- function(seconds) {
-  if (is.na(seconds)) return("Unknown")
-  
-  hours <- floor(seconds / 3600)
-  minutes <- floor((seconds %% 3600) / 60)
-  secs <- seconds %% 60
-  
-  if (hours > 0) {
-    return(sprintf("%02d:%02d:%02d", hours, minutes, secs))
-  } else {
-    return(sprintf("%02d:%02d", minutes, secs))
-  }
+  # Handle vectors properly
+  sapply(seconds, function(s) {
+    if (is.na(s)) return("Unknown")
+    
+    hours <- floor(s / 3600)
+    minutes <- floor((s %% 3600) / 60)
+    secs <- s %% 60
+    
+    if (hours > 0) {
+      return(sprintf("%02d:%02d:%02d", hours, minutes, secs))
+    } else {
+      return(sprintf("%02d:%02d", minutes, secs))
+    }
+  })
 }
 
 # Load current data

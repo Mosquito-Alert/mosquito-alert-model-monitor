@@ -1,0 +1,23 @@
+{
+  "job_name": "weekly_report",
+  "status": "completed",
+  "start_time": "",
+  "end_time": "",
+  "duration": 1800,
+  "progress": 100,
+  "cpu_usage": 25.1,
+  "memory_usage": 1024,
+  "next_scheduled_run": "",
+  "log_entries": [
+    "Starting weekly analysis report",
+    "Aggregating data from past 7 days",
+    "Generating visualizations",
+    "Report generation completed",
+    "Results saved to /reports/weekly_20250821.pdf"
+  ],
+  "config": {
+    "report_type": "weekly_summary",
+    "output_format": "pdf",
+    "include_charts": true
+  }
+}

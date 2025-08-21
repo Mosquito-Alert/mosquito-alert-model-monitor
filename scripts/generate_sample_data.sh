@@ -13,12 +13,12 @@ cat > "$STATUS_DIR/live_classification.json" << EOF
 {
   "job_name": "live_classification",
   "status": "running",
-  "start_time": "$(date -d '2 hours ago' -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "start_time": "$(date -u -v-2H +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -u -d '2 hours ago' +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -u +"%Y-%m-%dT%H:%M:%SZ")",
   "duration": 7200,
   "progress": 85,
   "cpu_usage": 92.3,
   "memory_usage": 3072,
-  "next_scheduled_run": "$(date -d '+22 hours' -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "next_scheduled_run": "$(date -u -v+22H +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -u -d '+22 hours' +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -u +"%Y-%m-%dT%H:%M:%SZ")",
   "log_entries": [
     "Starting live classification system",
     "Loading trained model weights",
@@ -39,13 +39,13 @@ cat > "$STATUS_DIR/weekly_report.json" << EOF
 {
   "job_name": "weekly_report",
   "status": "completed",
-  "start_time": "$(date -d '1 hour ago' -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "end_time": "$(date -d '30 minutes ago' -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "start_time": "$(date -u -v-1H +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -u -d '1 hour ago' +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "end_time": "$(date -u -v-30M +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -u -d '30 minutes ago' +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -u +"%Y-%m-%dT%H:%M:%SZ")",
   "duration": 1800,
   "progress": 100,
   "cpu_usage": 25.1,
   "memory_usage": 1024,
-  "next_scheduled_run": "$(date -d '+6 days' -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "next_scheduled_run": "$(date -u -v+6d +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -u -d '+6 days' +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -u +"%Y-%m-%dT%H:%M:%SZ")",
   "log_entries": [
     "Starting weekly analysis report",
     "Aggregating data from past 7 days",
@@ -66,7 +66,7 @@ cat > "$STATUS_DIR/model_training.json" << EOF
 {
   "job_name": "model_training",
   "status": "pending",
-  "next_scheduled_run": "$(date -d '+30 minutes' -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "next_scheduled_run": "$(date -u -v+30M +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -u -d '+30 minutes' +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -u +"%Y-%m-%dT%H:%M:%SZ")",
   "progress": 0,
   "cpu_usage": 0,
   "memory_usage": 0,

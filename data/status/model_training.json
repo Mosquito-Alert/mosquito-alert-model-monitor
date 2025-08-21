@@ -1,0 +1,17 @@
+{
+  "job_name": "model_training",
+  "status": "pending",
+  "next_scheduled_run": "",
+  "progress": 0,
+  "cpu_usage": 0,
+  "memory_usage": 0,
+  "log_entries": [
+    "Job scheduled for next training cycle",
+    "Waiting for computational resources"
+  ],
+  "config": {
+    "training_data": "/data/new_annotations_batch_47",
+    "epochs": 50,
+    "validation_split": 0.2
+  }
+}
