@@ -29,6 +29,9 @@ sdist/
 _site/
 # docs/ - commented out for GitHub Pages deployment
 *.html
+# Allow HTML files in docs directory for GitHub Pages
+!docs/*.html
+!docs/**/*.html
 .httr-oauth
 
 # Don't ignore the docs/ folder if using GitHub Pages
