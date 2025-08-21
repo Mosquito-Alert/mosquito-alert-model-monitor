@@ -1,0 +1,10 @@
+{
+  "job_name": "weather-forecast",
+  "status": "running",
+  "last_updated": "2025-08-21T23:53:54Z",
+  "duration": 120,
+  "progress": 45,
+  "cpu_usage": 223.2,
+  "memory_usage": 382.976,
+  "next_scheduled_run": ""
+}

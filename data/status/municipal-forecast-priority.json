@@ -1,0 +1,23 @@
+{
+  "job_name": "municipal-forecast-priority",
+  "status": "waiting", 
+  "last_updated": "2025-08-22T12:00:00Z",
+  "start_time": "2025-08-22T12:00:00Z",
+  "duration": 0,
+  "progress": 0,
+  "cpu_usage": 0,
+  "memory_usage": 0,
+  "next_scheduled_run": "2025-08-22T18:00:00Z",
+  "log_entries": [
+    "System initialized",
+    "Waiting for next scheduled run", 
+    "Priority municipal forecast collection"
+  ],
+  "config": {
+    "project_type": "weather_data_collection",
+    "data_source": "AEMET OpenData API",
+    "collection_scope": "Priority municipalities immediate forecast",
+    "frequency": "Every 6 hours",
+    "priority": "CRITICAL"
+  }
+}
