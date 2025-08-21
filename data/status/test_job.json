@@ -1,0 +1,10 @@
+{
+  "job_name": "test_job",
+  "status": "running",
+  "last_updated": "2025-08-21T19:26:29Z",
+  "duration": 60,
+  "progress": 50,
+  "cpu_usage": 198.8,
+  "memory_usage": 154.624,
+  "next_scheduled_run": "2025-08-22T19:26:30Z"
+}
