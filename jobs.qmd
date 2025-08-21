@@ -1,0 +1,236 @@
+---
+title: "Job Details"
+format: html
+---
+
+```{r setup, include=FALSE}
+library(DT)
+library(plotly)
+library(jsonlite)
+library(lubridate)
+library(dplyr)
+library(purrr)
+library(stringr)
+library(ggplot2)
+
+# Source the shared functions
+source("scripts/dashboard_functions.R")
+```
+
+# Job Details & Analysis
+
+This page provides detailed analysis and configuration information for all monitored jobs.
+
+```{r load-data}
+# Load job status data
+jobs_data <- load_job_status()
+
+if (nrow(jobs_data) == 0) {
+  cat("No job data available. Jobs will appear here once they start reporting status.\n")
+} else {
+  cat("Found", nrow(jobs_data), "jobs with status data\n")
+}
+```
+
+## Job Configuration Details
+
+```{r job-configs}
+if (nrow(jobs_data) > 0) {
+  # Extract and display job configurations
+  config_details <- jobs_data %>%
+    select(job_name, status, last_updated, config) %>%
+    mutate(
+      project_type = map_chr(config, ~.x$project_type %||% "Unknown"),
+      frequency = map_chr(config, ~.x$frequency %||% "Unknown"),
+      priority = map_chr(config, ~.x$priority %||% "Unknown"),
+      data_source = map_chr(config, ~.x$data_source %||% "Unknown"),
+      collection_scope = map_chr(config, ~.x$collection_scope %||% "Unknown")
+    ) %>%
+    select(-config)
+  
+  # Display configuration table
+  DT::datatable(
+    config_details,
+    caption = "Job Configuration Details",
+    options = list(
+      pageLength = 10,
+      scrollX = TRUE,
+      columnDefs = list(
+        list(className = 'dt-center', targets = '_all')
+      )
+    ),
+    rownames = FALSE
+  ) %>%
+    DT::formatStyle(
+      'priority',
+      backgroundColor = DT::styleEqual(
+        c('CRITICAL', 'MEDIUM', 'LOW'),
+        c('#ffebee', '#fff3e0', '#e8f5e8')
+      )
+    ) %>%
+    DT::formatStyle(
+      'status',
+      backgroundColor = DT::styleEqual(
+        c('completed', 'running', 'failed', 'waiting'),
+        c('#e8f5e8', '#e3f2fd', '#ffebee', '#f5f5f5')
+      )
+    )
+}
+```
+
+## Resource Usage Analysis
+
+```{r resource-analysis}
+if (nrow(jobs_data) > 0) {
+  # Resource usage plot
+  p_resources <- jobs_data %>%
+    filter(!is.na(cpu_usage) | !is.na(memory_usage)) %>%
+    select(job_name, cpu_usage, memory_usage) %>%
+    tidyr::pivot_longer(
+      cols = c(cpu_usage, memory_usage),
+      names_to = "resource_type",
+      values_to = "usage"
+    ) %>%
+    mutate(
+      resource_type = case_when(
+        resource_type == "cpu_usage" ~ "CPU Usage (%)",
+        resource_type == "memory_usage" ~ "Memory Usage (MB)",
+        TRUE ~ resource_type
+      )
+    ) %>%
+    ggplot(aes(x = job_name, y = usage, fill = resource_type)) +
+    geom_col(position = "dodge") +
+    facet_wrap(~resource_type, scales = "free_y") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    labs(
+      title = "Resource Usage by Job",
+      x = "Job Name",
+      y = "Usage",
+      fill = "Resource Type"
+    )
+  
+  ggplotly(p_resources, tooltip = c("x", "y"))
+}
+```
+
+## Job Performance Metrics
+
+```{r performance-metrics}
+if (nrow(jobs_data) > 0) {
+  # Performance summary
+  performance_summary <- jobs_data %>%
+    group_by(job_name) %>%
+    summarise(
+      avg_duration = round(mean(duration, na.rm = TRUE) / 60, 2),
+      max_duration = round(max(duration, na.rm = TRUE) / 60, 2),
+      avg_cpu = round(mean(cpu_usage, na.rm = TRUE), 1),
+      avg_memory = round(mean(memory_usage, na.rm = TRUE), 1),
+      last_status = first(status),
+      .groups = 'drop'
+    ) %>%
+    rename(
+      "Job Name" = job_name,
+      "Avg Duration (min)" = avg_duration,
+      "Max Duration (min)" = max_duration,
+      "Avg CPU (%)" = avg_cpu,
+      "Avg Memory (MB)" = avg_memory,
+      "Current Status" = last_status
+    )
+  
+  DT::datatable(
+    performance_summary,
+    caption = "Job Performance Summary",
+    options = list(
+      pageLength = 10,
+      columnDefs = list(
+        list(className = 'dt-center', targets = '_all')
+      )
+    ),
+    rownames = FALSE
+  ) %>%
+    DT::formatStyle(
+      'Current Status',
+      backgroundColor = DT::styleEqual(
+        c('completed', 'running', 'failed', 'waiting'),
+        c('#e8f5e8', '#e3f2fd', '#ffebee', '#f5f5f5')
+      )
+    )
+}
+```
+
+## Scheduling Information
+
+```{r scheduling-info}
+if (nrow(jobs_data) > 0) {
+  # Next scheduled runs
+  schedule_info <- jobs_data %>%
+    select(job_name, next_scheduled_run, last_updated) %>%
+    mutate(
+      next_run_parsed = as_datetime(next_scheduled_run),
+      last_updated_parsed = as_datetime(last_updated),
+      time_until_next = as.numeric(next_run_parsed - Sys.time()),
+      status_text = case_when(
+        is.na(next_run_parsed) ~ "No schedule set",
+        time_until_next < 0 ~ "Overdue",
+        time_until_next < 3600 ~ paste(round(time_until_next/60), "min"),
+        time_until_next < 86400 ~ paste(round(time_until_next/3600, 1), "hrs"),
+        TRUE ~ paste(round(time_until_next/86400, 1), "days")
+      )
+    ) %>%
+    select(
+      "Job Name" = job_name,
+      "Last Updated" = last_updated,
+      "Next Scheduled" = next_scheduled_run,
+      "Time Until Next" = status_text
+    )
+  
+  DT::datatable(
+    schedule_info,
+    caption = "Job Scheduling Information",
+    options = list(
+      pageLength = 10,
+      columnDefs = list(
+        list(className = 'dt-center', targets = '_all')
+      )
+    ),
+    rownames = FALSE
+  )
+}
+```
+
+## Log Analysis
+
+```{r log-analysis}
+if (nrow(jobs_data) > 0) {
+  # Recent log entries
+  log_data <- jobs_data %>%
+    select(job_name, log_entries) %>%
+    filter(!is.na(log_entries)) %>%
+    mutate(
+      log_text = map_chr(log_entries, ~paste(.x, collapse = " | "))
+    ) %>%
+    select("Job Name" = job_name, "Recent Log Entries" = log_text)
+  
+  if (nrow(log_data) > 0) {
+    DT::datatable(
+      log_data,
+      caption = "Recent Log Entries",
+      options = list(
+        pageLength = 5,
+        columnDefs = list(
+          list(width = '200px', targets = 0),
+          list(width = '600px', targets = 1)
+        )
+      ),
+      rownames = FALSE
+    )
+  } else {
+    cat("No log entries available.\n")
+  }
+}
+```
+
+---
+
+*Page last updated: `r Sys.time()`*
