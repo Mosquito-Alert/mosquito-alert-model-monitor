@@ -118,11 +118,11 @@ if (nrow(jobs) > 0) {
 - **Running:** `r running_jobs`  
 - **Failed:** `r failed_jobs`
 
-### Quick Links
+### Project Info
 
-- [Job Details](jobs.qmd)
-- [History](history.qmd)
-- [Alerts](alerts.qmd)
+**Mosquito Alert Model Monitor** tracks automated data processing jobs running on computational clusters.
+
+**Repository:** [mosquito_model_data_prep](https://github.com/Mosquito-Alert/mosquito_model_data_prep)
 
 ## Overview
 
