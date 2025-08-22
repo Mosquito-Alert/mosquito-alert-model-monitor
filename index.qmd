@@ -79,7 +79,9 @@ if (nrow(jobs_data) == 0) {
       Progress = ifelse(!is.na(progress), 
                        paste0(progress, "%"), 
                        "Unknown"),
-      `Last Updated` = format(last_updated, "%Y-%m-%d %H:%M:%S")
+      `Last Updated` = ifelse(!is.na(last_updated) & last_updated != "", 
+                             format(as.POSIXct(last_updated), "%Y-%m-%d %H:%M:%S"), 
+                             "Unknown")
     ) %>%
     select(
       `Job Name` = job_name,
@@ -148,7 +150,9 @@ if (nrow(jobs_data) == 0 || !"latest_log" %in% names(jobs_data)) {
     filter(!is.na(latest_log)) %>%
     select(job_name, latest_log, last_updated) %>%
     mutate(
-      timestamp = format(last_updated, "%H:%M:%S"),
+      timestamp = ifelse(!is.na(last_updated) & last_updated != "", 
+                        format(as.POSIXct(last_updated), "%H:%M:%S"), 
+                        "Unknown"),
       message = latest_log
     ) %>%
     select(
