@@ -1,10 +1,18 @@
 {
   "job_name": "weather-historical",
   "status": "running",
-  "last_updated": "2025-08-21T23:54:03Z",
-  "duration": 180,
-  "progress": 75,
-  "cpu_usage": 170.9,
-  "memory_usage": 382.976,
-  "next_scheduled_run": ""
+  "last_updated": "2025-08-21T23:33:51Z",
+  "start_time": "2025-08-21T23:33:51Z",
+  "duration": 200,
+  "progress": 70,
+  "cpu_usage": 199.6,
+  "memory_usage": 191.488,
+  "next_scheduled_run": "2025-08-22T23:33:51Z",
+  "config": {
+    "project_type": "weather_data_collection",
+    "data_source": "AEMET OpenData API",
+    "collection_scope": "Spain",
+    "script": "update_weather_status.sh",
+    "cluster": "SLURM cluster"
+  }
 }
