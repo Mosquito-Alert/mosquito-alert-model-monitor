@@ -61,7 +61,6 @@ if (nrow(jobs_data) == 0) {
   cat(overview_html)
 }
 ```
-```
 
 ## Job Status
 
@@ -160,7 +159,7 @@ if (nrow(jobs_data) == 0 || !"latest_log" %in% names(jobs_data)) {
       Job = job_name,
       Message = message
     ) %>%
-    arrange(desc(Time))
+    arrange(desc(Job))  # Sort by job name instead of time to avoid issues
   
   DT::datatable(
     recent_logs,
