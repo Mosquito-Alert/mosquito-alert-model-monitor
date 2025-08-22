@@ -34,6 +34,15 @@ jobs:
       uses: r-lib/actions/setup-r@v2
       with:
         r-version: '4.3'
+        use-public-rspm: true  # Use faster binary packages
+        
+    - name: Cache R packages
+      uses: actions/cache@v3
+      with:
+        path: ${{ env.R_LIBS_USER }}
+        key: ${{ runner.os }}-r-${{ hashFiles('DESCRIPTION') }}-2
+        restore-keys: |
+          ${{ runner.os }}-r-
         
     - name: Install system dependencies
       run: |
@@ -42,12 +51,21 @@ jobs:
         
     - name: Install R dependencies
       run: |
-        install.packages(c(
+        if (!require("pak", quietly = TRUE)) install.packages("pak", repos = "https://r-lib.github.io/p/pak/stable/")
+        pak::pkg_install(c(
           "DT", "plotly", "jsonlite", "lubridate", 
           "dplyr", "purrr", "stringr", "ggplot2", "yaml", 
           "htmltools", "knitr", "rmarkdown"
-        ), repos = "https://cloud.r-project.org", dependencies = TRUE)
+        ))
       shell: Rscript {0}
+      
+    - name: Cache Quarto
+      uses: actions/cache@v3
+      with:
+        path: ~/.local/share/quarto
+        key: ${{ runner.os }}-quarto-${{ hashFiles('**/*.qmd') }}
+        restore-keys: |
+          ${{ runner.os }}-quarto-
       
     - name: Setup Quarto
       uses: quarto-dev/quarto-actions/setup@v2

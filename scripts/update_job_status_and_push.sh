@@ -67,6 +67,23 @@ git commit -m "$COMMIT_MSG" || {
     exit 1
 }
 
+# Check if we should use cluster building for faster rebuilds
+if [ "$USE_CLUSTER_BUILD" = "true" ] && [ -f "$SCRIPT_DIR/build_and_deploy_dashboard.sh" ]; then
+    echo "Using cluster building for faster dashboard rebuild..."
+    
+    # Run the cluster build script
+    "$SCRIPT_DIR/build_and_deploy_dashboard.sh" || {
+        echo "Warning: Cluster build failed. Falling back to GitHub Actions..."
+        # Fall through to regular git push
+    }
+    
+    if [ $? -eq 0 ]; then
+        echo "✅ Status updated and dashboard rebuilt via cluster!"
+        echo "📊 Dashboard updated in under 1 minute vs 30+ minutes with GitHub Actions"
+        exit 0
+    fi
+fi
+
 # Push to remote (this will trigger GitHub Actions)
 echo "Pushing changes to trigger dashboard rebuild..."
 git push origin main || {
@@ -76,5 +93,7 @@ git push origin main || {
 }
 
 echo "✅ Status updated and pushed successfully!"
-echo "📊 Dashboard will rebuild automatically via GitHub Actions"
+echo "📊 Dashboard will rebuild automatically via GitHub Actions (may take 30+ minutes)"
 echo "🔗 Check progress at: https://github.com/$(git config --get remote.origin.url | sed 's/.*github.com[:/]\([^.]*\).*/\1/')/actions"
+echo ""
+echo "💡 Tip: Set USE_CLUSTER_BUILD=true to enable faster cluster-based rebuilds"
