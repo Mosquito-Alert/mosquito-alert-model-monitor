@@ -63,6 +63,24 @@ quarto render
 
 ## Job Integration
 
+### Dashboard Update Mechanism
+
+The dashboard is designed to update automatically through two possible strategies:
+
+#### 1. Job-Triggered Updates (Recommended)
+- **How it works**: When each job completes (success or failure), it automatically pushes status updates to the git repository, which triggers GitHub Actions to rebuild and redeploy the dashboard
+- **Script**: Use `scripts/update_job_status_and_push.sh` in your jobs
+- **Advantages**: Real-time updates as soon as jobs complete
+- **Requirements**: Git push access from your HPC cluster
+
+#### 2. Scheduled Updates (Alternative)
+- **How it works**: Set up a separate cron job that periodically checks for status changes and pushes updates
+- **Script**: Use `scripts/update_job_status.sh` followed by manual git operations
+- **Advantages**: Works even if individual jobs can't push to git
+- **Requirements**: Separate scheduling system
+
+The current implementation uses strategy #1 for immediate dashboard updates.
+
 ### Status File Format
 
 Each job should create/update a JSON file in `data/status/` with this structure:

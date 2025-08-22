@@ -1,0 +1,257 @@
+---
+title: "Job History"
+format: html
+---
+
+```{r setup, include=FALSE}
+library(DT)
+library(plotly)
+library(jsonlite)
+library(lubridate)
+library(dplyr)
+library(purrr)
+library(stringr)
+library(ggplot2)
+
+# Source the shared functions
+source("scripts/dashboard_functions.R")
+```
+
+# Job Execution History
+
+This page shows historical trends and patterns in job execution over time.
+
+```{r load-history}
+# Load historical data
+history_files <- list.files("data/history", pattern = "*.json", full.names = TRUE)
+
+if (length(history_files) == 0) {
+  cat("No historical data available yet. History will accumulate as jobs run.\n")
+  history_data <- data.frame()
+} else {
+  # Load and combine all history files
+  history_data <- map_dfr(history_files, function(file) {
+    tryCatch({
+      data <- fromJSON(file, flatten = TRUE)
+      if (is.data.frame(data) && nrow(data) > 0) {
+        data$date_file <- basename(tools::file_path_sans_ext(file))
+        return(data)
+      }
+      return(data.frame())
+    }, error = function(e) {
+      data.frame()
+    })
+  })
+  
+  if (nrow(history_data) > 0) {
+    # Clean and standardize the data
+    history_data <- history_data %>%
+      mutate(
+        timestamp = as_datetime(timestamp),
+        duration = as.numeric(duration),
+        progress = as.numeric(progress),
+        date_recorded = as.Date(date_file)
+      )
+    
+    cat("Loaded", nrow(history_data), "historical job records from", length(history_files), "days\n")
+  }
+}
+```
+
+## Execution Timeline
+
+```{r timeline}
+if (nrow(history_data) > 0) {
+  # Create timeline plot
+  p_timeline <- history_data %>%
+    ggplot(aes(x = timestamp, y = job_name, color = status)) +
+    geom_point(aes(size = duration/60), alpha = 0.7) +
+    scale_color_manual(
+      values = c(
+        "completed" = "#4caf50",
+        "failed" = "#f44336", 
+        "running" = "#2196f3",
+        "waiting" = "#9e9e9e"
+      )
+    ) +
+    scale_size_continuous(name = "Duration (min)", range = c(2, 8)) +
+    theme_minimal() +
+    theme(
+      axis.text.y = element_text(size = 10),
+      legend.position = "bottom"
+    ) +
+    labs(
+      title = "Job Execution Timeline",
+      x = "Time",
+      y = "Job Name",
+      color = "Status"
+    )
+  
+  ggplotly(p_timeline, tooltip = c("x", "y", "colour", "size"))
+} else {
+  cat("No historical data to display timeline.\n")
+}
+```
+
+## Daily Job Summary
+
+```{r daily-summary}
+if (nrow(history_data) > 0) {
+  # Daily aggregation
+  daily_summary <- history_data %>%
+    group_by(date_recorded, job_name) %>%
+    summarise(
+      total_runs = n(),
+      successful_runs = sum(status == "completed"),
+      failed_runs = sum(status == "failed"),
+      avg_duration = round(mean(duration, na.rm = TRUE) / 60, 2),
+      success_rate = round(successful_runs / total_runs * 100, 1),
+      .groups = 'drop'
+    )
+  
+  # Success rate over time
+  p_success <- daily_summary %>%
+    ggplot(aes(x = date_recorded, y = success_rate, color = job_name)) +
+    geom_line(size = 1) +
+    geom_point(aes(size = total_runs)) +
+    scale_y_continuous(limits = c(0, 100)) +
+    theme_minimal() +
+    labs(
+      title = "Job Success Rate Over Time",
+      x = "Date",
+      y = "Success Rate (%)",
+      color = "Job Name",
+      size = "Total Runs"
+    )
+  
+  ggplotly(p_success, tooltip = c("x", "y", "colour", "size"))
+}
+```
+
+## Performance Trends
+
+```{r performance-trends}
+if (nrow(history_data) > 0) {
+  # Duration trends
+  p_duration <- history_data %>%
+    filter(status %in% c("completed", "failed")) %>%
+    ggplot(aes(x = timestamp, y = duration/60, color = job_name)) +
+    geom_point(alpha = 0.6) +
+    geom_smooth(method = "loess", se = FALSE) +
+    theme_minimal() +
+    labs(
+      title = "Job Duration Trends",
+      x = "Time",
+      y = "Duration (minutes)",
+      color = "Job Name"
+    )
+  
+  ggplotly(p_duration, tooltip = c("x", "y", "colour"))
+}
+```
+
+## Historical Statistics Table
+
+```{r history-table}
+if (nrow(history_data) > 0) {
+  # Comprehensive statistics
+  stats_summary <- history_data %>%
+    group_by(job_name) %>%
+    summarise(
+      total_executions = n(),
+      successful = sum(status == "completed"),
+      failed = sum(status == "failed"),
+      success_rate = round(successful / total_executions * 100, 1),
+      avg_duration = round(mean(duration, na.rm = TRUE) / 60, 2),
+      min_duration = round(min(duration, na.rm = TRUE) / 60, 2),
+      max_duration = round(max(duration, na.rm = TRUE) / 60, 2),
+      first_run = min(timestamp, na.rm = TRUE),
+      last_run = max(timestamp, na.rm = TRUE),
+      .groups = 'drop'
+    ) %>%
+    mutate(
+      first_run = format(first_run, "%Y-%m-%d %H:%M"),
+      last_run = format(last_run, "%Y-%m-%d %H:%M")
+    ) %>%
+    rename(
+      "Job Name" = job_name,
+      "Total Runs" = total_executions,
+      "Successful" = successful,
+      "Failed" = failed,
+      "Success Rate (%)" = success_rate,
+      "Avg Duration (min)" = avg_duration,
+      "Min Duration (min)" = min_duration,
+      "Max Duration (min)" = max_duration,
+      "First Run" = first_run,
+      "Last Run" = last_run
+    )
+  
+  DT::datatable(
+    stats_summary,
+    caption = "Historical Job Statistics",
+    options = list(
+      pageLength = 10,
+      scrollX = TRUE,
+      columnDefs = list(
+        list(className = 'dt-center', targets = '_all')
+      )
+    ),
+    rownames = FALSE
+  ) %>%
+    DT::formatStyle(
+      'Success Rate (%)',
+      backgroundColor = DT::styleInterval(
+        cuts = c(80, 95),
+        values = c('#ffebee', '#fff3e0', '#e8f5e8')
+      )
+    )
+}
+```
+
+## Recent Activity Log
+
+```{r recent-activity}
+if (nrow(history_data) > 0) {
+  # Show last 50 job executions
+  recent_activity <- history_data %>%
+    arrange(desc(timestamp)) %>%
+    head(50) %>%
+    mutate(
+      duration_formatted = format_duration(duration),
+      timestamp_formatted = format(timestamp, "%Y-%m-%d %H:%M:%S")
+    ) %>%
+    select(
+      "Job Name" = job_name,
+      "Status" = status,
+      "Timestamp" = timestamp_formatted,
+      "Duration" = duration_formatted,
+      "Progress (%)" = progress
+    )
+  
+  DT::datatable(
+    recent_activity,
+    caption = "Recent Job Executions (Last 50)",
+    options = list(
+      pageLength = 15,
+      order = list(list(2, 'desc')),  # Sort by timestamp descending
+      columnDefs = list(
+        list(className = 'dt-center', targets = '_all')
+      )
+    ),
+    rownames = FALSE
+  ) %>%
+    DT::formatStyle(
+      'Status',
+      backgroundColor = DT::styleEqual(
+        c('completed', 'running', 'failed', 'waiting'),
+        c('#e8f5e8', '#e3f2fd', '#ffebee', '#f5f5f5')
+      )
+    )
+} else {
+  cat("No recent activity to display.\n")
+}
+```
+
+---
+
+*Page last updated: `r Sys.time()`*
