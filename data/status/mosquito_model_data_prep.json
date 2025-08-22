@@ -1,23 +1,23 @@
 {
   "job_name": "mosquito_model_data_prep",
-  "status": "waiting",
-  "last_updated": "2025-08-22T12:00:00Z",
-  "start_time": "2025-08-22T02:30:00Z",
-  "duration": 0,
-  "progress": 0,
-  "cpu_usage": 0,
-  "memory_usage": 0,
+  "status": "running",
+  "last_updated": "2025-08-22T17:28:16Z",
+  "start_time": "2025-08-22T17:28:16Z",
+  "duration": 120,
+  "progress": 75,
+  "cpu_usage": 0.0,
+  "memory_usage": 1.84375,
   "next_scheduled_run": "2025-08-23T02:30:00Z",
-  "log_entries": [
-    "System initialized",
-    "Waiting for next scheduled run",
-    "Daily data preparation pipeline"
-  ],
   "config": {
-    "project_type": "data_preparation",
-    "data_source": "Mosquito Alert production database",
-    "collection_scope": "Global mosquito model data preparation",
-    "frequency": "Daily at 2:30 AM",
-    "priority": "HIGH"
-  }
+    "project_type": "mosquito_data_preparation",
+    "data_source": "Mosquito Alert Database",
+    "collection_scope": "Global reports processing",
+    "script": "prepare_malert_data.sh",
+    "schedule": "Daily at 2:30 AM",
+    "cluster": "SLURM cluster",
+    "project": "mosquito_model_data_prep"
+  },
+  "log_entries": [
+    "Testing updated integration script"
+  ]
 }
