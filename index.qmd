@@ -136,6 +136,7 @@ jobs_data <- load_job_status()
 
 ```{r}
 #| label: overview-stats
+#| results: asis
 
 if (nrow(jobs_data) == 0) {
   cat("**No Jobs Configured**\n\nNo job status files found in data/status/")
@@ -145,13 +146,21 @@ if (nrow(jobs_data) == 0) {
   failed_jobs <- sum(jobs_data$status == "failed", na.rm = TRUE)
   completed_jobs <- sum(jobs_data$status == "completed", na.rm = TRUE)
   
-  cat("### System Overview\n\n")
-  cat("- **Total Jobs:** ", total_jobs, "\n")
-  cat("- **Running:** ", running_jobs, "\n") 
-  cat("- **Completed:** ", completed_jobs, "\n")
-  cat("- **Failed:** ", failed_jobs, "\n\n")
-  cat("*Last updated:* ", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\n\n")
+  # Create formatted output as HTML
+  overview_html <- paste0(
+    "<h3>System Overview</h3>\n",
+    "<ul>\n",
+    "<li><strong>Total Jobs:</strong> ", total_jobs, "</li>\n",
+    "<li><strong>Running:</strong> ", running_jobs, "</li>\n",
+    "<li><strong>Completed:</strong> ", completed_jobs, "</li>\n",
+    "<li><strong>Failed:</strong> ", failed_jobs, "</li>\n",
+    "</ul>\n",
+    "<p><em>Last updated:</em> ", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "</p>\n"
+  )
+  
+  cat(overview_html)
 }
+```
 ```
 
 ## Job Status
