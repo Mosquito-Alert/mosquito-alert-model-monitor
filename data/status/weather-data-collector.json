@@ -1,0 +1,18 @@
+{
+  "job_name": "weather-data-collector",
+  "status": "running",
+  "last_updated": "2025-08-21T23:30:48Z",
+  "start_time": "2025-08-21T23:30:48Z",
+  "duration": 17,
+  "progress": 20,
+  "cpu_usage": 199.5,
+  "memory_usage": 174.08,
+  "next_scheduled_run": "2025-08-22T05:30:48Z",
+  "config": {
+    "project_type": "weather_data_collection",
+    "data_source": "AEMET OpenData API",
+    "collection_scope": "Spain",
+    "script": "update_weather_status.sh",
+    "cluster": "SLURM cluster"
+  }
+}
