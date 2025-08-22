@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Example cronjob script for species classification model
-# This should be adapted for your specific model/pipeline
+# Example cronjob script for your model/pipeline
+# This should be adapted for your specific project
 
 # Set up environment for HPC cluster
 # Load required modules (adjust module names/versions as needed)
@@ -22,14 +22,14 @@ cd /path/to/your/model/directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 STATUS_SCRIPT="$SCRIPT_DIR/update_job_status_and_push.sh"
 
-JOB_NAME="species_classification_model"
+JOB_NAME="your_project_name"  # Change this to your actual project name
 START_TIME=$(date +%s)
 
 # Update status to running (this will also push to git and trigger dashboard rebuild)
 $STATUS_SCRIPT "$JOB_NAME" "running" 0 0
 
 # Run your actual model/pipeline here
-echo "Starting species classification model training..."
+echo "Starting your model/pipeline..."
 
 # Example model execution (replace with your actual commands)
 python -c "
@@ -38,12 +38,12 @@ import sys
 
 # Simulate model training with progress updates
 for i in range(1, 11):
-    print(f'Training epoch {i}/10')
+    print(f'Processing step {i}/10')
     time.sleep(5)  # Simulate work
     progress = i * 10
     # Update progress (you could call the status script here too)
     
-print('Model training completed successfully')
+print('Processing completed successfully')
 "
 
 # Check if the model succeeded
@@ -55,7 +55,7 @@ if [ $? -eq 0 ]; then
     # Update status to completed (this will push to git and trigger dashboard rebuild)
     $STATUS_SCRIPT "$JOB_NAME" "completed" "$DURATION" 100
     
-    echo "Model training completed successfully"
+    echo "Processing completed successfully"
 else
     # Calculate duration
     END_TIME=$(date +%s)
@@ -64,7 +64,7 @@ else
     # Update status to failed (this will push to git and trigger dashboard rebuild)
     $STATUS_SCRIPT "$JOB_NAME" "failed" "$DURATION" 0
     
-    echo "Model training failed"
+    echo "Processing failed"
     exit 1
 fi
 
