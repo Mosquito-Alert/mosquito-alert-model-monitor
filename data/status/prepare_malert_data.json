@@ -1,10 +1,10 @@
 {
   "job_name": "prepare_malert_data",
-  "status": "running",
-  "last_updated": "2025-08-22T17:28:38Z",
-  "start_time": "2025-08-22T17:28:38Z",
-  "duration": 180,
-  "progress": 65,
+  "status": "completed",
+  "last_updated": "2025-08-22T17:28:47Z",
+  "start_time": "2025-08-22T17:28:47Z",
+  "duration": 3600,
+  "progress": 100,
   "cpu_usage": 0.0,
   "memory_usage": 1.79688,
   "next_scheduled_run": "2025-08-23T02:30:00Z",
@@ -18,6 +18,6 @@
     "project": "mosquito_model_data_prep"
   },
   "log_entries": [
-    "Processing mosquito alert data"
+    "Data preparation pipeline completed successfully"
   ]
 }
