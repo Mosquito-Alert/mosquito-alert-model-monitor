@@ -14,49 +14,54 @@ load_job_status <- function() {
     return(data.frame())
   }
   
-  # Read all status files
+  # Read all status files and create a list of data frames
   jobs_list <- map(status_files, function(file) {
     tryCatch({
       data <- fromJSON(file, flatten = TRUE)
       
-      # Create a standardized job record
-      job_record <- list(
+      # Create a standardized job record as a data frame
+      job_df <- data.frame(
         job_name = data$job_name %||% tools::file_path_sans_ext(basename(file)),
         status = data$status %||% "unknown",
-        last_updated = data$last_updated %||% Sys.time(),
-        start_time = data$start_time %||% data$last_updated %||% Sys.time(),
+        last_updated = data$last_updated %||% as.character(Sys.time()),
+        start_time = data$start_time %||% data$last_updated %||% as.character(Sys.time()),
         duration = as.numeric(data$duration %||% 0),
         progress = as.numeric(data$progress %||% 0),
         cpu_usage = as.numeric(data$cpu_usage %||% 0),
         memory_usage = as.numeric(data$memory_usage %||% 0),
-        next_scheduled_run = data$next_scheduled_run %||% NA_character_
+        next_scheduled_run = data$next_scheduled_run %||% NA_character_,
+        stringsAsFactors = FALSE
       )
       
-      # Handle log_entries as a single string (latest entry)
+      # Handle log_entries - keep as character for consistency
       if (!is.null(data$log_entries) && length(data$log_entries) > 0) {
         if (is.list(data$log_entries)) {
-          job_record$latest_log <- tail(data$log_entries, 1)[[1]]
-          job_record$log_entries <- data$log_entries
+          job_df$latest_log <- paste(tail(data$log_entries, 1)[[1]], collapse = " ")
         } else {
-          job_record$latest_log <- as.character(data$log_entries)
-          job_record$log_entries <- list(data$log_entries)
+          job_df$latest_log <- as.character(data$log_entries)
         }
       } else {
-        job_record$latest_log <- NA_character_
-        job_record$log_entries <- list()
+        job_df$latest_log <- NA_character_
       }
       
-      # Handle config as both summary string and full object
+      # Handle config - extract key fields as separate columns
       if (!is.null(data$config) && length(data$config) > 0) {
-        config_summary <- paste(names(data$config), collapse = ", ")
-        job_record$config_summary <- config_summary
-        job_record$config <- list(data$config)
+        job_df$project_type <- data$config$project_type %||% "Unknown"
+        job_df$frequency <- data$config$frequency %||% "Unknown"
+        job_df$priority <- data$config$priority %||% "Unknown"
+        job_df$data_source <- data$config$data_source %||% "Unknown"
+        job_df$collection_scope <- data$config$collection_scope %||% "Unknown"
+        job_df$config_summary <- paste(names(data$config), collapse = ", ")
       } else {
-        job_record$config_summary <- NA_character_
-        job_record$config <- list()
+        job_df$project_type <- "Unknown"
+        job_df$frequency <- "Unknown"
+        job_df$priority <- "Unknown"
+        job_df$data_source <- "Unknown"
+        job_df$collection_scope <- "Unknown"
+        job_df$config_summary <- NA_character_
       }
       
-      return(job_record)
+      return(job_df)
     }, error = function(e) {
       warning(paste("Error reading", file, ":", e$message))
       return(NULL)
@@ -70,8 +75,8 @@ load_job_status <- function() {
     return(data.frame())
   }
   
-  # Convert to data frame
-  jobs_df <- do.call(rbind, map(jobs_list, function(x) as.data.frame(x, stringsAsFactors = FALSE)))
+  # Combine all data frames
+  jobs_df <- bind_rows(jobs_list)
   
   return(jobs_df)
 }

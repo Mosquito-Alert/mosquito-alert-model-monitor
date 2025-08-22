@@ -38,15 +38,7 @@ if (nrow(jobs_data) == 0) {
 if (nrow(jobs_data) > 0) {
   # Extract and display job configurations
   config_details <- jobs_data %>%
-    select(job_name, status, last_updated, config) %>%
-    mutate(
-      project_type = map_chr(config, ~.x$project_type %||% "Unknown"),
-      frequency = map_chr(config, ~.x$frequency %||% "Unknown"),
-      priority = map_chr(config, ~.x$priority %||% "Unknown"),
-      data_source = map_chr(config, ~.x$data_source %||% "Unknown"),
-      collection_scope = map_chr(config, ~.x$collection_scope %||% "Unknown")
-    ) %>%
-    select(-config)
+    select(job_name, status, last_updated, project_type, frequency, priority, data_source, collection_scope)
   
   # Display configuration table
   DT::datatable(
@@ -205,12 +197,9 @@ if (nrow(jobs_data) > 0) {
 if (nrow(jobs_data) > 0) {
   # Recent log entries
   log_data <- jobs_data %>%
-    select(job_name, log_entries) %>%
-    filter(!is.na(log_entries)) %>%
-    mutate(
-      log_text = map_chr(log_entries, ~paste(.x, collapse = " | "))
-    ) %>%
-    select("Job Name" = job_name, "Recent Log Entries" = log_text)
+    select(job_name, latest_log) %>%
+    filter(!is.na(latest_log)) %>%
+    rename("Job Name" = job_name, "Recent Log Entries" = latest_log)
   
   if (nrow(log_data) > 0) {
     DT::datatable(
