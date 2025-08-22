@@ -1,12 +1,12 @@
 {
   "job_name": "mosquito_model_data_prep",
   "status": "running",
-  "last_updated": "2025-08-22T17:28:16Z",
-  "start_time": "2025-08-22T17:28:16Z",
+  "last_updated": "2025-08-22T17:31:01Z",
+  "start_time": "2025-08-22T17:31:01Z",
   "duration": 120,
-  "progress": 75,
+  "progress": 25,
   "cpu_usage": 0.0,
-  "memory_usage": 1.84375,
+  "memory_usage": 1.79688,
   "next_scheduled_run": "2025-08-23T02:30:00Z",
   "config": {
     "project_type": "mosquito_data_preparation",
@@ -18,6 +18,6 @@
     "project": "mosquito_model_data_prep"
   },
   "log_entries": [
-    "Testing updated integration script"
+    "Testing data download"
   ]
 }
