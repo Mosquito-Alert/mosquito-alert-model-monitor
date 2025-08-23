@@ -1,0 +1,205 @@
+---
+title: "Job Logs"
+format: 
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    code-fold: true
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(DT)
+library(jsonlite)
+library(lubridate)
+library(dplyr)
+library(purrr)
+library(stringr)
+
+# Source shared functions
+source("scripts/dashboard_functions.R")
+```
+
+# Job Logs and Output Files
+
+This page provides access to log files and output from monitored jobs. Click on any log file name to view its contents.
+
+## Recent Log Files
+
+```{r}
+#| label: load-logs
+#| results: asis
+
+# Check for log files in data/details directory
+log_files <- list.files("data/details", pattern = "*.log", full.names = TRUE)
+
+if (length(log_files) == 0) {
+  cat("**No log files found.**\n\nLog files will appear here as jobs execute and update their status.\n")
+} else {
+  # Get file information
+  log_info <- map_dfr(log_files, function(file) {
+    info <- file.info(file)
+    file_content <- readLines(file, n = 5, warn = FALSE)
+    
+    data.frame(
+      filename = basename(file),
+      job_name = gsub("_latest\\.log$", "", basename(file)),
+      size_kb = round(info$size / 1024, 1),
+      modified = as.character(info$mtime),
+      preview = paste(head(file_content, 3), collapse = " | "),
+      full_path = file,
+      stringsAsFactors = FALSE
+    )
+  }) %>%
+  arrange(desc(modified))
+  
+  # Create an interactive table with log file links
+  log_table <- log_info %>%
+    mutate(
+      filename = sprintf('<a href="#" onclick="showLog(\'%s\')">%s</a>', full_path, filename),
+      size = paste(size_kb, "KB"),
+      last_modified = format(as_datetime(modified), "%Y-%m-%d %H:%M"),
+      preview = ifelse(nchar(preview) > 100, paste0(substr(preview, 1, 100), "..."), preview)
+    ) %>%
+    select(filename, job_name, size, last_modified, preview)
+  
+  datatable(log_table, 
+            escape = FALSE,
+            options = list(pageLength = 15, scrollX = TRUE),
+            caption = "Available Log Files (click filename to view)")
+}
+```
+
+## Log File Viewer
+
+<div id="log-viewer" style="display: none; margin-top: 20px;">
+  <h3 id="log-filename"></h3>
+  <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; padding: 15px;">
+    <pre id="log-content" style="white-space: pre-wrap; max-height: 600px; overflow-y: auto; font-family: monospace; font-size: 12px;"></pre>
+  </div>
+  <button onclick="hideLog()" class="btn btn-secondary" style="margin-top: 10px;">Close Log</button>
+</div>
+
+## Project Log Directories
+
+```{r}
+#| label: project-logs
+#| results: asis
+
+# Check for links to external project logs
+external_log_info <- list(
+  list(
+    project = "mosquito_model_data_prep",
+    description = "Mosquito Alert data preparation pipeline",
+    local_logs = "~/research/mosquito_model_data_prep/logs/",
+    github_logs = "https://github.com/Mosquito-Alert/mosquito_model_data_prep/tree/main/logs"
+  ),
+  list(
+    project = "weather-data-collector-spain", 
+    description = "Weather data collection for Spain",
+    local_logs = "~/research/weather-data-collector-spain/logs/",
+    github_logs = "https://github.com/Mosquito-Alert/weather-data-collector-spain/tree/main/logs"
+  )
+)
+
+cat("### External Project Logs\n\n")
+cat("For complete log access from each monitored project:\n\n")
+
+for (proj in external_log_info) {
+  cat(sprintf("**%s**\n", proj$project))
+  cat(sprintf("- Description: %s\n", proj$description))
+  cat(sprintf("- Local logs: `%s`\n", proj$local_logs))
+  cat(sprintf("- GitHub logs: [View on GitHub](%s)\n", proj$github_logs))
+  cat("\n")
+}
+```
+
+## Log Analysis Summary
+
+```{r}
+#| label: log-analysis
+
+if (length(log_files) > 0) {
+  cat("### Log File Statistics\n\n")
+  
+  # Analyze log files for common patterns
+  total_size_mb <- sum(file.info(log_files)$size) / (1024 * 1024)
+  total_files <- length(log_files)
+  newest_file <- log_info$filename[which.max(as_datetime(log_info$modified))]
+  
+  cat(sprintf("- **Total log files:** %d\n", total_files))
+  cat(sprintf("- **Total size:** %.1f MB\n", total_size_mb))
+  cat(sprintf("- **Most recent:** %s\n", newest_file))
+  cat("\n")
+  
+  # Look for error patterns
+  error_counts <- map_int(log_files, function(file) {
+    tryCatch({
+      content <- readLines(file, warn = FALSE)
+      sum(grepl("ERROR|Error|error", content, ignore.case = TRUE))
+    }, error = function(e) 0)
+  })
+  
+  if (sum(error_counts) > 0) {
+    cat("### Error Detection\n\n")
+    error_summary <- data.frame(
+      log_file = basename(log_files),
+      error_count = error_counts
+    ) %>% 
+    filter(error_count > 0) %>%
+    arrange(desc(error_count))
+    
+    if (nrow(error_summary) > 0) {
+      datatable(error_summary, 
+                options = list(pageLength = 10),
+                caption = "Log Files with Detected Errors")
+    }
+  }
+}
+```
+
+<script>
+function showLog(logPath) {
+  // This would need to be implemented with a proper backend
+  // For now, show a message
+  document.getElementById('log-filename').textContent = 'Log File: ' + logPath.split('/').pop();
+  document.getElementById('log-content').textContent = 'Loading log file contents...\n\nNote: Full log viewing requires server-side implementation.\nFor now, please access log files directly:\n- Local: ' + logPath + '\n- Or view recent excerpts in the dashboard status updates.';
+  document.getElementById('log-viewer').style.display = 'block';
+  
+  // Scroll to the log viewer
+  document.getElementById('log-viewer').scrollIntoView({behavior: 'smooth'});
+}
+
+function hideLog() {
+  document.getElementById('log-viewer').style.display = 'none';
+}
+</script>
+
+## Direct Log Access
+
+Since this is a static dashboard, full interactive log viewing requires additional setup. Here are alternative ways to access logs:
+
+### Option 1: Local File Access
+- Navigate to the project directories locally
+- Log files are typically in `logs/` subdirectories
+- Use standard text editors or terminal commands (`tail`, `less`, etc.)
+
+### Option 2: GitHub Repository Logs
+- Many projects sync their log directories to GitHub
+- Use the GitHub web interface to browse log files
+- Search for specific error patterns using GitHub's search
+
+### Option 3: Dashboard Log Excerpts
+- Recent log excerpts are copied to `data/details/` 
+- These show the last 200 lines of each log file
+- Updated automatically when jobs run
+
+### Option 4: Mobile-Friendly Log Server (Future Enhancement)
+Consider setting up a simple log server that can serve log files over HTTP for easy mobile access.

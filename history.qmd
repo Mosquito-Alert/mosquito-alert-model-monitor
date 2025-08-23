@@ -22,32 +22,201 @@ source("scripts/dashboard_functions.R")
 This page shows historical trends and patterns in job execution over time.
 
 ```{r load-history, echo=FALSE, message=FALSE, warning=FALSE}
-# Load historical data
+# Load historical data from both history files and current status
 history_files <- list.files("data/history", pattern = "*.json", full.names = TRUE)
+status_files <- list.files("data/status", pattern = "*.json", full.names = TRUE)
 
-if (length(history_files) == 0) {
-  cat("No historical data available yet. History will accumulate as jobs run.\n")
-  history_data <- data.frame()
-} else {
-  # Load and combine all history files
-  history_data <- map_dfr(history_files, function(file) {
-    tryCatch({
-      data <- fromJSON(file, flatten = TRUE)
-      if (is.data.frame(data) && nrow(data) > 0) {
-        data$date_file <- basename(tools::file_path_sans_ext(file))
-        return(data)
-      }
-      return(data.frame())
-    }, error = function(e) {
-      data.frame()
-    })
+# Function to safely load JSON files
+safe_load_json <- function(file) {
+  tryCatch({
+    data <- fromJSON(file, flatten = TRUE)
+    
+    # Convert to data frame if it's not already
+    if (!is.data.frame(data)) {
+      df <- data.frame(
+        job_name = data$job_name %||% tools::file_path_sans_ext(basename(file)),
+        status = data$status %||% "unknown",
+        last_updated = data$last_updated %||% data$start_time %||% file.info(file)$mtime,
+        duration = as.numeric(data$duration %||% 0),
+        progress = as.numeric(data$progress %||% 0),
+        stringsAsFactors = FALSE
+      )
+    } else {
+      df <- data
+    }
+    
+    df$source_file <- basename(file)
+    df$file_date <- file.info(file)$mtime
+    return(df)
+  }, error = function(e) {
+    return(data.frame())
   })
+}
+
+# Load history files
+history_data <- data.frame()
+if (length(history_files) > 0) {
+  history_list <- map(history_files, safe_load_json)
+  history_data <- bind_rows(history_list[lengths(history_list) > 0])
+}
+
+# Load current status for recent activity
+current_data <- data.frame()
+if (length(status_files) > 0) {
+  status_list <- map(status_files, safe_load_json)
+  current_data <- bind_rows(status_list[lengths(status_list) > 0])
+  current_data$source_type <- "current"
+}
+
+# Combine historical and current data
+all_data <- bind_rows(
+  if(nrow(history_data) > 0) mutate(history_data, source_type = "history") else data.frame(),
+  current_data
+)
+
+if (nrow(all_data) == 0) {
+  cat("**No historical data available yet.**\n\n")
+  cat("History will accumulate as jobs run and complete. Check back after some jobs have executed.\n")
+} else {
+  # Clean and standardize the data
+  all_data <- all_data %>%
+    mutate(
+      last_updated = as_datetime(ifelse(
+        !is.na(last_updated) & last_updated != "", 
+        last_updated, 
+        as.character(file_date)
+      )),
+      duration_minutes = round(duration / 60, 1),
+      status = factor(status, levels = c("completed", "running", "failed", "pending", "unknown")),
+      job_name = as.factor(job_name)
+    ) %>%
+    filter(!is.na(last_updated)) %>%
+    arrange(desc(last_updated))
   
-  if (nrow(history_data) > 0) {
-    # Clean and standardize the data
-    history_data <- history_data %>%
-      mutate(
-        timestamp = as_datetime(timestamp),
+  cat(paste("**Total Records:**", nrow(all_data), "\n"))
+  cat(paste("**Date Range:**", 
+            format(min(all_data$last_updated, na.rm = TRUE), "%Y-%m-%d"), 
+            "to", 
+            format(max(all_data$last_updated, na.rm = TRUE), "%Y-%m-%d"), "\n\n"))
+}
+```
+
+## Recent Job Activity
+
+```{r recent-jobs, echo=FALSE}
+if (nrow(all_data) > 0) {
+  # Show recent job executions
+  recent_jobs <- all_data %>%
+    head(20) %>%
+    select(job_name, status, last_updated, duration_minutes, progress) %>%
+    mutate(
+      last_updated = format(last_updated, "%Y-%m-%d %H:%M"),
+      duration = ifelse(duration_minutes > 0, paste(duration_minutes, "min"), "N/A"),
+      progress = paste0(progress, "%")
+    ) %>%
+    select(-duration_minutes)
+  
+  datatable(recent_jobs, 
+            options = list(pageLength = 10, scrollX = TRUE),
+            caption = "Most Recent Job Executions") %>%
+    formatStyle("status",
+                backgroundColor = styleEqual(
+                  c("completed", "running", "failed", "pending"), 
+                  c("#d4edda", "#cce5ff", "#f8d7da", "#fff3cd")
+                ))
+} else {
+  cat("No recent job data available.\n")
+}
+```
+
+## Job Success Rates
+
+```{r success-rates, echo=FALSE}
+if (nrow(all_data) > 0) {
+  # Calculate success rates by job
+  success_summary <- all_data %>%
+    group_by(job_name) %>%
+    summarise(
+      total_runs = n(),
+      completed = sum(status == "completed", na.rm = TRUE),
+      failed = sum(status == "failed", na.rm = TRUE),
+      success_rate = round(completed / total_runs * 100, 1),
+      avg_duration_min = round(mean(duration / 60, na.rm = TRUE), 1),
+      last_run = max(last_updated, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    arrange(desc(total_runs))
+  
+  datatable(success_summary,
+            options = list(pageLength = 10),
+            caption = "Job Success Rates and Performance") %>%
+    formatStyle("success_rate",
+                backgroundColor = styleInterval(c(80, 95), c("#f8d7da", "#fff3cd", "#d4edda")))
+} else {
+  cat("No data available for success rate analysis.\n")
+}
+```
+
+## Performance Trends
+
+```{r performance-trends, echo=FALSE, fig.width=10, fig.height=6}
+if (nrow(all_data) > 0 && sum(!is.na(all_data$duration)) > 0) {
+  # Plot duration trends over time
+  trend_data <- all_data %>%
+    filter(!is.na(duration) & duration > 0) %>%
+    mutate(date = as.Date(last_updated))
+  
+  p <- ggplot(trend_data, aes(x = last_updated, y = duration / 60, color = job_name)) +
+    geom_line(alpha = 0.7) +
+    geom_point(aes(shape = status), size = 2) +
+    labs(
+      title = "Job Duration Trends Over Time",
+      x = "Date",
+      y = "Duration (minutes)",
+      color = "Job",
+      shape = "Status"
+    ) +
+    theme_minimal() +
+    scale_color_brewer(type = "qual", palette = "Set2")
+  
+  ggplotly(p)
+} else {
+  cat("Insufficient data for performance trend analysis.\n")
+}
+```
+
+## Status Distribution
+
+```{r status-distribution, echo=FALSE, fig.width=8, fig.height=6}
+if (nrow(all_data) > 0) {
+  # Status distribution by job
+  status_data <- all_data %>%
+    count(job_name, status) %>%
+    group_by(job_name) %>%
+    mutate(percentage = round(n / sum(n) * 100, 1))
+  
+  p <- ggplot(status_data, aes(x = job_name, y = n, fill = status)) +
+    geom_col(position = "stack") +
+    labs(
+      title = "Job Status Distribution",
+      x = "Job Name",
+      y = "Number of Executions",
+      fill = "Status"
+    ) +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    scale_fill_manual(values = c(
+      "completed" = "#28a745",
+      "running" = "#007bff", 
+      "failed" = "#dc3545",
+      "pending" = "#ffc107",
+      "unknown" = "#6c757d"
+    ))
+  
+  ggplotly(p)
+} else {
+  cat("No data available for status distribution.\n")
+}
         duration = as.numeric(duration),
         progress = as.numeric(progress),
         date_recorded = as.Date(date_file)

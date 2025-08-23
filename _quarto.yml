@@ -12,6 +12,8 @@ website:
         text: Job Details
       - href: history.qmd
         text: History
+      - href: logs.qmd
+        text: Logs
       - href: alerts.qmd
         text: Alerts
     right:
