@@ -63,7 +63,10 @@ if (length(log_files) == 0) {
   # Create an interactive table with log file links
   log_table <- log_info %>%
     mutate(
-      filename = sprintf('<a href="#" onclick="showLog(\'%s\')">%s</a>', full_path, filename),
+      # Create GitHub links to log files
+      github_url = paste0("https://github.com/Mosquito-Alert/mosquito-alert-model-monitor/blob/main/", 
+                         gsub("./", "", full_path)),
+      filename = sprintf('<a href="%s" target="_blank">%s</a>', github_url, filename),
       size = paste(size_kb, "KB"),
       last_modified = format(as_datetime(modified), "%Y-%m-%d %H:%M"),
       preview = ifelse(nchar(preview) > 100, paste0(substr(preview, 1, 100), "..."), preview)
@@ -73,7 +76,7 @@ if (length(log_files) == 0) {
   datatable(log_table, 
             escape = FALSE,
             options = list(pageLength = 15, scrollX = TRUE),
-            caption = "Available Log Files (click filename to view)")
+            caption = "Available Log Files (click filename to view on GitHub)")
 }
 ```
 

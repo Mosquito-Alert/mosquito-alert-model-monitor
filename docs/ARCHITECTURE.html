@@ -157,10 +157,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="dropdown-text">System Architecture</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./ROBUSTNESS_GUIDE.html">
- <span class="dropdown-text">Robustness Guide</span></a>
-  </li>  
-        <li>
     <a class="dropdown-item" href="./SLURM_SETUP.html">
  <span class="dropdown-text">SLURM Setup</span></a>
   </li>  
@@ -350,33 +346,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p></p><figure class="figure"><p></p>
 <div>
 <pre class="mermaid mermaid-js">sequenceDiagram
-    participant PA as Project A
-    participant PB as Project B
-    participant UJS as update_job_status.sh
-    participant SF as Status Files
-    participant LGS as locked_git_sync.sh
-    participant GIT as Git Repository
+    participant PA as ProjectA
+    participant PB as ProjectB
+    participant UJS as update_job_status
+    participant SF as StatusFiles
+    participant LGS as locked_git_sync
+    participant GIT as GitRepository
     
     Note over PA,PB: Multiple projects can run simultaneously
     
     PA-&gt;&gt;+UJS: Call with job status
     UJS-&gt;&gt;SF: Write A.json immediately
-    UJS-&gt;&gt;+LGS: Request git sync (A)
+    UJS-&gt;&gt;+LGS: Request git sync A
     
     Note over LGS: Acquire git lock
     
     PB-&gt;&gt;+UJS: Call with job status
     UJS-&gt;&gt;SF: Write B.json immediately
-    UJS-&gt;&gt;LGS: Request git sync (B) - WAITS for lock
+    UJS-&gt;&gt;LGS: Request git sync B WAITS for lock
     
-    LGS-&gt;&gt;GIT: git add/commit/push (A's changes)
-    LGS--&gt;&gt;-UJS: Sync complete (A)
+    LGS-&gt;&gt;GIT: git add commit push A changes
+    LGS--&gt;&gt;-UJS: Sync complete A
     UJS--&gt;&gt;-PA: Status update complete
     
-    Note over LGS: Release git lock, acquire for B
+    Note over LGS: Release git lock acquire for B
     
-    LGS-&gt;&gt;+GIT: git add/commit/push (A+B changes)
-    LGS--&gt;&gt;-UJS: Sync complete (B)
+    LGS-&gt;&gt;+GIT: git add commit push A and B changes
+    LGS--&gt;&gt;-UJS: Sync complete B
     UJS--&gt;&gt;-PB: Status update complete
 </pre>
 </div>
@@ -393,26 +389,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p></p><figure class="figure"><p></p>
 <div>
 <pre class="mermaid mermaid-js">sequenceDiagram
-    participant CRON as SLURM Cron
-    participant SDS as slurm_dashboard_sync.sh
-    participant LGS as locked_git_sync.sh
-    participant GIT as Git Repository
-    participant GA as GitHub Actions
-    participant GP as GitHub Pages
+    participant CRON as SLURMCron
+    participant SDS as dashboard_sync
+    participant LGS as locked_git_sync
+    participant GIT as GitRepository
+    participant GA as GitHubActions
+    participant GP as GitHubPages
     
     CRON-&gt;&gt;+SDS: Every 15-30 minutes
     SDS-&gt;&gt;+LGS: Request bulk sync
     
-    Note over LGS: Acquire git lock (may wait)
+    Note over LGS: Acquire git lock may wait
     
-    LGS-&gt;&gt;GIT: git add data/ (all accumulated changes)
-    LGS-&gt;&gt;GIT: git commit "Dashboard sync"
+    LGS-&gt;&gt;GIT: git add data all accumulated changes
+    LGS-&gt;&gt;GIT: git commit Dashboard sync
     LGS-&gt;&gt;GIT: git push origin main
     LGS--&gt;&gt;-SDS: Sync complete
     SDS--&gt;&gt;-CRON: Cron job complete
     
     GIT-&gt;&gt;+GA: Trigger on push to main
-    GA-&gt;&gt;GA: quarto render (build dashboard)
+    GA-&gt;&gt;GA: quarto render build dashboard
     GA-&gt;&gt;GP: Deploy to GitHub Pages
     GA--&gt;&gt;-GIT: Deployment complete
 </pre>
@@ -433,14 +429,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p></p><figure class="figure"><p></p>
 <div>
 <pre class="mermaid mermaid-js">graph LR
-    subgraph "No Lock Required"
-        A1[Project A writes A.json]
-        B1[Project B writes B.json]
-        C1[Project C writes C.json]
+    subgraph NoLock ["No Lock Required"]
+        A1[ProjectA writes A.json]
+        B1[ProjectB writes B.json]
+        C1[ProjectC writes C.json]
     end
     
-    subgraph "Git Lock Required"
-        GL[.git_sync_lock/]
+    subgraph GitLock ["Git Lock Required"]
+        GL[git_sync_lock]
         GO[Git Operations]
     end
     

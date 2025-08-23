@@ -20,8 +20,6 @@ website:
         menu:
           - href: ARCHITECTURE.qmd
             text: "System Architecture"
-          - href: ROBUSTNESS_GUIDE.md
-            text: "Robustness Guide"
           - href: SLURM_SETUP.md
             text: "SLURM Setup"
           - href: NOTIFICATION_SETUP.md

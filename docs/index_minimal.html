@@ -100,7 +100,7 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Dashboard</span></a>
   </li>  
   <li class="nav-item">
@@ -164,7 +164,6 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#system-status" id="toc-system-status" class="nav-link active" data-scroll-target="#system-status">📊 <strong>System Status</strong></a>
   <ul class="collapse">
   <li><a href="#current-jobs" id="toc-current-jobs" class="nav-link" data-scroll-target="#current-jobs">🎯 <strong>Current Jobs</strong></a></li>
-  <li><a href="#log-files" id="toc-log-files" class="nav-link" data-scroll-target="#log-files">📁 <strong>Log Files</strong></a></li>
   <li><a href="#data-files" id="toc-data-files" class="nav-link" data-scroll-target="#data-files">📁 <strong>Data Files</strong></a></li>
   </ul></li>
   </ul>
@@ -198,42 +197,8 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="current-jobs">🎯 <strong>Current Jobs</strong></h2>
 <div class="cell">
 <div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-7da05386ac1bbb5987d9" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-7da05386ac1bbb5987d9">{"x":{"filter":"none","vertical":false,"data":[["weather-hourly-quick","prepare_malert_data","mosquito_model_data_prep","weather-historical","weather-hourly","weather-forecast","weather-aggregation","municipal-forecast-priority"],["✅ Completed","✅ Completed","✅ Completed","✅ Completed","✅ Completed","✅ Completed","❌ Failed","✅ Completed"],["2025-08-23T15:43:04Z","2025-08-23T13:05:46Z","2025-08-22T17:35:06Z","2025-08-22T11:54:45Z","2025-08-22T11:54:37Z","2025-08-22T11:51:05Z","2025-08-22T10:28:16Z","2025-08-21T23:54:07Z"]],"container":"<table class=\"table table-striped\">\n  <thead>\n    <tr>\n      <th>Job<\/th>\n      <th>Status<\/th>\n      <th>Last Updated (Raw)<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":15,"dom":"t","columnDefs":[{"name":"Job","targets":0},{"name":"Status","targets":1},{"name":"Last Updated (Raw)","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,15,25,50,100]}},"evals":[],"jsHooks":[]}</script>
-</div>
-</div>
-</section>
-<section id="log-files" class="level2">
-<h2 class="anchored" data-anchor-id="log-files">📁 <strong>Log Files</strong></h2>
-<p>Recent log files linked to GitHub repository:</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>**Mosquito Model Data Prep Logs:**
-
-- [clean_photos.out](https://github.com/Mosquito-Alert/mosquito_model_data_prep/blob/main/logs/clean_photos.out)
-- [knit_daily_participation_report_country_detail.out](https://github.com/Mosquito-Alert/mosquito_model_data_prep/blob/main/logs/knit_daily_participation_report_country_detail.out)
-- [knit_daily_participation_report.out](https://github.com/Mosquito-Alert/mosquito_model_data_prep/blob/main/logs/knit_daily_participation_report.out)
-- [mosquito_alert_cleaned_reports.out](https://github.com/Mosquito-Alert/mosquito_model_data_prep/blob/main/logs/mosquito_alert_cleaned_reports.out)
-- [mosquito_alert_raw_reports.out](https://github.com/Mosquito-Alert/mosquito_model_data_prep/blob/main/logs/mosquito_alert_raw_reports.out)
-- [user_locations_small_cell.out](https://github.com/Mosquito-Alert/mosquito_model_data_prep/blob/main/logs/user_locations_small_cell.out)
-- [user_locations.out](https://github.com/Mosquito-Alert/mosquito_model_data_prep/blob/main/logs/user_locations.out)
-- [user_participation_times.out](https://github.com/Mosquito-Alert/mosquito_model_data_prep/blob/main/logs/user_participation_times.out)
-- [user_population_ages.out](https://github.com/Mosquito-Alert/mosquito_model_data_prep/blob/main/logs/user_population_ages.out)
-- [user_registration_times.out](https://github.com/Mosquito-Alert/mosquito_model_data_prep/blob/main/logs/user_registration_times.out)</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>**Weather Data Collector Logs:**
-
-- [generate_datasets_20250822_010904_dataset1.out](https://github.com/Mosquito-Alert/weather-data-collector-spain/blob/main/logs/generate_datasets_20250822_010904_dataset1.out)
-- [generate_datasets_20250822_011020_dataset1.out](https://github.com/Mosquito-Alert/weather-data-collector-spain/blob/main/logs/generate_datasets_20250822_011020_dataset1.out)
-- [generate_datasets_20250822_011020_dataset2.out](https://github.com/Mosquito-Alert/weather-data-collector-spain/blob/main/logs/generate_datasets_20250822_011020_dataset2.out)
-- [generate_datasets_20250822_011049_dataset1.out](https://github.com/Mosquito-Alert/weather-data-collector-spain/blob/main/logs/generate_datasets_20250822_011049_dataset1.out)
-- [generate_datasets_20250822_011049_dataset2.out](https://github.com/Mosquito-Alert/weather-data-collector-spain/blob/main/logs/generate_datasets_20250822_011049_dataset2.out)
-- [generate_datasets_20250822_011133_dataset1.out](https://github.com/Mosquito-Alert/weather-data-collector-spain/blob/main/logs/generate_datasets_20250822_011133_dataset1.out)
-- [generate_datasets_20250822_011133_dataset2.out](https://github.com/Mosquito-Alert/weather-data-collector-spain/blob/main/logs/generate_datasets_20250822_011133_dataset2.out)
-- [generate_datasets_20250822_011349_dataset1.out](https://github.com/Mosquito-Alert/weather-data-collector-spain/blob/main/logs/generate_datasets_20250822_011349_dataset1.out)
-- [generate_datasets_20250822_011349_dataset2.out](https://github.com/Mosquito-Alert/weather-data-collector-spain/blob/main/logs/generate_datasets_20250822_011349_dataset2.out)
-- [generate_datasets_20250822_011637_dataset1.out](https://github.com/Mosquito-Alert/weather-data-collector-spain/blob/main/logs/generate_datasets_20250822_011637_dataset1.out)</code></pre>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-72351bd5b16ced2b0aa9" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-72351bd5b16ced2b0aa9">{"x":{"filter":"none","vertical":false,"data":[["weather-hourly-quick","prepare_malert_data","mosquito_model_data_prep","weather-historical","weather-hourly","weather-forecast","weather-aggregation","municipal-forecast-priority"],["✅ Completed","✅ Completed","✅ Completed","✅ Completed","✅ Completed","✅ Completed","❌ Failed","✅ Completed"],["2025-08-23T15:43:04Z","2025-08-23T13:05:46Z","2025-08-22T17:35:06Z","2025-08-22T11:54:45Z","2025-08-22T11:54:37Z","2025-08-22T11:51:05Z","2025-08-22T10:28:16Z","2025-08-21T23:54:07Z"]],"container":"<table class=\"table table-striped\">\n  <thead>\n    <tr>\n      <th>Job<\/th>\n      <th>Status<\/th>\n      <th>Last Updated (Raw)<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":15,"dom":"t","columnDefs":[{"name":"Job","targets":0},{"name":"Status","targets":1},{"name":"Last Updated (Raw)","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,15,25,50,100]}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </section>
@@ -253,7 +218,7 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 <hr>
-<p><strong>This dashboard shows only verified, unprocessed data to ensure reliability.</strong></p>
+<p><strong>This is a minimal dashboard showing only raw, unprocessed data to ensure reliability.</strong></p>
 
 
 </section>

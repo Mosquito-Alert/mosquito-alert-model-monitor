@@ -89,33 +89,33 @@ graph TB
 
 ```{mermaid}
 sequenceDiagram
-    participant PA as Project A
-    participant PB as Project B
-    participant UJS as update_job_status.sh
-    participant SF as Status Files
-    participant LGS as locked_git_sync.sh
-    participant GIT as Git Repository
+    participant PA as ProjectA
+    participant PB as ProjectB
+    participant UJS as update_job_status
+    participant SF as StatusFiles
+    participant LGS as locked_git_sync
+    participant GIT as GitRepository
     
     Note over PA,PB: Multiple projects can run simultaneously
     
     PA->>+UJS: Call with job status
     UJS->>SF: Write A.json immediately
-    UJS->>+LGS: Request git sync (A)
+    UJS->>+LGS: Request git sync A
     
     Note over LGS: Acquire git lock
     
     PB->>+UJS: Call with job status
     UJS->>SF: Write B.json immediately
-    UJS->>LGS: Request git sync (B) - WAITS for lock
+    UJS->>LGS: Request git sync B WAITS for lock
     
-    LGS->>GIT: git add/commit/push (A's changes)
-    LGS-->>-UJS: Sync complete (A)
+    LGS->>GIT: git add commit push A changes
+    LGS-->>-UJS: Sync complete A
     UJS-->>-PA: Status update complete
     
-    Note over LGS: Release git lock, acquire for B
+    Note over LGS: Release git lock acquire for B
     
-    LGS->>+GIT: git add/commit/push (A+B changes)
-    LGS-->>-UJS: Sync complete (B)
+    LGS->>+GIT: git add commit push A and B changes
+    LGS-->>-UJS: Sync complete B
     UJS-->>-PB: Status update complete
 ```
 
@@ -123,26 +123,26 @@ sequenceDiagram
 
 ```{mermaid}
 sequenceDiagram
-    participant CRON as SLURM Cron
-    participant SDS as slurm_dashboard_sync.sh
-    participant LGS as locked_git_sync.sh
-    participant GIT as Git Repository
-    participant GA as GitHub Actions
-    participant GP as GitHub Pages
+    participant CRON as SLURMCron
+    participant SDS as dashboard_sync
+    participant LGS as locked_git_sync
+    participant GIT as GitRepository
+    participant GA as GitHubActions
+    participant GP as GitHubPages
     
     CRON->>+SDS: Every 15-30 minutes
     SDS->>+LGS: Request bulk sync
     
-    Note over LGS: Acquire git lock (may wait)
+    Note over LGS: Acquire git lock may wait
     
-    LGS->>GIT: git add data/ (all accumulated changes)
-    LGS->>GIT: git commit "Dashboard sync"
+    LGS->>GIT: git add data all accumulated changes
+    LGS->>GIT: git commit Dashboard sync
     LGS->>GIT: git push origin main
     LGS-->>-SDS: Sync complete
     SDS-->>-CRON: Cron job complete
     
     GIT->>+GA: Trigger on push to main
-    GA->>GA: quarto render (build dashboard)
+    GA->>GA: quarto render build dashboard
     GA->>GP: Deploy to GitHub Pages
     GA-->>-GIT: Deployment complete
 ```
@@ -153,14 +153,14 @@ sequenceDiagram
 
 ```{mermaid}
 graph LR
-    subgraph "No Lock Required"
-        A1[Project A writes A.json]
-        B1[Project B writes B.json]
-        C1[Project C writes C.json]
+    subgraph NoLock ["No Lock Required"]
+        A1[ProjectA writes A.json]
+        B1[ProjectB writes B.json]
+        C1[ProjectC writes C.json]
     end
     
-    subgraph "Git Lock Required"
-        GL[.git_sync_lock/]
+    subgraph GitLock ["Git Lock Required"]
+        GL[git_sync_lock]
         GO[Git Operations]
     end
     

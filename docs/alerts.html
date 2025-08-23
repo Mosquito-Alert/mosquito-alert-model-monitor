@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Alerts &amp; Monitoring – Mosquito Alert Model Monitor</title>
+<title>alerts – Mosquito Alert Model Monitor</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -67,16 +67,6 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
-<link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
-<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
-<link href="site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
-<script src="site_libs/datatables-binding-0.33/datatables.js"></script>
-<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
-<link href="site_libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
-<link href="site_libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
-<script src="site_libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
-<link href="site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
-<script src="site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
 
 
 <link rel="stylesheet" href="styles.css">
@@ -129,10 +119,6 @@ ul.task-list li input[type="checkbox"] {
  <span class="dropdown-text">System Architecture</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./ROBUSTNESS_GUIDE.html">
- <span class="dropdown-text">Robustness Guide</span></a>
-  </li>  
-        <li>
     <a class="dropdown-item" href="./SLURM_SETUP.html">
  <span class="dropdown-text">SLURM Setup</span></a>
   </li>  
@@ -160,92 +146,17 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#system-alerts-monitoring" id="toc-system-alerts-monitoring" class="nav-link active" data-scroll-target="#system-alerts-monitoring">System Alerts &amp; Monitoring</a>
-  <ul class="collapse">
-  <li><a href="#active-alerts" id="toc-active-alerts" class="nav-link" data-scroll-target="#active-alerts">🚨 Active Alerts</a></li>
-  <li><a href="#system-health-overview" id="toc-system-health-overview" class="nav-link" data-scroll-target="#system-health-overview">📊 System Health Overview</a></li>
-  <li><a href="#performance-monitoring" id="toc-performance-monitoring" class="nav-link" data-scroll-target="#performance-monitoring">📈 Performance Monitoring</a></li>
-  <li><a href="#maintenance-recommendations" id="toc-maintenance-recommendations" class="nav-link" data-scroll-target="#maintenance-recommendations">🔧 Maintenance Recommendations</a></li>
-  <li><a href="#alert-configuration" id="toc-alert-configuration" class="nav-link" data-scroll-target="#alert-configuration">📧 Alert Configuration</a></li>
-  </ul></li>
-  </ul>
-</nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Alerts &amp; Monitoring</h1>
-</div>
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
 
 
 
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
 
 
-</header>
 
-
-<section id="system-alerts-monitoring" class="level1">
-<h1>System Alerts &amp; Monitoring</h1>
-<p>This page provides automated alerts and monitoring for job failures, performance issues, and system status.</p>
-<section id="active-alerts" class="level2">
-<h2 class="anchored" data-anchor-id="active-alerts">🚨 Active Alerts</h2>
-<div class="cell">
-<div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-38ff6baf80cf18a64fe0" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-38ff6baf80cf18a64fe0">{"x":{"filter":"none","vertical":false,"caption":"<caption>Active Alerts ( 9 total)<\/caption>","data":[["Job Failure","Overdue Job","Overdue Job","Overdue Job","High Resource Usage","High Resource Usage","High Resource Usage","High Resource Usage","High Resource Usage"],["weather-aggregation","weather-aggregation","weather-forecast","weather-hourly","municipal-forecast-priority","weather-aggregation","weather-forecast","weather-historical","weather-hourly"],["HIGH","MEDIUM","MEDIUM","MEDIUM","MEDIUM","MEDIUM","MEDIUM","MEDIUM","MEDIUM"],["Job failed at 2025-08-22T10:28:16Z","Job overdue by 0 hours","Job overdue by 0 hours","Job overdue by 0 hours","High resource usage: CPU: 191.9 %","High resource usage: CPU: 199.4 %","High resource usage: CPU: 99 %","High resource usage: CPU: 99.1 %","High resource usage: CPU: 99 %"],["Check logs and restart job","Check job scheduler and system status","Check job scheduler and system status","Check job scheduler and system status","Monitor system performance","Monitor system performance","Monitor system performance","Monitor system performance","Monitor system performance"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Alert_Type<\/th>\n      <th>Job_Name<\/th>\n      <th>Severity<\/th>\n      <th>Description<\/th>\n      <th>Action_Required<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"order":[[2,"desc"]],"columnDefs":[{"className":"dt-center","targets":"_all"},{"name":"Alert_Type","targets":0},{"name":"Job_Name","targets":1},{"name":"Severity","targets":2},{"name":"Description","targets":3},{"name":"Action_Required","targets":4}],"autoWidth":false,"orderClasses":false,"rowCallback":"function(row, data, displayNum, displayIndex, dataIndex) {\nvar value=data[2]; $(this.api().cell(row, 2).node()).css({'background-color':value == \"HIGH\" ? \"#ffebee\" : value == \"MEDIUM\" ? \"#fff3e0\" : value == \"LOW\" ? \"#e8f5e8\" : null});\nvar value=data[0]; $(this.api().cell(row, 0).node()).css({'background-color':value == \"Job Failure\" ? \"#ffcdd2\" : value == \"Overdue Job\" ? \"#ffe0b2\" : value == \"Long Running\" ? \"#f8bbd9\" : value == \"High Resource Usage\" ? \"#dcedc1\" : null});\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script>
-</div>
-</div>
-</section>
-<section id="system-health-overview" class="level2">
-<h2 class="anchored" data-anchor-id="system-health-overview">📊 System Health Overview</h2>
-<div class="cell">
-<div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-86c971b351ce370eee18" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-86c971b351ce370eee18">{"x":{"filter":"none","vertical":false,"caption":"<caption>System Health Overview<\/caption>","data":[["Total Jobs","Running","Completed","Failed","Waiting","System Health Score"],["8","2","5","1","0","87.5 %"],["Info","Good","Good","Warning","Info","Good"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Metric<\/th>\n      <th>Value<\/th>\n      <th>Status<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"columnDefs":[{"className":"dt-center","targets":"_all"},{"name":"Metric","targets":0},{"name":"Value","targets":1},{"name":"Status","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"rowCallback":"function(row, data, displayNum, displayIndex, dataIndex) {\nvar value=data[2]; $(this.api().cell(row, 2).node()).css({'background-color':value == \"Excellent\" ? \"#e8f5e8\" : value == \"Good\" ? \"#e3f2fd\" : value == \"Warning\" ? \"#fff3e0\" : value == \"Info\" ? \"#f5f5f5\" : null});\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script>
-</div>
-</div>
-</section>
-<section id="performance-monitoring" class="level2">
-<h2 class="anchored" data-anchor-id="performance-monitoring">📈 Performance Monitoring</h2>
-</section>
-<section id="maintenance-recommendations" class="level2">
-<h2 class="anchored" data-anchor-id="maintenance-recommendations">🔧 Maintenance Recommendations</h2>
-<div class="cell">
-<div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-bfc0e73f9c3d391e1aea" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-bfc0e73f9c3d391e1aea">{"x":{"filter":"none","vertical":false,"caption":"<caption>System Maintenance Recommendations<\/caption>","data":[["Medium","Medium","Medium","Medium","Medium","Medium","Low","Low"],["Check mosquito_model_data_prep job status","Check municipal-forecast-priority job status","Check weather-aggregation job status","Check weather-forecast job status","Check weather-historical job status","Check weather-hourly job status","Review log files for any warning messages","Archive old historical data (&gt;30 days)"],["No updates for 0 hours","No updates for 0 hours","No updates for 0 hours","No updates for 0 hours","No updates for 0 hours","No updates for 0 hours","Regular maintenance best practice","Optimize dashboard performance"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Priority<\/th>\n      <th>Recommendation<\/th>\n      <th>Reason<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"columnDefs":[{"className":"dt-center","targets":"_all"},{"name":"Priority","targets":0},{"name":"Recommendation","targets":1},{"name":"Reason","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"rowCallback":"function(row, data, displayNum, displayIndex, dataIndex) {\nvar value=data[0]; $(this.api().cell(row, 0).node()).css({'background-color':value == \"High\" ? \"#ffebee\" : value == \"Medium\" ? \"#fff3e0\" : value == \"Low\" ? \"#e8f5e8\" : null});\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script>
-</div>
-</div>
-</section>
-<section id="alert-configuration" class="level2">
-<h2 class="anchored" data-anchor-id="alert-configuration">📧 Alert Configuration</h2>
-<div class="cell">
-<div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-ccc10f467bcce42eaa50" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-ccc10f467bcce42eaa50">{"x":{"filter":"none","vertical":false,"caption":"<caption>Alert Configuration &amp; Thresholds<\/caption>","data":[["Job Failure","Overdue Jobs","Long Running Jobs","High CPU Usage","High Memory Usage","System Health Score"],["Any failed status","&gt; 1 hour past scheduled time","&gt; 2 hours runtime","&gt; 90% CPU usage","&gt; 8GB memory usage","&lt; 70% overall health"],["Display alert in dashboard","Display alert in dashboard","Display alert in dashboard","Display alert in dashboard","Display alert in dashboard","Display alert in dashboard"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Alert_Type<\/th>\n      <th>Threshold<\/th>\n      <th>Current_Action<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"columnDefs":[{"className":"dt-center","targets":"_all"},{"name":"Alert_Type","targets":0},{"name":"Threshold","targets":1},{"name":"Current_Action","targets":2}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
-</div>
-</div>
-<hr>
-<p><em>Page last updated: 2025-08-23 20:15:18.683849</em></p>
-<p><strong>Note</strong>: This monitoring system provides basic alerting through the dashboard. For production use, consider integrating with external alerting systems (email, Slack, etc.) for immediate notifications.</p>
-
-
-</section>
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

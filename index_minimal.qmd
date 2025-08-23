@@ -83,37 +83,6 @@ if (nrow(jobs_data) > 0) {
 }
 ```
 
-## 📁 **Log Files**
-
-Recent log files linked to GitHub repository:
-
-```{r log-links}
-# List recent log files from both projects
-mosquito_logs <- list.files("../mosquito_model_data_prep/logs", pattern = "\\.out$", full.names = FALSE)
-weather_logs <- list.files("../weather-data-collector-spain/logs", pattern = "\\.out$", full.names = FALSE)
-
-if (length(mosquito_logs) > 0) {
-  cat("**Mosquito Model Data Prep Logs:**\n\n")
-  for (log in head(mosquito_logs, 10)) {
-    github_url <- paste0("https://github.com/Mosquito-Alert/mosquito_model_data_prep/blob/main/logs/", log)
-    cat(paste0("- [", log, "](", github_url, ")\n"))
-  }
-  cat("\n")
-}
-
-if (length(weather_logs) > 0) {
-  cat("**Weather Data Collector Logs:**\n\n")
-  for (log in head(weather_logs, 10)) {
-    github_url <- paste0("https://github.com/Mosquito-Alert/weather-data-collector-spain/blob/main/logs/", log)
-    cat(paste0("- [", log, "](", github_url, ")\n"))
-  }
-}
-
-if (length(mosquito_logs) == 0 && length(weather_logs) == 0) {
-  cat("No log files found in connected projects.")
-}
-```
-
 ## 📁 **Data Files**
 
 **Status Files Available:**
@@ -131,4 +100,4 @@ if (length(status_files) > 0) {
 
 ---
 
-**This dashboard shows only verified, unprocessed data to ensure reliability.**
+**This is a minimal dashboard showing only raw, unprocessed data to ensure reliability.**

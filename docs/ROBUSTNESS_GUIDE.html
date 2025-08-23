@@ -153,10 +153,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="dropdown-text">System Architecture</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./ROBUSTNESS_GUIDE.html">
- <span class="dropdown-text">Robustness Guide</span></a>
-  </li>  
-        <li>
     <a class="dropdown-item" href="./SLURM_SETUP.html">
  <span class="dropdown-text">SLURM Setup</span></a>
   </li>  
@@ -189,12 +185,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#dashboard-robustness-implementation-guide" id="toc-dashboard-robustness-implementation-guide" class="nav-link active" data-scroll-target="#dashboard-robustness-implementation-guide">Dashboard Robustness Implementation Guide</a>
+  <li><a href="#dashboard-robustness---reference-guide" id="toc-dashboard-robustness---reference-guide" class="nav-link active" data-scroll-target="#dashboard-robustness---reference-guide">Dashboard Robustness - Reference Guide</a>
   <ul class="collapse">
-  <li><a href="#problem-summary" id="toc-problem-summary" class="nav-link" data-scroll-target="#problem-summary">🚨 <strong>Problem Summary</strong></a></li>
+  <li><a href="#problem-solved" id="toc-problem-solved" class="nav-link" data-scroll-target="#problem-solved">🚨 <strong>Problem Solved</strong></a></li>
   <li><a href="#robust-solutions-implemented" id="toc-robust-solutions-implemented" class="nav-link" data-scroll-target="#robust-solutions-implemented">✅ <strong>Robust Solutions Implemented</strong></a>
   <ul class="collapse">
-  <li><a href="#fail-safe-status-updates-recommended" id="toc-fail-safe-status-updates-recommended" class="nav-link" data-scroll-target="#fail-safe-status-updates-recommended"><strong>1. Fail-Safe Status Updates (RECOMMENDED)</strong></a></li>
+  <li><a href="#fail-safe-status-updates-implemented" id="toc-fail-safe-status-updates-implemented" class="nav-link" data-scroll-target="#fail-safe-status-updates-implemented"><strong>1. Fail-Safe Status Updates (IMPLEMENTED)</strong></a></li>
   <li><a href="#automatic-cron-based-dashboard-sync" id="toc-automatic-cron-based-dashboard-sync" class="nav-link" data-scroll-target="#automatic-cron-based-dashboard-sync"><strong>2. Automatic Cron-Based Dashboard Sync</strong></a></li>
   <li><a href="#enhanced-project-integration" id="toc-enhanced-project-integration" class="nav-link" data-scroll-target="#enhanced-project-integration"><strong>3. Enhanced Project Integration</strong></a></li>
   </ul></li>
@@ -218,24 +214,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<section id="dashboard-robustness-implementation-guide" class="level1">
-<h1>Dashboard Robustness Implementation Guide</h1>
-<section id="problem-summary" class="level2">
-<h2 class="anchored" data-anchor-id="problem-summary">🚨 <strong>Problem Summary</strong></h2>
-<p>The current dashboard integration is fragile and can cause critical job failures when git operations fail due to merge conflicts or repository state issues.</p>
+<section id="dashboard-robustness---reference-guide" class="level1">
+<h1>Dashboard Robustness - Reference Guide</h1>
+<section id="problem-solved" class="level2">
+<h2 class="anchored" data-anchor-id="problem-solved">🚨 <strong>Problem Solved</strong></h2>
+<p>The dashboard integration was fragile and could cause critical job failures when git operations failed due to merge conflicts or repository state issues. This has been resolved.</p>
 </section>
 <section id="robust-solutions-implemented" class="level2">
 <h2 class="anchored" data-anchor-id="robust-solutions-implemented">✅ <strong>Robust Solutions Implemented</strong></h2>
-<section id="fail-safe-status-updates-recommended" class="level3">
-<h3 class="anchored" data-anchor-id="fail-safe-status-updates-recommended"><strong>1. Fail-Safe Status Updates (RECOMMENDED)</strong></h3>
-<p>Replace the current status update calls in your project scripts with the robust version:</p>
-<section id="old-fragile-approach" class="level4">
-<h4 class="anchored" data-anchor-id="old-fragile-approach"><strong>Old (Fragile) Approach:</strong></h4>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This can fail and crash your job</span></span>
+<section id="fail-safe-status-updates-implemented" class="level3">
+<h3 class="anchored" data-anchor-id="fail-safe-status-updates-implemented"><strong>1. Fail-Safe Status Updates (IMPLEMENTED)</strong></h3>
+<p>The project scripts now use the robust version that never causes job failures:</p>
+<section id="previous-fragile-approach" class="level4">
+<h4 class="anchored" data-anchor-id="previous-fragile-approach"><strong>Previous (Fragile) Approach:</strong></h4>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This could fail and crash your job</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./scripts/update_job_status.sh</span> <span class="st">"job_name"</span> <span class="st">"status"</span> 120 75</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="new-robust-approach" class="level4">
-<h4 class="anchored" data-anchor-id="new-robust-approach"><strong>New (Robust) Approach:</strong></h4>
+<section id="current-robust-approach" class="level4">
+<h4 class="anchored" data-anchor-id="current-robust-approach"><strong>Current (Robust) Approach:</strong></h4>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This NEVER fails - always exits successfully</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">~/research/mosquito-alert-model-monitor/scripts/robust_status_update.sh</span> <span class="st">"job_name"</span> <span class="st">"status"</span> 120 75 <span class="st">"log message"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
