@@ -7,47 +7,77 @@
 ```yaml
 dashboard_repo: "mosquito-alert-model-monitor"
 dashboard_path: "$HOME/research/mosquito-alert-model-monitor"
-integration_version: "2.0_robust"
+integration_version: "3.0_bulletproof"
 compatible_with: ["bash", "python", "R", "SLURM"]
+git_conflict_resilient: true
 ```
 
-## REQUIRED_FILES_IN_DASHBOARD
-```yaml
-scripts_needed:
-  - "scripts/update_job_status.sh"           # Main status update (robust version)
-  - "scripts/update_job_status_and_push.sh"  # Alternative name (same file)
-  - "scripts/collect_logs.sh"                # Log collection
-  - "scripts/slurm_dashboard_sync.sh"        # SLURM cron sync
-  
-directories_needed:
-  - "data/status/"    # Status JSON files
-  - "data/history/"   # Historical job data  
-  - "data/details/"   # Log excerpts
-  - "logs/"          # Dashboard sync logs
-```
+## ARCHITECTURE_PRINCIPLES
 
-## PROJECT_INTEGRATION_PATTERN
+### SEPARATION_OF_CONCERNS
+- **Main projects**: Focus on their core mission, fail fast on infrastructure issues
+- **Monitor project**: Handle all dashboard complexity, never fail calling jobs  
+- **Status integration**: Simple drop-in calls, always exit 0
 
-### STEP_1_IDENTIFICATION
-```yaml
-identify_in_project:
-  main_script_patterns: ["*.sh", "main.py", "run_*.py", "process_*.sh"]
-  existing_status_calls: 
-    - "./scripts/update_job_status.sh"
-    - "../mosquito-alert-model-monitor/scripts/update_job_status*.sh"
-  log_directories: ["logs/", "output/", "log/"]
-  schedule_info: ["crontab", "*.sh", "README.md", "slurm_*.sh"]
-```
+### ROBUSTNESS_HIERARCHY
+1. **Core data collection NEVER fails due to dashboard issues**
+2. **Status updates are best-effort only**
+3. **Git conflicts handled gracefully without blocking jobs**
+4. **Module loading is required for main scripts, not defensive**
 
-### STEP_2_STATUS_INTEGRATION
+## CORRECT_INTEGRATION_PATTERN
+
+### FOR_MAIN_PROJECT_SCRIPTS
 ```bash
-# REQUIRED: Replace or add these calls in main project script
-# PATTERN: Call at start, middle (progress updates), and end
+# DO THIS: Simple, focused scripts that do their job
+#!/bin/bash
+#SBATCH --job-name=my-job
 
-# Job start
-~/research/mosquito-alert-model-monitor/scripts/update_job_status.sh "PROJECT_JOB_NAME" "running" 0 0 "Job started"
+# Load required modules (MUST succeed or job should fail)
+module load R/4.4.2-gfbf-2024a
+module load cURL/8.7.1-GCCcore-13.3.0
 
-# Progress updates (throughout script)
+# Set up job
+JOB_NAME="my-job-name"
+STATUS_SCRIPT="./scripts/update_weather_status.sh"  # Drop-in wrapper
+START_TIME=$(date +%s)
+
+# Status updates (never fail)
+$STATUS_SCRIPT "$JOB_NAME" "running" 0 5
+
+# Do the actual work
+echo "Starting main work..."
+python my_main_script.py
+
+# Final status
+$STATUS_SCRIPT "$JOB_NAME" "completed" $(($(date +%s) - START_TIME)) 100
+```
+
+### FOR_PROJECT_STATUS_WRAPPER
+```bash
+#!/bin/bash
+# Drop-in status update script: scripts/update_weather_status.sh
+# This script NEVER fails the calling job
+
+JOB_NAME="${1:-project-unknown}"
+STATUS="${2:-unknown}"  
+DURATION="${3:-0}"
+PROGRESS="${4:-0}"
+LOG_MESSAGE="${5:-Job status update}"
+
+# Use the robust monitor script if available
+MONITOR_SCRIPT="$HOME/research/mosquito-alert-model-monitor/scripts/update_job_status.sh"
+
+if [ -f "$MONITOR_SCRIPT" ]; then
+    echo "📊 Updating dashboard via monitor project..."
+    "$MONITOR_SCRIPT" "$JOB_NAME" "$STATUS" "$DURATION" "$PROGRESS" "$LOG_MESSAGE"
+else
+    echo "⚠️  Monitor project not found - skipping dashboard update"
+fi
+
+# ALWAYS exit successfully so calling jobs continue
+exit 0
+```
 ~/research/mosquito-alert-model-monitor/scripts/update_job_status.sh "PROJECT_JOB_NAME" "running" $ELAPSED_SECONDS $PROGRESS_PERCENT "Current step description"
 
 # Job completion (success)
