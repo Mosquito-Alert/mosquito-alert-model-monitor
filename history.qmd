@@ -36,13 +36,23 @@ safe_load_json <- function(file) {
       df <- data.frame(
         job_name = data$job_name %||% tools::file_path_sans_ext(basename(file)),
         status = data$status %||% "unknown",
-        last_updated = data$last_updated %||% data$start_time %||% file.info(file)$mtime,
+        last_updated = as.character(data$last_updated %||% data$start_time %||% file.info(file)$mtime),
         duration = as.numeric(data$duration %||% 0),
         progress = as.numeric(data$progress %||% 0),
         stringsAsFactors = FALSE
       )
     } else {
       df <- data
+      # Ensure consistent column types
+      if ("last_updated" %in% names(df)) {
+        df$last_updated <- as.character(df$last_updated)
+      }
+      if ("duration" %in% names(df)) {
+        df$duration <- as.numeric(df$duration)
+      }
+      if ("progress" %in% names(df)) {
+        df$progress <- as.numeric(df$progress)
+      }
     }
     
     df$source_file <- basename(file)
@@ -217,30 +227,23 @@ if (nrow(all_data) > 0) {
 } else {
   cat("No data available for status distribution.\n")
 }
-        duration = as.numeric(duration),
-        progress = as.numeric(progress),
-        date_recorded = as.Date(date_file)
-      )
-    
-    cat("Loaded", nrow(history_data), "historical job records from", length(history_files), "days\n")
-  }
-}
 ```
 
 ## Execution Timeline
 
 ```{r timeline, echo=FALSE, message=FALSE, warning=FALSE}
-if (nrow(history_data) > 0) {
+if (nrow(all_data) > 0) {
   # Create timeline plot
-  p_timeline <- history_data %>%
-    ggplot(aes(x = timestamp, y = job_name, color = status)) +
-    geom_point(aes(size = duration/60), alpha = 0.7) +
+  p_timeline <- all_data %>%
+    ggplot(aes(x = last_updated, y = job_name, color = status)) +
+    geom_point(aes(size = duration_minutes), alpha = 0.7) +
     scale_color_manual(
       values = c(
         "completed" = "#4caf50",
         "failed" = "#f44336", 
         "running" = "#2196f3",
-        "waiting" = "#9e9e9e"
+        "pending" = "#ffc107",
+        "unknown" = "#9e9e9e"
       )
     ) +
     scale_size_continuous(name = "Duration (min)", range = c(2, 8)) +
@@ -265,15 +268,16 @@ if (nrow(history_data) > 0) {
 ## Daily Job Summary
 
 ```{r daily-summary, echo=FALSE, message=FALSE, warning=FALSE}
-if (nrow(history_data) > 0) {
+if (nrow(all_data) > 0) {
   # Daily aggregation
-  daily_summary <- history_data %>%
+  daily_summary <- all_data %>%
+    mutate(date_recorded = as.Date(last_updated)) %>%
     group_by(date_recorded, job_name) %>%
     summarise(
       total_runs = n(),
       successful_runs = sum(status == "completed"),
       failed_runs = sum(status == "failed"),
-      avg_duration = round(mean(duration, na.rm = TRUE) / 60, 2),
+      avg_duration = round(mean(duration_minutes, na.rm = TRUE), 2),
       success_rate = round(successful_runs / total_runs * 100, 1),
       .groups = 'drop'
     )
@@ -297,14 +301,14 @@ if (nrow(history_data) > 0) {
 }
 ```
 
-## Performance Trends
+## Historical Performance Analysis
 
-```{r performance-trends, echo=FALSE, message=FALSE, warning=FALSE}
-if (nrow(history_data) > 0) {
+```{r historical-performance, echo=FALSE, message=FALSE, warning=FALSE}
+if (nrow(all_data) > 0) {
   # Duration trends
-  p_duration <- history_data %>%
+  p_duration <- all_data %>%
     filter(status %in% c("completed", "failed")) %>%
-    ggplot(aes(x = timestamp, y = duration/60, color = job_name)) +
+    ggplot(aes(x = last_updated, y = duration_minutes, color = job_name)) +
     geom_point(alpha = 0.6) +
     geom_smooth(method = "loess", se = FALSE) +
     theme_minimal() +
@@ -322,20 +326,20 @@ if (nrow(history_data) > 0) {
 ## Historical Statistics Table
 
 ```{r history-table, echo=FALSE, message=FALSE, warning=FALSE}
-if (nrow(history_data) > 0) {
+if (nrow(all_data) > 0) {
   # Comprehensive statistics
-  stats_summary <- history_data %>%
+  stats_summary <- all_data %>%
     group_by(job_name) %>%
     summarise(
       total_executions = n(),
       successful = sum(status == "completed"),
       failed = sum(status == "failed"),
       success_rate = round(successful / total_executions * 100, 1),
-      avg_duration = round(mean(duration, na.rm = TRUE) / 60, 2),
-      min_duration = round(min(duration, na.rm = TRUE) / 60, 2),
-      max_duration = round(max(duration, na.rm = TRUE) / 60, 2),
-      first_run = min(timestamp, na.rm = TRUE),
-      last_run = max(timestamp, na.rm = TRUE),
+      avg_duration = round(mean(duration_minutes, na.rm = TRUE), 2),
+      min_duration = round(min(duration_minutes, na.rm = TRUE), 2),
+      max_duration = round(max(duration_minutes, na.rm = TRUE), 2),
+      first_run = min(last_updated, na.rm = TRUE),
+      last_run = max(last_updated, na.rm = TRUE),
       .groups = 'drop'
     ) %>%
     mutate(
@@ -380,14 +384,14 @@ if (nrow(history_data) > 0) {
 ## Recent Activity Log
 
 ```{r recent-activity, echo=FALSE, message=FALSE, warning=FALSE}
-if (nrow(history_data) > 0) {
+if (nrow(all_data) > 0) {
   # Show last 50 job executions
-  recent_activity <- history_data %>%
-    arrange(desc(timestamp)) %>%
+  recent_activity <- all_data %>%
+    arrange(desc(last_updated)) %>%
     head(50) %>%
     mutate(
-      duration_formatted = format_duration(duration),
-      timestamp_formatted = format(timestamp, "%Y-%m-%d %H:%M:%S")
+      duration_formatted = paste0(round(duration_minutes, 1), " min"),
+      timestamp_formatted = format(last_updated, "%Y-%m-%d %H:%M:%S")
     ) %>%
     select(
       "Job Name" = job_name,
@@ -412,8 +416,8 @@ if (nrow(history_data) > 0) {
     DT::formatStyle(
       'Status',
       backgroundColor = DT::styleEqual(
-        c('completed', 'running', 'failed', 'waiting'),
-        c('#e8f5e8', '#e3f2fd', '#ffebee', '#f5f5f5')
+        c('completed', 'running', 'failed', 'pending', 'unknown'),
+        c('#e8f5e8', '#e3f2fd', '#ffebee', '#fff3e0', '#f5f5f5')
       )
     )
 } else {
