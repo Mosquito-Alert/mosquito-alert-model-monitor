@@ -27,6 +27,8 @@ format:
     toc: true
     smooth-scroll: true
     code-fold: true
+    mermaid:
+      theme: default
     
 execute:
   freeze: false

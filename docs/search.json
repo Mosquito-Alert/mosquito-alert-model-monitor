@@ -4,14 +4,14 @@
     "href": "jobs.html",
     "title": "Job Details",
     "section": "",
-    "text": "This page provides detailed analysis and configuration information for all monitored jobs.\n\n\nFound 12 jobs with status data\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPage last updated: 2025-08-23 19:16:34.950901"
+    "text": "This page provides detailed analysis and configuration information for all monitored jobs.\n\n\nFound 13 jobs with status data\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPage last updated: 2025-08-23 19:35:08.735331"
   },
   {
     "objectID": "jobs.html#log-analysis",
     "href": "jobs.html#log-analysis",
     "title": "Job Details",
     "section": "",
-    "text": "Page last updated: 2025-08-23 19:16:34.950901"
+    "text": "Page last updated: 2025-08-23 19:35:08.735331"
   },
   {
     "objectID": "NOTIFICATION_SETUP.html",
@@ -88,14 +88,14 @@
     "href": "index.html",
     "title": "Mosquito Alert Model Monitor",
     "section": "",
-    "text": "Total Jobs: 12\n\n\nRunning: 4\n\n\nCompleted: 7\n\n\nFailed: 1\n\n\n\nLast updated: 2025-08-23 19:16:31"
+    "text": "Total Jobs: 13\n\n\nRunning: 5\n\n\nCompleted: 7\n\n\nFailed: 1\n\n\n\nLast updated: 2025-08-23 19:35:05"
   },
   {
     "objectID": "index.html#overview",
     "href": "index.html#overview",
     "title": "Mosquito Alert Model Monitor",
     "section": "",
-    "text": "Total Jobs: 12\n\n\nRunning: 4\n\n\nCompleted: 7\n\n\nFailed: 1\n\n\n\nLast updated: 2025-08-23 19:16:31"
+    "text": "Total Jobs: 13\n\n\nRunning: 5\n\n\nCompleted: 7\n\n\nFailed: 1\n\n\n\nLast updated: 2025-08-23 19:35:05"
   },
   {
     "objectID": "index.html#quick-navigation",
@@ -193,14 +193,14 @@
     "href": "alerts.html",
     "title": "Alerts & Monitoring",
     "section": "",
-    "text": "This page provides automated alerts and monitoring for job failures, performance issues, and system status.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPage last updated: 2025-08-23 19:16:29.475166\nNote: This monitoring system provides basic alerting through the dashboard. For production use, consider integrating with external alerting systems (email, Slack, etc.) for immediate notifications."
+    "text": "This page provides automated alerts and monitoring for job failures, performance issues, and system status.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPage last updated: 2025-08-23 19:35:03.439258\nNote: This monitoring system provides basic alerting through the dashboard. For production use, consider integrating with external alerting systems (email, Slack, etc.) for immediate notifications."
   },
   {
     "objectID": "alerts.html#alert-configuration",
     "href": "alerts.html#alert-configuration",
     "title": "Alerts & Monitoring",
     "section": "",
-    "text": "Page last updated: 2025-08-23 19:16:29.475166\nNote: This monitoring system provides basic alerting through the dashboard. For production use, consider integrating with external alerting systems (email, Slack, etc.) for immediate notifications."
+    "text": "Page last updated: 2025-08-23 19:35:03.439258\nNote: This monitoring system provides basic alerting through the dashboard. For production use, consider integrating with external alerting systems (email, Slack, etc.) for immediate notifications."
   },
   {
     "objectID": "logs.html",
@@ -466,7 +466,7 @@
     "href": "history.html",
     "title": "Job History",
     "section": "",
-    "text": "This page shows historical trends and patterns in job execution over time.\n\n\n**Total Records:** 19 \n**Date Range:** 2025-08-21 to 2025-08-23 \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nWarning in RColorBrewer::brewer.pal(n, pal): n too large, allowed maximum for palette Set2 is 8\nReturning the palette you asked for with that many colors\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPage last updated: 2025-08-23 19:16:33.768851"
+    "text": "This page shows historical trends and patterns in job execution over time.\n\n\n**Total Records:** 20 \n**Date Range:** 2025-08-21 to 2025-08-23 \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nWarning in RColorBrewer::brewer.pal(n, pal): n too large, allowed maximum for palette Set2 is 8\nReturning the palette you asked for with that many colors\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPage last updated: 2025-08-23 19:35:07.554768"
   },
   {
     "objectID": "history.html#performance-trends",
@@ -480,6 +480,13 @@
     "href": "history.html#recent-activity-log",
     "title": "Job History",
     "section": "",
-    "text": "Page last updated: 2025-08-23 19:16:33.768851"
+    "text": "Page last updated: 2025-08-23 19:35:07.554768"
+  },
+  {
+    "objectID": "mermaid_test.html",
+    "href": "mermaid_test.html",
+    "title": "Mermaid Test",
+    "section": "",
+    "text": "Mermaid Test\nSimple test diagram:\ngraph TD\n    A[Start] --&gt; B[Process]\n    B --&gt; C[End]\nSequence diagram test:\nsequenceDiagram\n    participant A as User\n    participant B as System\n    A-&gt;&gt;B: Request\n    B--&gt;&gt;A: Response"
   }
 ]
