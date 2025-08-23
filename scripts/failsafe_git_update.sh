@@ -61,6 +61,48 @@ resolve_conflicts() {
     }
 }
 
+# Try to pull latest changes first to avoid conflicts
+echo "📥 Syncing with remote repository..."
+if ! git pull origin main 2>/dev/null; then
+    echo "⚠️  Pull failed - likely due to conflicts or network issues"
+    resolve_conflicts
+fi
+
+# Add our status file
+if [ -f "data/status/${JOB_NAME}.json" ]; then
+    git add "data/status/${JOB_NAME}.json" 2>/dev/null || true
+    
+    # Try to commit
+    COMMIT_MSG="Update ${JOB_NAME} status: ${STATUS} ($(date '+%Y-%m-%d %H:%M:%S'))"
+    
+    if git commit -m "$COMMIT_MSG" 2>/dev/null; then
+        echo "✅ Status committed locally"
+        
+        # Try to push
+        if git push origin main 2>/dev/null; then
+            echo "✅ Dashboard update pushed - will be live in ~2-3 minutes"
+        else
+            echo "⚠️  Push failed - attempting conflict resolution..."
+            resolve_conflicts
+            
+            # Try push again after conflict resolution
+            if git push origin main 2>/dev/null; then
+                echo "✅ Dashboard update pushed after conflict resolution"
+            else
+                echo "⚠️  Push still failed - dashboard may show stale data"
+                echo "💡 Consider running: cd $REPO_PATH && git pull && git push"
+            fi
+        fi
+    else
+        echo "ℹ️  No changes to commit (status unchanged)"
+    fi
+else
+    echo "⚠️  Status file not found - cannot update dashboard"
+fi
+
+# Always exit successfully - never fail the calling job
+exit 0
+
 # Function to safely execute git operations
 safe_git_operation() {
     local operation="$1"
