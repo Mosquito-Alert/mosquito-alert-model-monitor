@@ -100,14 +100,14 @@ JSONEOF
 # Update status files (this should always work)
 update_status_files
 
-# Try git operations using the failsafe script (but don't fail if it doesn't work)
-if [ -f "$MONITOR_REPO_PATH/scripts/failsafe_git_update.sh" ]; then
-    echo "🔄 Attempting dashboard sync..."
-    "$MONITOR_REPO_PATH/scripts/failsafe_git_update.sh" "$MONITOR_REPO_PATH" "$JOB_NAME" "$STATUS" || {
+# Try git operations using the locked git sync (but don't fail if it doesn't work)
+if [ -f "$MONITOR_REPO_PATH/scripts/locked_git_sync.sh" ]; then
+    echo "🔄 Attempting dashboard sync with git lock..."
+    "$MONITOR_REPO_PATH/scripts/locked_git_sync.sh" "$MONITOR_REPO_PATH" "$JOB_NAME ($STATUS)" || {
         echo "⚠️  Dashboard sync failed but continuing job execution"
     }
 else
-    echo "⚠️  Failsafe git script not found - status updated locally only"
+    echo "⚠️  Locked git sync script not found - status updated locally only"
 fi
 
 echo "📊 Status update complete: $JOB_NAME -> $STATUS"

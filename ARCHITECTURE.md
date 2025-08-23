@@ -1,0 +1,312 @@
+# System Architecture and Data Flow
+
+This document provides a comprehensive overview of how the Mosquito Alert Model Monitor integrates with tracked projects and manages data flow.
+
+## 🏗️ **Architecture Overview**
+
+```mermaid
+graph TB
+    subgraph "Tracked Projects (e.g., mosquito_model_data_prep, weather-data-collector)"
+        TP1[Project A Job Script]
+        TP2[Project B Job Script]
+        TP3[Project C Job Script]
+    end
+    
+    subgraph "Monitor Repository (mosquito-alert-model-monitor)"
+        subgraph "Scripts"
+            UJS[update_job_status.sh]
+            LGS[locked_git_sync.sh]
+            SDS[slurm_dashboard_sync.sh]
+        end
+        
+        subgraph "Data Storage"
+            SF[data/status/*.json]
+            HF[data/history/*.json]
+            LF[data/details/*.log]
+        end
+        
+        subgraph "Dashboard"
+            IDX[index.qmd]
+            HIST[history.qmd]
+            JOBS[jobs.qmd]
+            ALERTS[alerts.qmd]
+        end
+    end
+    
+    subgraph "GitHub"
+        GR[Git Repository]
+        GA[GitHub Actions]
+        GP[GitHub Pages]
+    end
+    
+    subgraph "SLURM Cluster"
+        SC[Cron Jobs]
+    end
+    
+    %% Data flow from tracked projects
+    TP1 -->|calls| UJS
+    TP2 -->|calls| UJS
+    TP3 -->|calls| UJS
+    
+    %% Internal monitor flows
+    UJS -->|writes immediately| SF
+    UJS -->|queues for sync| LGS
+    LGS -->|git add/commit/push| GR
+    
+    %% Cron sync flow
+    SC -->|every 15-30 min| SDS
+    SDS -->|uses| LGS
+    
+    %% GitHub deployment
+    GR -->|triggers| GA
+    GA -->|renders| IDX
+    GA -->|renders| HIST
+    GA -->|renders| JOBS
+    GA -->|renders| ALERTS
+    GA -->|deploys| GP
+    
+    %% Dashboard reads data
+    IDX -->|reads| SF
+    HIST -->|reads| HF
+    JOBS -->|reads| SF
+    ALERTS -->|reads| SF
+    
+    %% Styling
+    classDef tracked fill:#e1f5fe
+    classDef monitor fill:#f3e5f5
+    classDef github fill:#fff3e0
+    classDef cluster fill:#e8f5e8
+    
+    class TP1,TP2,TP3 tracked
+    class UJS,LGS,SDS,SF,HF,LF,IDX,HIST,JOBS,ALERTS monitor
+    class GR,GA,GP github
+    class SC cluster
+```
+
+## 🔄 **Detailed Data Flow**
+
+### **1. Job Status Updates (Real-time)**
+
+```mermaid
+sequenceDiagram
+    participant PA as Project A
+    participant PB as Project B
+    participant UJS as update_job_status.sh
+    participant SF as Status Files
+    participant LGS as locked_git_sync.sh
+    participant GIT as Git Repository
+    
+    Note over PA,PB: Multiple projects can run simultaneously
+    
+    PA->>+UJS: Call with job status
+    UJS->>SF: Write A.json immediately
+    UJS->>+LGS: Request git sync (A)
+    
+    Note over LGS: Acquire git lock
+    
+    PB->>+UJS: Call with job status
+    UJS->>SF: Write B.json immediately
+    UJS->>LGS: Request git sync (B) - WAITS for lock
+    
+    LGS->>GIT: git add/commit/push (A's changes)
+    LGS-->>-UJS: Sync complete (A)
+    UJS-->>-PA: Status update complete
+    
+    Note over LGS: Release git lock, acquire for B
+    
+    LGS->>+GIT: git add/commit/push (A+B changes)
+    LGS-->>-UJS: Sync complete (B)
+    UJS-->>-PB: Status update complete
+```
+
+### **2. Periodic Dashboard Sync (Cron)**
+
+```mermaid
+sequenceDiagram
+    participant CRON as SLURM Cron
+    participant SDS as slurm_dashboard_sync.sh
+    participant LGS as locked_git_sync.sh
+    participant GIT as Git Repository
+    participant GA as GitHub Actions
+    participant GP as GitHub Pages
+    
+    CRON->>+SDS: Every 15-30 minutes
+    SDS->>+LGS: Request bulk sync
+    
+    Note over LGS: Acquire git lock (may wait)
+    
+    LGS->>GIT: git add data/ (all accumulated changes)
+    LGS->>GIT: git commit "Dashboard sync"
+    LGS->>GIT: git push origin main
+    LGS-->>-SDS: Sync complete
+    SDS-->>-CRON: Cron job complete
+    
+    GIT->>+GA: Trigger on push to main
+    GA->>GA: quarto render (build dashboard)
+    GA->>GP: Deploy to GitHub Pages
+    GA-->>-GIT: Deployment complete
+```
+
+## 🔐 **Lock Mechanism Details**
+
+### **File Locking Strategy**
+
+```mermaid
+graph LR
+    subgraph "No Lock Required"
+        A1[Project A writes A.json]
+        B1[Project B writes B.json]
+        C1[Project C writes C.json]
+    end
+    
+    subgraph "Git Lock Required"
+        GL[.git_sync_lock/]
+        GO[Git Operations]
+    end
+    
+    A1 -.->|immediate| A1
+    B1 -.->|immediate| B1  
+    C1 -.->|immediate| C1
+    
+    A1 -->|request sync| GL
+    B1 -->|request sync| GL
+    C1 -->|request sync| GL
+    
+    GL -->|serialize| GO
+    
+    classDef nolock fill:#e8f5e8
+    classDef lock fill:#ffebee
+    
+    class A1,B1,C1 nolock
+    class GL,GO lock
+```
+
+### **Lock File Structure**
+
+```
+mosquito-alert-model-monitor/
+├── .git_sync_lock/          # Lock directory (created atomically)
+│   ├── pid                  # Process ID holding lock
+│   ├── timestamp            # When lock was acquired
+│   ├── operation            # Description of operation
+│   └── host                 # Hostname of locking process
+```
+
+## 📊 **Component Responsibilities**
+
+### **Tracked Projects**
+- ✅ **Call monitoring** via `update_job_status.sh`
+- ✅ **Continue execution** regardless of monitoring success/failure
+- ✅ **Provide status updates** (running, completed, failed)
+- ✅ **Include progress info** (duration, percentage complete)
+
+### **update_job_status.sh**
+- ✅ **Write status files immediately** (no waiting)
+- ✅ **Queue git operations** via `locked_git_sync.sh`
+- ✅ **Never fail** (always exit 0)
+- ✅ **Handle missing directories** gracefully
+
+### **locked_git_sync.sh**
+- ✅ **Serialize git operations** using file locks
+- ✅ **Handle lock timeouts** (max 30 seconds)
+- ✅ **Clean up stale locks** (> 5 minutes old)
+- ✅ **Retry failed pushes** with rebase
+- ✅ **Preserve data locally** if push fails
+
+### **slurm_dashboard_sync.sh**
+- ✅ **Periodic bulk sync** (every 15-30 minutes)
+- ✅ **Use same locking mechanism** as individual updates
+- ✅ **Minimal resource usage** (512MB RAM, 1 CPU, 5 min max)
+- ✅ **Handle conflicts gracefully**
+
+### **Dashboard Pages**
+- ✅ **Read status files** for current state
+- ✅ **Read history files** for trends
+- ✅ **Auto-refresh** via GitHub Actions
+- ✅ **Handle missing data** gracefully
+
+## 🚨 **Race Condition Prevention**
+
+### **Problem Scenarios**
+1. **Multiple projects updating simultaneously**
+2. **Cron sync during project updates**
+3. **Git conflicts from concurrent pushes**
+4. **Stale locks from crashed processes**
+
+### **Solutions Implemented**
+1. **Immediate file writes** - No waiting for git operations
+2. **Git-only locking** - Files can be written concurrently
+3. **Lock timeouts** - Prevent deadlocks
+4. **Stale lock cleanup** - Handle crashed processes
+5. **Graceful failures** - Preserve data even if sync fails
+
+## 📈 **Performance Characteristics**
+
+### **File Operations**
+- **Status file writes**: < 1 second (no lock contention)
+- **Multiple projects**: Can write simultaneously
+- **File size**: ~1-2KB per status file
+
+### **Git Operations**
+- **Lock acquisition**: Usually instant, max 30 seconds
+- **Commit/push time**: 5-30 seconds depending on network
+- **Conflict resolution**: Automatic via rebase
+
+### **Resource Usage**
+- **Individual updates**: Minimal overhead
+- **Cron sync**: 512MB RAM, 1 CPU core, ~1-2 minutes
+- **Dashboard build**: Handled by GitHub Actions (free)
+
+## 🔧 **Configuration Points**
+
+### **Lock Timeouts**
+```bash
+LOCK_TIMEOUT=30          # Max wait for git lock (seconds)
+LOCK_CHECK_INTERVAL=1    # Check frequency (seconds)
+STALE_LOCK_AGE=300      # Clean locks older than 5 minutes
+```
+
+### **Cron Frequency**
+```bash
+*/15 * * * *  # Every 15 minutes (active development)
+*/30 * * * *  # Every 30 minutes (production)
+```
+
+### **Resource Limits**
+```bash
+#SBATCH --mem=512M       # Memory limit
+#SBATCH --cpus-per-task=1 # CPU limit
+#SBATCH --time=00:05:00  # Time limit
+```
+
+## 🔍 **Monitoring and Debugging**
+
+### **Lock Status Check**
+```bash
+# Check if git lock is active
+ls -la /path/to/monitor/.git_sync_lock/
+
+# View lock details
+cat /path/to/monitor/.git_sync_lock/pid
+cat /path/to/monitor/.git_sync_lock/operation
+```
+
+### **Git Sync Logs**
+```bash
+# Recent git operations
+git log --oneline -10
+
+# Check for conflicts
+git status
+```
+
+### **Status File Verification**
+```bash
+# Check latest status files
+ls -lt data/status/*.json | head -5
+
+# Validate JSON format
+jq . data/status/project_name.json
+```
+
+This architecture ensures that tracked projects can always update their status immediately while git operations are properly serialized to prevent conflicts and data loss.

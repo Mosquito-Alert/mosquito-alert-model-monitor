@@ -4,14 +4,406 @@
     "href": "jobs.html",
     "title": "Job Details",
     "section": "",
-    "text": "This page provides detailed analysis and configuration information for all monitored jobs.\n\n\nFound 11 jobs with status data\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPage last updated: 2025-08-23 12:41:14.716899"
+    "text": "This page provides detailed analysis and configuration information for all monitored jobs.\n\n\nFound 12 jobs with status data\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPage last updated: 2025-08-23 19:16:34.950901"
   },
   {
     "objectID": "jobs.html#log-analysis",
     "href": "jobs.html#log-analysis",
     "title": "Job Details",
     "section": "",
-    "text": "Page last updated: 2025-08-23 12:41:14.716899"
+    "text": "Page last updated: 2025-08-23 19:16:34.950901"
+  },
+  {
+    "objectID": "NOTIFICATION_SETUP.html",
+    "href": "NOTIFICATION_SETUP.html",
+    "title": "Notification Setup Guide",
+    "section": "",
+    "text": "⚠️ Important: The notification system is not currently implemented. The configuration files in config/ are placeholders for future development. This guide explains how to set up notifications when the system is implemented.\n\n\n\n\nThe dashboard includes template configuration files for future notification features:\n\nconfig/email_config.json: Email notification settings (SMTP)\nconfig/slack_config.json: Slack webhook notification settings\n\nThese files are: - ✅ Templates only - Not currently used by any scripts - ✅ Git-ignored - Won’t be tracked in version control - ✅ Cluster-specific - You’d copy and configure them on your cluster\n\n\n\nWhen implemented, notifications would work as follows:\n\n\n\nNotifications sent directly from the cluster where jobs run\nReal-time alerts when jobs fail or encounter issues\nRich context with access to logs and system status\nNo dependency on GitHub Actions availability\n\n\n\n\n\nDaily/weekly summary reports\nDashboard build status notifications\nRepository health alerts\n\n\n\n\n\n\n\nA. Create Slack App: 1. Go to https://api.slack.com/apps 2. Click “Create New App” → “From scratch” 3. Name: “Mosquito Alert Monitor”, choose your workspace 4. Go to “Incoming Webhooks” → Enable incoming webhooks 5. Click “Add New Webhook to Workspace” 6. Choose channel (e.g., #mosquito-alert-monitoring) 7. Copy the webhook URL\nB. Configure Slack on Cluster:\n# Copy template to cluster\ncp config/slack_config.json /path/to/cluster/config/\nEdit slack_config.json:\n{\n  \"enabled\": true,\n  \"webhook_url\": \"https://hooks.slack.com/services/YOUR/ACTUAL/WEBHOOK\",\n  \"channel\": \"#mosquito-alert-monitoring\",\n  \"username\": \"Mosquito Alert Monitor\",\n  \"alert_levels\": [\"high\", \"medium\"],\n  \"message_template\": {\n    \"high\": \"🚨 *HIGH ALERT*: {message}\",\n    \"medium\": \"⚠️ *MEDIUM ALERT*: {message}\",\n    \"low\": \"ℹ️ *LOW ALERT*: {message}\"\n  }\n}\nC. Test Connectivity:\n# Test webhook from cluster\ncurl -X POST -H 'Content-type: application/json' \\\n  --data '{\"text\":\"🧪 Test from cluster: Mosquito Alert Monitor\"}' \\\n  YOUR_SLACK_WEBHOOK_URL\n\n\n\nA. Email Service Setup: - Gmail: Enable 2FA, create App Password - Institutional Email: Get SMTP settings from IT - SendGrid/Mailgun: Create API credentials\nB. Configure Email on Cluster:\n# Copy template to cluster\ncp config/email_config.json /path/to/cluster/config/\nEdit email_config.json:\n{\n  \"enabled\": true,\n  \"smtp_server\": \"smtp.gmail.com\",\n  \"smtp_port\": 587,\n  \"sender_email\": \"your-alerts@example.com\",\n  \"sender_password\": \"your-app-password\",\n  \"recipients\": [\n    \"researcher1@example.com\",\n    \"researcher2@example.com\"\n  ],\n  \"alert_levels\": [\"high\", \"medium\"],\n  \"subject_template\": \"[Mosquito Alert] {level}: {job_name}\",\n  \"use_tls\": true\n}\nC. Test SMTP Connection:\n# Test SMTP access from cluster\ntelnet smtp.gmail.com 587\n\n\n\nOutbound Access Needed: - Slack: HTTPS (port 443) to hooks.slack.com - Email: SMTP (port 587/465) to your email provider - Proxy: Configure if behind institutional firewall\nTest Commands:\n# Check HTTPS access\ncurl -I https://hooks.slack.com\n\n# Check SMTP access  \nnc -zv smtp.gmail.com 587\n\n# Check proxy settings\necho $HTTP_PROXY\necho $HTTPS_PROXY\n\n\n\n\nNotifications would be sent for:\n\n\n\n✅ Job failures with error codes\n✅ System resource critical (&gt;90% disk, &gt;95% memory)\n✅ Dashboard sync failures\n\n\n\n\n\n✅ Long-running jobs (&gt;2 hours)\n✅ Stale jobs (&gt;24 hours without update)\n✅ Resource warnings (&gt;80% disk, &gt;90% memory)\n\n\n\n\n\n✅ Job completion summaries\n✅ Performance trends\n✅ System health reports\n\n\n\n\n\n\n\n🚨 HIGH ALERT: Job Failed\n📊 Job: prepare_malert_data\n⏰ Failed at: 2025-08-23 14:30:15\n💥 Error: Process killed (OOM)\n🔗 Dashboard: https://mosquito-alert.github.io/mosquito-alert-model-monitor/\n📋 Logs: /cluster/logs/prepare_malert_data.log\n\n\n\nSubject: [Mosquito Alert] HIGH: prepare_malert_data Failed\n\nJob prepare_malert_data has failed with the following details:\n\nTime: 2025-08-23 14:30:15\nDuration: 45 minutes\nError: Out of memory (OOM)\nExit Code: 137\n\nView Dashboard: https://mosquito-alert.github.io/mosquito-alert-model-monitor/\nCheck Logs: /cluster/logs/prepare_malert_data.log\n\nThis is an automated message from Mosquito Alert Monitor.\n\n\n\n\n\n\n\nStore webhook URLs in protected config files (mode 600)\nRotate webhook URLs periodically\nUse dedicated Slack channels with limited access\n\n\n\n\n\nUse app passwords, not account passwords\nStore credentials in protected files\nConsider institutional email over personal accounts\n\n\n\n\n\nKeep config files in user directories (not shared)\nUse appropriate file permissions\nDon’t commit real credentials to git\n\n\n\n\n\n✅ Ready for Development: - Configuration templates created - Architecture designed - Setup instructions documented\n❌ Not Yet Implemented: - Notification sending scripts - Integration with job status updates - Alert threshold monitoring - Config file reading functions\n\n\n\nIf you want to implement the notification system:\n\nCheck cluster network access using the test commands above\nSet up Slack/email credentials following this guide\nRequest implementation of the notification scripts\nTest with dummy notifications before enabling alerts\n\nThe notification system is designed to be modular - you can enable Slack only, email only, or both, and configure which alert levels you want to receive."
+  },
+  {
+    "objectID": "NOTIFICATION_SETUP.html#current-status-not-implemented",
+    "href": "NOTIFICATION_SETUP.html#current-status-not-implemented",
+    "title": "Notification Setup Guide",
+    "section": "",
+    "text": "⚠️ Important: The notification system is not currently implemented. The configuration files in config/ are placeholders for future development. This guide explains how to set up notifications when the system is implemented."
+  },
+  {
+    "objectID": "NOTIFICATION_SETUP.html#configuration-files-overview",
+    "href": "NOTIFICATION_SETUP.html#configuration-files-overview",
+    "title": "Notification Setup Guide",
+    "section": "",
+    "text": "The dashboard includes template configuration files for future notification features:\n\nconfig/email_config.json: Email notification settings (SMTP)\nconfig/slack_config.json: Slack webhook notification settings\n\nThese files are: - ✅ Templates only - Not currently used by any scripts - ✅ Git-ignored - Won’t be tracked in version control - ✅ Cluster-specific - You’d copy and configure them on your cluster"
+  },
+  {
+    "objectID": "NOTIFICATION_SETUP.html#implementation-architecture",
+    "href": "NOTIFICATION_SETUP.html#implementation-architecture",
+    "title": "Notification Setup Guide",
+    "section": "",
+    "text": "When implemented, notifications would work as follows:\n\n\n\nNotifications sent directly from the cluster where jobs run\nReal-time alerts when jobs fail or encounter issues\nRich context with access to logs and system status\nNo dependency on GitHub Actions availability\n\n\n\n\n\nDaily/weekly summary reports\nDashboard build status notifications\nRepository health alerts"
+  },
+  {
+    "objectID": "NOTIFICATION_SETUP.html#setup-instructions-future-implementation",
+    "href": "NOTIFICATION_SETUP.html#setup-instructions-future-implementation",
+    "title": "Notification Setup Guide",
+    "section": "",
+    "text": "A. Create Slack App: 1. Go to https://api.slack.com/apps 2. Click “Create New App” → “From scratch” 3. Name: “Mosquito Alert Monitor”, choose your workspace 4. Go to “Incoming Webhooks” → Enable incoming webhooks 5. Click “Add New Webhook to Workspace” 6. Choose channel (e.g., #mosquito-alert-monitoring) 7. Copy the webhook URL\nB. Configure Slack on Cluster:\n# Copy template to cluster\ncp config/slack_config.json /path/to/cluster/config/\nEdit slack_config.json:\n{\n  \"enabled\": true,\n  \"webhook_url\": \"https://hooks.slack.com/services/YOUR/ACTUAL/WEBHOOK\",\n  \"channel\": \"#mosquito-alert-monitoring\",\n  \"username\": \"Mosquito Alert Monitor\",\n  \"alert_levels\": [\"high\", \"medium\"],\n  \"message_template\": {\n    \"high\": \"🚨 *HIGH ALERT*: {message}\",\n    \"medium\": \"⚠️ *MEDIUM ALERT*: {message}\",\n    \"low\": \"ℹ️ *LOW ALERT*: {message}\"\n  }\n}\nC. Test Connectivity:\n# Test webhook from cluster\ncurl -X POST -H 'Content-type: application/json' \\\n  --data '{\"text\":\"🧪 Test from cluster: Mosquito Alert Monitor\"}' \\\n  YOUR_SLACK_WEBHOOK_URL\n\n\n\nA. Email Service Setup: - Gmail: Enable 2FA, create App Password - Institutional Email: Get SMTP settings from IT - SendGrid/Mailgun: Create API credentials\nB. Configure Email on Cluster:\n# Copy template to cluster\ncp config/email_config.json /path/to/cluster/config/\nEdit email_config.json:\n{\n  \"enabled\": true,\n  \"smtp_server\": \"smtp.gmail.com\",\n  \"smtp_port\": 587,\n  \"sender_email\": \"your-alerts@example.com\",\n  \"sender_password\": \"your-app-password\",\n  \"recipients\": [\n    \"researcher1@example.com\",\n    \"researcher2@example.com\"\n  ],\n  \"alert_levels\": [\"high\", \"medium\"],\n  \"subject_template\": \"[Mosquito Alert] {level}: {job_name}\",\n  \"use_tls\": true\n}\nC. Test SMTP Connection:\n# Test SMTP access from cluster\ntelnet smtp.gmail.com 587\n\n\n\nOutbound Access Needed: - Slack: HTTPS (port 443) to hooks.slack.com - Email: SMTP (port 587/465) to your email provider - Proxy: Configure if behind institutional firewall\nTest Commands:\n# Check HTTPS access\ncurl -I https://hooks.slack.com\n\n# Check SMTP access  \nnc -zv smtp.gmail.com 587\n\n# Check proxy settings\necho $HTTP_PROXY\necho $HTTPS_PROXY"
+  },
+  {
+    "objectID": "NOTIFICATION_SETUP.html#alert-triggers-when-implemented",
+    "href": "NOTIFICATION_SETUP.html#alert-triggers-when-implemented",
+    "title": "Notification Setup Guide",
+    "section": "",
+    "text": "Notifications would be sent for:\n\n\n\n✅ Job failures with error codes\n✅ System resource critical (&gt;90% disk, &gt;95% memory)\n✅ Dashboard sync failures\n\n\n\n\n\n✅ Long-running jobs (&gt;2 hours)\n✅ Stale jobs (&gt;24 hours without update)\n✅ Resource warnings (&gt;80% disk, &gt;90% memory)\n\n\n\n\n\n✅ Job completion summaries\n✅ Performance trends\n✅ System health reports"
+  },
+  {
+    "objectID": "NOTIFICATION_SETUP.html#notification-examples",
+    "href": "NOTIFICATION_SETUP.html#notification-examples",
+    "title": "Notification Setup Guide",
+    "section": "",
+    "text": "🚨 HIGH ALERT: Job Failed\n📊 Job: prepare_malert_data\n⏰ Failed at: 2025-08-23 14:30:15\n💥 Error: Process killed (OOM)\n🔗 Dashboard: https://mosquito-alert.github.io/mosquito-alert-model-monitor/\n📋 Logs: /cluster/logs/prepare_malert_data.log\n\n\n\nSubject: [Mosquito Alert] HIGH: prepare_malert_data Failed\n\nJob prepare_malert_data has failed with the following details:\n\nTime: 2025-08-23 14:30:15\nDuration: 45 minutes\nError: Out of memory (OOM)\nExit Code: 137\n\nView Dashboard: https://mosquito-alert.github.io/mosquito-alert-model-monitor/\nCheck Logs: /cluster/logs/prepare_malert_data.log\n\nThis is an automated message from Mosquito Alert Monitor."
+  },
+  {
+    "objectID": "NOTIFICATION_SETUP.html#security-considerations",
+    "href": "NOTIFICATION_SETUP.html#security-considerations",
+    "title": "Notification Setup Guide",
+    "section": "",
+    "text": "Store webhook URLs in protected config files (mode 600)\nRotate webhook URLs periodically\nUse dedicated Slack channels with limited access\n\n\n\n\n\nUse app passwords, not account passwords\nStore credentials in protected files\nConsider institutional email over personal accounts\n\n\n\n\n\nKeep config files in user directories (not shared)\nUse appropriate file permissions\nDon’t commit real credentials to git"
+  },
+  {
+    "objectID": "NOTIFICATION_SETUP.html#implementation-status",
+    "href": "NOTIFICATION_SETUP.html#implementation-status",
+    "title": "Notification Setup Guide",
+    "section": "",
+    "text": "✅ Ready for Development: - Configuration templates created - Architecture designed - Setup instructions documented\n❌ Not Yet Implemented: - Notification sending scripts - Integration with job status updates - Alert threshold monitoring - Config file reading functions"
+  },
+  {
+    "objectID": "NOTIFICATION_SETUP.html#getting-help",
+    "href": "NOTIFICATION_SETUP.html#getting-help",
+    "title": "Notification Setup Guide",
+    "section": "",
+    "text": "If you want to implement the notification system:\n\nCheck cluster network access using the test commands above\nSet up Slack/email credentials following this guide\nRequest implementation of the notification scripts\nTest with dummy notifications before enabling alerts\n\nThe notification system is designed to be modular - you can enable Slack only, email only, or both, and configure which alert levels you want to receive."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Mosquito Alert Model Monitor",
+    "section": "",
+    "text": "Total Jobs: 12\n\n\nRunning: 4\n\n\nCompleted: 7\n\n\nFailed: 1\n\n\n\nLast updated: 2025-08-23 19:16:31"
+  },
+  {
+    "objectID": "index.html#overview",
+    "href": "index.html#overview",
+    "title": "Mosquito Alert Model Monitor",
+    "section": "",
+    "text": "Total Jobs: 12\n\n\nRunning: 4\n\n\nCompleted: 7\n\n\nFailed: 1\n\n\n\nLast updated: 2025-08-23 19:16:31"
+  },
+  {
+    "objectID": "index.html#quick-navigation",
+    "href": "index.html#quick-navigation",
+    "title": "Mosquito Alert Model Monitor",
+    "section": "📚 Quick Navigation",
+    "text": "📚 Quick Navigation\n\n\n\n\n\n\nDocumentation & Resources\n\n\n\n\n📊 Dashboard Pages: Jobs | History | Alerts | Logs\n🛡️ Setup Guides: Robustness Guide | SLURM Setup | Integration API\n🔧 GitHub: Repository | Actions | Issues\n📈 Status:"
+  },
+  {
+    "objectID": "index.html#job-status",
+    "href": "index.html#job-status",
+    "title": "Mosquito Alert Model Monitor",
+    "section": "Job Status",
+    "text": "Job Status"
+  },
+  {
+    "objectID": "index.html#resource-usage",
+    "href": "index.html#resource-usage",
+    "title": "Mosquito Alert Model Monitor",
+    "section": "Resource Usage",
+    "text": "Resource Usage"
+  },
+  {
+    "objectID": "index.html#recent-activity",
+    "href": "index.html#recent-activity",
+    "title": "Mosquito Alert Model Monitor",
+    "section": "Recent Activity",
+    "text": "Recent Activity"
+  },
+  {
+    "objectID": "index.html#performance-summary",
+    "href": "index.html#performance-summary",
+    "title": "Mosquito Alert Model Monitor",
+    "section": "Performance Summary",
+    "text": "Performance Summary"
+  },
+  {
+    "objectID": "RACE_CONDITION_PREVENTION.html",
+    "href": "RACE_CONDITION_PREVENTION.html",
+    "title": "Race Condition Prevention Guide",
+    "section": "",
+    "text": "Multiple projects updating the dashboard simultaneously can cause data loss through git conflicts and stashing operations.\n\n\n\n\n\n10:30:00 - Weather project pushes status update\n10:30:15 - SLURM sync script runs (cron every 15 min)\n10:30:16 - Sync script stashes weather updates  \n10:30:17 - Dashboard shows stale weather data\n\n\n\nProject A: Updates data/status/job_a.json\nProject B: Updates data/status/job_b.json (same time)\nSync Script: Encounters merge conflict\nSync Script: Stashes ALL changes (loses both updates)\nDashboard: Shows outdated status for both jobs\n\n\n\nProject A: Commits status update locally\nProject B: Commits status update locally  \nProject A: Pushes successfully\nProject B: Force pushes, overwrites Project A's update\nResult: Project A's status lost\n\n\n\n\n\n\n\n1. scripts/slurm_dashboard_sync_safe.sh - Uses file locking to prevent concurrent sync operations - Safely merges remote changes without losing local updates - Only adds specific data files, not entire directories - Retries with conflict resolution\n2. scripts/failsafe_git_update_safe.sh\n- Acquires lock before git operations - Updates only the specific job’s status file - Checks for conflicts with that specific file - Falls back to local-only updates if lock unavailable\n\n\n\n\n\n# Prevents multiple git operations simultaneously\nLOCK_FILE=\"$REPO_PATH/.git/dashboard_sync.lock\"\nacquire_lock() {\n    if (set -C; echo $$ &gt; \"$LOCK_FILE\") 2&gt;/dev/null; then\n        return 0  # Got lock\n    else\n        return 1  # Another operation in progress\n    fi\n}\n\n\n\n# OLD (dangerous): Adds all changes\ngit add data/\n\n# NEW (safe): Adds only specific files\ngit add \"data/status/${JOB_NAME}.json\"\n\n\n\n# Check if our specific file conflicts with remote\nour_file=\"data/status/${JOB_NAME}.json\"\nremote_changes=$(git diff --name-only HEAD origin/main)\nif echo \"$remote_changes\" | grep -q \"^$our_file$\"; then\n    # Handle conflict specifically for our file\nfi\n\n\n\n# If can't get lock, update locally only\nif ! acquire_lock; then\n    echo \"📝 Status updated locally - sync job will pick up later\"\n    exit 0  # Don't fail the calling job\nfi\n\n\n\n\n\n\n\n# Replace current sync script\ncp scripts/slurm_dashboard_sync_safe.sh scripts/slurm_dashboard_sync.sh\n\n# Update crontab to use safe script\ncrontab -e\n# Change to: */15 * * * * cd ~/research/mosquito-alert-model-monitor && sbatch scripts/slurm_dashboard_sync.sh\n\n\n\n# In mosquito_model_data_prep project:\n# Replace calls to update_job_status.sh with safe version\n~/research/mosquito-alert-model-monitor/scripts/failsafe_git_update_safe.sh \\\n    ~/research/mosquito-alert-model-monitor \\\n    \"prepare_malert_data\" \\\n    \"running\" \\\n    3600 \\\n    50\n\n\n\n# Check sync logs for conflicts\ntail -50 ~/research/mosquito-alert-model-monitor/logs/dashboard_sync.log\n\n# Look for:\n# \"⚠️  Could not acquire lock\" - High contention\n# \"🔧 Removing stale lock file\" - Crashed operations  \n# \"❌ All push retries failed\" - Network/conflict issues\n\n\n\n\n\n\n# Terminal 1: Start fake job update\nfor i in {1..10}; do\n    echo '{\"job_name\":\"test_job_a\",\"status\":\"running\",\"progress\":'$((i*10))'}' &gt; data/status/test_job_a.json\n    ~/research/mosquito-alert-model-monitor/scripts/failsafe_git_update_safe.sh \\\n        ~/research/mosquito-alert-model-monitor test_job_a running\n    sleep 5\ndone\n\n# Terminal 2: Start another fake job update  \nfor i in {1..10}; do\n    echo '{\"job_name\":\"test_job_b\",\"status\":\"completed\",\"progress\":100}' &gt; data/status/test_job_b.json\n    ~/research/mosquito-alert-model-monitor/scripts/failsafe_git_update_safe.sh \\\n        ~/research/mosquito-alert-model-monitor test_job_b completed\n    sleep 3\ndone\n\n# Terminal 3: Run sync script\nsbatch scripts/slurm_dashboard_sync_safe.sh\n\n\n\n\n✅ Both test_job_a and test_job_b updates preserved\n✅ No “stash” operations in git log\n✅ Lock messages in logs showing coordination\n✅ All updates appear in dashboard\n\n\n\n\n\n\n\n# See if operations are waiting for locks\nls -la ~/research/mosquito-alert-model-monitor/.git/*.lock\n\n# Check process holding lock\nif [ -f ~/research/mosquito-alert-model-monitor/.git/dashboard_sync.lock ]; then\n    cat ~/research/mosquito-alert-model-monitor/.git/dashboard_sync.lock\nfi\n\n\n\n# Check for stash operations (should be rare/none)\ncd ~/research/mosquito-alert-model-monitor\ngit log --oneline -10 | grep -i stash\n\n# Check commit frequency (should be steady)\ngit log --oneline --since=\"1 hour ago\" | wc -l\n\n\n\n# Check sync job success rate\ntail -100 ~/research/mosquito-alert-model-monitor/logs/dashboard_sync.log | \\\n    grep -E \"(completed|failed)\" | tail -10\n\n\n\n\n\n\n\nMultiple “stash” entries in git log\nStatus files missing expected updates\nLog messages about “complex conflicts”\nJobs reporting success but not appearing in dashboard\n\n\n\n\n\nRegular commit messages with job names\n“Acquired/Released lock” messages in logs\nConsistent dashboard updates within 2-3 minutes\nNo “manual intervention required” messages\n\n\n\n\n\n\n\n\nMinimal: File locking adds ~100ms per operation\nTimeout: Operations wait max 30s for locks\nFallback: Local updates continue even if locks fail\n\n\n\n\n\nSame SLURM allocation: 512MB RAM, 1 CPU, 5 min max\nSlightly longer runtime: +10-20s for safety checks\nBetter reliability: Fewer failed syncs requiring manual fix\n\nThe safe approach trades a small performance cost for significantly better data integrity and reliability."
+  },
+  {
+    "objectID": "RACE_CONDITION_PREVENTION.html#critical-issue-dashboard-sync-race-conditions",
+    "href": "RACE_CONDITION_PREVENTION.html#critical-issue-dashboard-sync-race-conditions",
+    "title": "Race Condition Prevention Guide",
+    "section": "",
+    "text": "Multiple projects updating the dashboard simultaneously can cause data loss through git conflicts and stashing operations.\n\n\n\n\n\n10:30:00 - Weather project pushes status update\n10:30:15 - SLURM sync script runs (cron every 15 min)\n10:30:16 - Sync script stashes weather updates  \n10:30:17 - Dashboard shows stale weather data\n\n\n\nProject A: Updates data/status/job_a.json\nProject B: Updates data/status/job_b.json (same time)\nSync Script: Encounters merge conflict\nSync Script: Stashes ALL changes (loses both updates)\nDashboard: Shows outdated status for both jobs\n\n\n\nProject A: Commits status update locally\nProject B: Commits status update locally  \nProject A: Pushes successfully\nProject B: Force pushes, overwrites Project A's update\nResult: Project A's status lost"
+  },
+  {
+    "objectID": "RACE_CONDITION_PREVENTION.html#solution-safe-scripts-with-locking",
+    "href": "RACE_CONDITION_PREVENTION.html#solution-safe-scripts-with-locking",
+    "title": "Race Condition Prevention Guide",
+    "section": "",
+    "text": "1. scripts/slurm_dashboard_sync_safe.sh - Uses file locking to prevent concurrent sync operations - Safely merges remote changes without losing local updates - Only adds specific data files, not entire directories - Retries with conflict resolution\n2. scripts/failsafe_git_update_safe.sh\n- Acquires lock before git operations - Updates only the specific job’s status file - Checks for conflicts with that specific file - Falls back to local-only updates if lock unavailable\n\n\n\n\n\n# Prevents multiple git operations simultaneously\nLOCK_FILE=\"$REPO_PATH/.git/dashboard_sync.lock\"\nacquire_lock() {\n    if (set -C; echo $$ &gt; \"$LOCK_FILE\") 2&gt;/dev/null; then\n        return 0  # Got lock\n    else\n        return 1  # Another operation in progress\n    fi\n}\n\n\n\n# OLD (dangerous): Adds all changes\ngit add data/\n\n# NEW (safe): Adds only specific files\ngit add \"data/status/${JOB_NAME}.json\"\n\n\n\n# Check if our specific file conflicts with remote\nour_file=\"data/status/${JOB_NAME}.json\"\nremote_changes=$(git diff --name-only HEAD origin/main)\nif echo \"$remote_changes\" | grep -q \"^$our_file$\"; then\n    # Handle conflict specifically for our file\nfi\n\n\n\n# If can't get lock, update locally only\nif ! acquire_lock; then\n    echo \"📝 Status updated locally - sync job will pick up later\"\n    exit 0  # Don't fail the calling job\nfi"
+  },
+  {
+    "objectID": "RACE_CONDITION_PREVENTION.html#migration-plan",
+    "href": "RACE_CONDITION_PREVENTION.html#migration-plan",
+    "title": "Race Condition Prevention Guide",
+    "section": "",
+    "text": "# Replace current sync script\ncp scripts/slurm_dashboard_sync_safe.sh scripts/slurm_dashboard_sync.sh\n\n# Update crontab to use safe script\ncrontab -e\n# Change to: */15 * * * * cd ~/research/mosquito-alert-model-monitor && sbatch scripts/slurm_dashboard_sync.sh\n\n\n\n# In mosquito_model_data_prep project:\n# Replace calls to update_job_status.sh with safe version\n~/research/mosquito-alert-model-monitor/scripts/failsafe_git_update_safe.sh \\\n    ~/research/mosquito-alert-model-monitor \\\n    \"prepare_malert_data\" \\\n    \"running\" \\\n    3600 \\\n    50\n\n\n\n# Check sync logs for conflicts\ntail -50 ~/research/mosquito-alert-model-monitor/logs/dashboard_sync.log\n\n# Look for:\n# \"⚠️  Could not acquire lock\" - High contention\n# \"🔧 Removing stale lock file\" - Crashed operations  \n# \"❌ All push retries failed\" - Network/conflict issues"
+  },
+  {
+    "objectID": "RACE_CONDITION_PREVENTION.html#testing-the-fix",
+    "href": "RACE_CONDITION_PREVENTION.html#testing-the-fix",
+    "title": "Race Condition Prevention Guide",
+    "section": "",
+    "text": "# Terminal 1: Start fake job update\nfor i in {1..10}; do\n    echo '{\"job_name\":\"test_job_a\",\"status\":\"running\",\"progress\":'$((i*10))'}' &gt; data/status/test_job_a.json\n    ~/research/mosquito-alert-model-monitor/scripts/failsafe_git_update_safe.sh \\\n        ~/research/mosquito-alert-model-monitor test_job_a running\n    sleep 5\ndone\n\n# Terminal 2: Start another fake job update  \nfor i in {1..10}; do\n    echo '{\"job_name\":\"test_job_b\",\"status\":\"completed\",\"progress\":100}' &gt; data/status/test_job_b.json\n    ~/research/mosquito-alert-model-monitor/scripts/failsafe_git_update_safe.sh \\\n        ~/research/mosquito-alert-model-monitor test_job_b completed\n    sleep 3\ndone\n\n# Terminal 3: Run sync script\nsbatch scripts/slurm_dashboard_sync_safe.sh\n\n\n\n\n✅ Both test_job_a and test_job_b updates preserved\n✅ No “stash” operations in git log\n✅ Lock messages in logs showing coordination\n✅ All updates appear in dashboard"
+  },
+  {
+    "objectID": "RACE_CONDITION_PREVENTION.html#monitoring-commands",
+    "href": "RACE_CONDITION_PREVENTION.html#monitoring-commands",
+    "title": "Race Condition Prevention Guide",
+    "section": "",
+    "text": "# See if operations are waiting for locks\nls -la ~/research/mosquito-alert-model-monitor/.git/*.lock\n\n# Check process holding lock\nif [ -f ~/research/mosquito-alert-model-monitor/.git/dashboard_sync.lock ]; then\n    cat ~/research/mosquito-alert-model-monitor/.git/dashboard_sync.lock\nfi\n\n\n\n# Check for stash operations (should be rare/none)\ncd ~/research/mosquito-alert-model-monitor\ngit log --oneline -10 | grep -i stash\n\n# Check commit frequency (should be steady)\ngit log --oneline --since=\"1 hour ago\" | wc -l\n\n\n\n# Check sync job success rate\ntail -100 ~/research/mosquito-alert-model-monitor/logs/dashboard_sync.log | \\\n    grep -E \"(completed|failed)\" | tail -10"
+  },
+  {
+    "objectID": "RACE_CONDITION_PREVENTION.html#what-to-watch-for",
+    "href": "RACE_CONDITION_PREVENTION.html#what-to-watch-for",
+    "title": "Race Condition Prevention Guide",
+    "section": "",
+    "text": "Multiple “stash” entries in git log\nStatus files missing expected updates\nLog messages about “complex conflicts”\nJobs reporting success but not appearing in dashboard\n\n\n\n\n\nRegular commit messages with job names\n“Acquired/Released lock” messages in logs\nConsistent dashboard updates within 2-3 minutes\nNo “manual intervention required” messages"
+  },
+  {
+    "objectID": "RACE_CONDITION_PREVENTION.html#performance-impact",
+    "href": "RACE_CONDITION_PREVENTION.html#performance-impact",
+    "title": "Race Condition Prevention Guide",
+    "section": "",
+    "text": "Minimal: File locking adds ~100ms per operation\nTimeout: Operations wait max 30s for locks\nFallback: Local updates continue even if locks fail\n\n\n\n\n\nSame SLURM allocation: 512MB RAM, 1 CPU, 5 min max\nSlightly longer runtime: +10-20s for safety checks\nBetter reliability: Fewer failed syncs requiring manual fix\n\nThe safe approach trades a small performance cost for significantly better data integrity and reliability."
+  },
+  {
+    "objectID": "alerts.html",
+    "href": "alerts.html",
+    "title": "Alerts & Monitoring",
+    "section": "",
+    "text": "This page provides automated alerts and monitoring for job failures, performance issues, and system status.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPage last updated: 2025-08-23 19:16:29.475166\nNote: This monitoring system provides basic alerting through the dashboard. For production use, consider integrating with external alerting systems (email, Slack, etc.) for immediate notifications."
+  },
+  {
+    "objectID": "alerts.html#alert-configuration",
+    "href": "alerts.html#alert-configuration",
+    "title": "Alerts & Monitoring",
+    "section": "",
+    "text": "Page last updated: 2025-08-23 19:16:29.475166\nNote: This monitoring system provides basic alerting through the dashboard. For production use, consider integrating with external alerting systems (email, Slack, etc.) for immediate notifications."
+  },
+  {
+    "objectID": "logs.html",
+    "href": "logs.html",
+    "title": "Job Logs",
+    "section": "",
+    "text": "This page provides access to log files and output from monitored jobs. Click on any log file name to view its contents.\n\n\n\n\n\n\n\n\n\n\n&lt;pre id=\"log-content\" style=\"white-space: pre-wrap; max-height: 600px; overflow-y: auto; font-family: monospace; font-size: 12px;\"&gt;&lt;/pre&gt;\n\nClose Log\n\n\n\n\n\n\nFor complete log access from each monitored project:\nmosquito_model_data_prep - Description: Mosquito Alert data preparation pipeline - Local logs: ~/research/mosquito_model_data_prep/logs/ - GitHub logs: View on GitHub\nweather-data-collector-spain - Description: Weather data collection for Spain - Local logs: ~/research/weather-data-collector-spain/logs/ - GitHub logs: View on GitHub\n\n\n\n\n\n\n### Log File Statistics\n\n- **Total log files:** 21\n- **Total size:** 0.1 MB\n- **Most recent:** z5_gmod_post_run_predictions_latest.log\n\n### Error Detection\n\n\n\n\n\n\n\n\n\n\nSince this is a static dashboard, full interactive log viewing requires additional setup. Here are alternative ways to access logs:\n\n\n\nNavigate to the project directories locally\nLog files are typically in logs/ subdirectories\nUse standard text editors or terminal commands (tail, less, etc.)\n\n\n\n\n\nMany projects sync their log directories to GitHub\nUse the GitHub web interface to browse log files\nSearch for specific error patterns using GitHub’s search\n\n\n\n\n\nRecent log excerpts are copied to data/details/\nThese show the last 200 lines of each log file\nUpdated automatically when jobs run\n\n\n\n\nConsider setting up a simple log server that can serve log files over HTTP for easy mobile access."
+  },
+  {
+    "objectID": "logs.html#log-file-viewer",
+    "href": "logs.html#log-file-viewer",
+    "title": "Job Logs",
+    "section": "",
+    "text": "&lt;pre id=\"log-content\" style=\"white-space: pre-wrap; max-height: 600px; overflow-y: auto; font-family: monospace; font-size: 12px;\"&gt;&lt;/pre&gt;\n\nClose Log"
+  },
+  {
+    "objectID": "logs.html#project-log-directories",
+    "href": "logs.html#project-log-directories",
+    "title": "Job Logs",
+    "section": "",
+    "text": "For complete log access from each monitored project:\nmosquito_model_data_prep - Description: Mosquito Alert data preparation pipeline - Local logs: ~/research/mosquito_model_data_prep/logs/ - GitHub logs: View on GitHub\nweather-data-collector-spain - Description: Weather data collection for Spain - Local logs: ~/research/weather-data-collector-spain/logs/ - GitHub logs: View on GitHub"
+  },
+  {
+    "objectID": "logs.html#log-analysis-summary",
+    "href": "logs.html#log-analysis-summary",
+    "title": "Job Logs",
+    "section": "",
+    "text": "### Log File Statistics\n\n- **Total log files:** 21\n- **Total size:** 0.1 MB\n- **Most recent:** z5_gmod_post_run_predictions_latest.log\n\n### Error Detection"
+  },
+  {
+    "objectID": "logs.html#direct-log-access",
+    "href": "logs.html#direct-log-access",
+    "title": "Job Logs",
+    "section": "",
+    "text": "Since this is a static dashboard, full interactive log viewing requires additional setup. Here are alternative ways to access logs:\n\n\n\nNavigate to the project directories locally\nLog files are typically in logs/ subdirectories\nUse standard text editors or terminal commands (tail, less, etc.)\n\n\n\n\n\nMany projects sync their log directories to GitHub\nUse the GitHub web interface to browse log files\nSearch for specific error patterns using GitHub’s search\n\n\n\n\n\nRecent log excerpts are copied to data/details/\nThese show the last 200 lines of each log file\nUpdated automatically when jobs run\n\n\n\n\nConsider setting up a simple log server that can serve log files over HTTP for easy mobile access."
+  },
+  {
+    "objectID": "ARCHITECTURE.html",
+    "href": "ARCHITECTURE.html",
+    "title": "System Architecture and Data Flow",
+    "section": "",
+    "text": "This document provides a comprehensive overview of how the Mosquito Alert Model Monitor integrates with tracked projects and manages data flow.\n\n\ngraph TB\n    subgraph \"Tracked Projects (e.g., mosquito_model_data_prep, weather-data-collector)\"\n        TP1[Project A Job Script]\n        TP2[Project B Job Script]\n        TP3[Project C Job Script]\n    end\n    \n    subgraph \"Monitor Repository (mosquito-alert-model-monitor)\"\n        subgraph \"Scripts\"\n            UJS[update_job_status.sh]\n            LGS[locked_git_sync.sh]\n            SDS[slurm_dashboard_sync.sh]\n        end\n        \n        subgraph \"Data Storage\"\n            SF[data/status/*.json]\n            HF[data/history/*.json]\n            LF[data/details/*.log]\n        end\n        \n        subgraph \"Dashboard\"\n            IDX[index.qmd]\n            HIST[history.qmd]\n            JOBS[jobs.qmd]\n            ALERTS[alerts.qmd]\n        end\n    end\n    \n    subgraph \"GitHub\"\n        GR[Git Repository]\n        GA[GitHub Actions]\n        GP[GitHub Pages]\n    end\n    \n    subgraph \"SLURM Cluster\"\n        SC[Cron Jobs]\n    end\n    \n    %% Data flow from tracked projects\n    TP1 --&gt;|calls| UJS\n    TP2 --&gt;|calls| UJS\n    TP3 --&gt;|calls| UJS\n    \n    %% Internal monitor flows\n    UJS --&gt;|writes immediately| SF\n    UJS --&gt;|queues for sync| LGS\n    LGS --&gt;|git add/commit/push| GR\n    \n    %% Cron sync flow\n    SC --&gt;|every 15-30 min| SDS\n    SDS --&gt;|uses| LGS\n    \n    %% GitHub deployment\n    GR --&gt;|triggers| GA\n    GA --&gt;|renders| IDX\n    GA --&gt;|renders| HIST\n    GA --&gt;|renders| JOBS\n    GA --&gt;|renders| ALERTS\n    GA --&gt;|deploys| GP\n    \n    %% Dashboard reads data\n    IDX --&gt;|reads| SF\n    HIST --&gt;|reads| HF\n    JOBS --&gt;|reads| SF\n    ALERTS --&gt;|reads| SF\n    \n    %% Styling\n    classDef tracked fill:#e1f5fe\n    classDef monitor fill:#f3e5f5\n    classDef github fill:#fff3e0\n    classDef cluster fill:#e8f5e8\n    \n    class TP1,TP2,TP3 tracked\n    class UJS,LGS,SDS,SF,HF,LF,IDX,HIST,JOBS,ALERTS monitor\n    class GR,GA,GP github\n    class SC cluster\n\n\n\n\n\nsequenceDiagram\n    participant PA as Project A\n    participant PB as Project B\n    participant UJS as update_job_status.sh\n    participant SF as Status Files\n    participant LGS as locked_git_sync.sh\n    participant GIT as Git Repository\n    \n    Note over PA,PB: Multiple projects can run simultaneously\n    \n    PA-&gt;&gt;+UJS: Call with job status\n    UJS-&gt;&gt;SF: Write A.json immediately\n    UJS-&gt;&gt;+LGS: Request git sync (A)\n    \n    Note over LGS: Acquire git lock\n    \n    PB-&gt;&gt;+UJS: Call with job status\n    UJS-&gt;&gt;SF: Write B.json immediately\n    UJS-&gt;&gt;LGS: Request git sync (B) - WAITS for lock\n    \n    LGS-&gt;&gt;GIT: git add/commit/push (A's changes)\n    LGS--&gt;&gt;-UJS: Sync complete (A)\n    UJS--&gt;&gt;-PA: Status update complete\n    \n    Note over LGS: Release git lock, acquire for B\n    \n    LGS-&gt;&gt;+GIT: git add/commit/push (A+B changes)\n    LGS--&gt;&gt;-UJS: Sync complete (B)\n    UJS--&gt;&gt;-PB: Status update complete\n\n\n\nsequenceDiagram\n    participant CRON as SLURM Cron\n    participant SDS as slurm_dashboard_sync.sh\n    participant LGS as locked_git_sync.sh\n    participant GIT as Git Repository\n    participant GA as GitHub Actions\n    participant GP as GitHub Pages\n    \n    CRON-&gt;&gt;+SDS: Every 15-30 minutes\n    SDS-&gt;&gt;+LGS: Request bulk sync\n    \n    Note over LGS: Acquire git lock (may wait)\n    \n    LGS-&gt;&gt;GIT: git add data/ (all accumulated changes)\n    LGS-&gt;&gt;GIT: git commit \"Dashboard sync\"\n    LGS-&gt;&gt;GIT: git push origin main\n    LGS--&gt;&gt;-SDS: Sync complete\n    SDS--&gt;&gt;-CRON: Cron job complete\n    \n    GIT-&gt;&gt;+GA: Trigger on push to main\n    GA-&gt;&gt;GA: quarto render (build dashboard)\n    GA-&gt;&gt;GP: Deploy to GitHub Pages\n    GA--&gt;&gt;-GIT: Deployment complete\n\n\n\n\n\n\ngraph LR\n    subgraph \"No Lock Required\"\n        A1[Project A writes A.json]\n        B1[Project B writes B.json]\n        C1[Project C writes C.json]\n    end\n    \n    subgraph \"Git Lock Required\"\n        GL[.git_sync_lock/]\n        GO[Git Operations]\n    end\n    \n    A1 -.-&gt;|immediate| A1\n    B1 -.-&gt;|immediate| B1  \n    C1 -.-&gt;|immediate| C1\n    \n    A1 --&gt;|request sync| GL\n    B1 --&gt;|request sync| GL\n    C1 --&gt;|request sync| GL\n    \n    GL --&gt;|serialize| GO\n    \n    classDef nolock fill:#e8f5e8\n    classDef lock fill:#ffebee\n    \n    class A1,B1,C1 nolock\n    class GL,GO lock\n\n\n\nmosquito-alert-model-monitor/\n├── .git_sync_lock/          # Lock directory (created atomically)\n│   ├── pid                  # Process ID holding lock\n│   ├── timestamp            # When lock was acquired\n│   ├── operation            # Description of operation\n│   └── host                 # Hostname of locking process\n\n\n\n\n\n\n\n✅ Call monitoring via update_job_status.sh\n✅ Continue execution regardless of monitoring success/failure\n✅ Provide status updates (running, completed, failed)\n✅ Include progress info (duration, percentage complete)\n\n\n\n\n\n✅ Write status files immediately (no waiting)\n✅ Queue git operations via locked_git_sync.sh\n✅ Never fail (always exit 0)\n✅ Handle missing directories gracefully\n\n\n\n\n\n✅ Serialize git operations using file locks\n✅ Handle lock timeouts (max 30 seconds)\n✅ Clean up stale locks (&gt; 5 minutes old)\n✅ Retry failed pushes with rebase\n✅ Preserve data locally if push fails\n\n\n\n\n\n✅ Periodic bulk sync (every 15-30 minutes)\n✅ Use same locking mechanism as individual updates\n✅ Minimal resource usage (512MB RAM, 1 CPU, 5 min max)\n✅ Handle conflicts gracefully\n\n\n\n\n\n✅ Read status files for current state\n✅ Read history files for trends\n✅ Auto-refresh via GitHub Actions\n✅ Handle missing data gracefully\n\n\n\n\n\n\n\n\nMultiple projects updating simultaneously\nCron sync during project updates\nGit conflicts from concurrent pushes\nStale locks from crashed processes\n\n\n\n\n\nImmediate file writes - No waiting for git operations\nGit-only locking - Files can be written concurrently\nLock timeouts - Prevent deadlocks\nStale lock cleanup - Handle crashed processes\nGraceful failures - Preserve data even if sync fails\n\n\n\n\n\n\n\n\nStatus file writes: &lt; 1 second (no lock contention)\nMultiple projects: Can write simultaneously\nFile size: ~1-2KB per status file\n\n\n\n\n\nLock acquisition: Usually instant, max 30 seconds\nCommit/push time: 5-30 seconds depending on network\nConflict resolution: Automatic via rebase\n\n\n\n\n\nIndividual updates: Minimal overhead\nCron sync: 512MB RAM, 1 CPU core, ~1-2 minutes\nDashboard build: Handled by GitHub Actions (free)\n\n\n\n\n\n\n\nLOCK_TIMEOUT=30          # Max wait for git lock (seconds)\nLOCK_CHECK_INTERVAL=1    # Check frequency (seconds)\nSTALE_LOCK_AGE=300      # Clean locks older than 5 minutes\n\n\n\n*/15 * * * *  # Every 15 minutes (active development)\n*/30 * * * *  # Every 30 minutes (production)\n\n\n\n#SBATCH --mem=512M       # Memory limit\n#SBATCH --cpus-per-task=1 # CPU limit\n#SBATCH --time=00:05:00  # Time limit\n\n\n\n\n\n\n# Check if git lock is active\nls -la /path/to/monitor/.git_sync_lock/\n\n# View lock details\ncat /path/to/monitor/.git_sync_lock/pid\ncat /path/to/monitor/.git_sync_lock/operation\n\n\n\n# Recent git operations\ngit log --oneline -10\n\n# Check for conflicts\ngit status\n\n\n\n# Check latest status files\nls -lt data/status/*.json | head -5\n\n# Validate JSON format\njq . data/status/project_name.json\nThis architecture ensures that tracked projects can always update their status immediately while git operations are properly serialized to prevent conflicts and data loss."
+  },
+  {
+    "objectID": "ARCHITECTURE.html#architecture-overview",
+    "href": "ARCHITECTURE.html#architecture-overview",
+    "title": "System Architecture and Data Flow",
+    "section": "",
+    "text": "graph TB\n    subgraph \"Tracked Projects (e.g., mosquito_model_data_prep, weather-data-collector)\"\n        TP1[Project A Job Script]\n        TP2[Project B Job Script]\n        TP3[Project C Job Script]\n    end\n    \n    subgraph \"Monitor Repository (mosquito-alert-model-monitor)\"\n        subgraph \"Scripts\"\n            UJS[update_job_status.sh]\n            LGS[locked_git_sync.sh]\n            SDS[slurm_dashboard_sync.sh]\n        end\n        \n        subgraph \"Data Storage\"\n            SF[data/status/*.json]\n            HF[data/history/*.json]\n            LF[data/details/*.log]\n        end\n        \n        subgraph \"Dashboard\"\n            IDX[index.qmd]\n            HIST[history.qmd]\n            JOBS[jobs.qmd]\n            ALERTS[alerts.qmd]\n        end\n    end\n    \n    subgraph \"GitHub\"\n        GR[Git Repository]\n        GA[GitHub Actions]\n        GP[GitHub Pages]\n    end\n    \n    subgraph \"SLURM Cluster\"\n        SC[Cron Jobs]\n    end\n    \n    %% Data flow from tracked projects\n    TP1 --&gt;|calls| UJS\n    TP2 --&gt;|calls| UJS\n    TP3 --&gt;|calls| UJS\n    \n    %% Internal monitor flows\n    UJS --&gt;|writes immediately| SF\n    UJS --&gt;|queues for sync| LGS\n    LGS --&gt;|git add/commit/push| GR\n    \n    %% Cron sync flow\n    SC --&gt;|every 15-30 min| SDS\n    SDS --&gt;|uses| LGS\n    \n    %% GitHub deployment\n    GR --&gt;|triggers| GA\n    GA --&gt;|renders| IDX\n    GA --&gt;|renders| HIST\n    GA --&gt;|renders| JOBS\n    GA --&gt;|renders| ALERTS\n    GA --&gt;|deploys| GP\n    \n    %% Dashboard reads data\n    IDX --&gt;|reads| SF\n    HIST --&gt;|reads| HF\n    JOBS --&gt;|reads| SF\n    ALERTS --&gt;|reads| SF\n    \n    %% Styling\n    classDef tracked fill:#e1f5fe\n    classDef monitor fill:#f3e5f5\n    classDef github fill:#fff3e0\n    classDef cluster fill:#e8f5e8\n    \n    class TP1,TP2,TP3 tracked\n    class UJS,LGS,SDS,SF,HF,LF,IDX,HIST,JOBS,ALERTS monitor\n    class GR,GA,GP github\n    class SC cluster"
+  },
+  {
+    "objectID": "ARCHITECTURE.html#detailed-data-flow",
+    "href": "ARCHITECTURE.html#detailed-data-flow",
+    "title": "System Architecture and Data Flow",
+    "section": "",
+    "text": "sequenceDiagram\n    participant PA as Project A\n    participant PB as Project B\n    participant UJS as update_job_status.sh\n    participant SF as Status Files\n    participant LGS as locked_git_sync.sh\n    participant GIT as Git Repository\n    \n    Note over PA,PB: Multiple projects can run simultaneously\n    \n    PA-&gt;&gt;+UJS: Call with job status\n    UJS-&gt;&gt;SF: Write A.json immediately\n    UJS-&gt;&gt;+LGS: Request git sync (A)\n    \n    Note over LGS: Acquire git lock\n    \n    PB-&gt;&gt;+UJS: Call with job status\n    UJS-&gt;&gt;SF: Write B.json immediately\n    UJS-&gt;&gt;LGS: Request git sync (B) - WAITS for lock\n    \n    LGS-&gt;&gt;GIT: git add/commit/push (A's changes)\n    LGS--&gt;&gt;-UJS: Sync complete (A)\n    UJS--&gt;&gt;-PA: Status update complete\n    \n    Note over LGS: Release git lock, acquire for B\n    \n    LGS-&gt;&gt;+GIT: git add/commit/push (A+B changes)\n    LGS--&gt;&gt;-UJS: Sync complete (B)\n    UJS--&gt;&gt;-PB: Status update complete\n\n\n\nsequenceDiagram\n    participant CRON as SLURM Cron\n    participant SDS as slurm_dashboard_sync.sh\n    participant LGS as locked_git_sync.sh\n    participant GIT as Git Repository\n    participant GA as GitHub Actions\n    participant GP as GitHub Pages\n    \n    CRON-&gt;&gt;+SDS: Every 15-30 minutes\n    SDS-&gt;&gt;+LGS: Request bulk sync\n    \n    Note over LGS: Acquire git lock (may wait)\n    \n    LGS-&gt;&gt;GIT: git add data/ (all accumulated changes)\n    LGS-&gt;&gt;GIT: git commit \"Dashboard sync\"\n    LGS-&gt;&gt;GIT: git push origin main\n    LGS--&gt;&gt;-SDS: Sync complete\n    SDS--&gt;&gt;-CRON: Cron job complete\n    \n    GIT-&gt;&gt;+GA: Trigger on push to main\n    GA-&gt;&gt;GA: quarto render (build dashboard)\n    GA-&gt;&gt;GP: Deploy to GitHub Pages\n    GA--&gt;&gt;-GIT: Deployment complete"
+  },
+  {
+    "objectID": "ARCHITECTURE.html#lock-mechanism-details",
+    "href": "ARCHITECTURE.html#lock-mechanism-details",
+    "title": "System Architecture and Data Flow",
+    "section": "",
+    "text": "graph LR\n    subgraph \"No Lock Required\"\n        A1[Project A writes A.json]\n        B1[Project B writes B.json]\n        C1[Project C writes C.json]\n    end\n    \n    subgraph \"Git Lock Required\"\n        GL[.git_sync_lock/]\n        GO[Git Operations]\n    end\n    \n    A1 -.-&gt;|immediate| A1\n    B1 -.-&gt;|immediate| B1  \n    C1 -.-&gt;|immediate| C1\n    \n    A1 --&gt;|request sync| GL\n    B1 --&gt;|request sync| GL\n    C1 --&gt;|request sync| GL\n    \n    GL --&gt;|serialize| GO\n    \n    classDef nolock fill:#e8f5e8\n    classDef lock fill:#ffebee\n    \n    class A1,B1,C1 nolock\n    class GL,GO lock\n\n\n\nmosquito-alert-model-monitor/\n├── .git_sync_lock/          # Lock directory (created atomically)\n│   ├── pid                  # Process ID holding lock\n│   ├── timestamp            # When lock was acquired\n│   ├── operation            # Description of operation\n│   └── host                 # Hostname of locking process"
+  },
+  {
+    "objectID": "ARCHITECTURE.html#component-responsibilities",
+    "href": "ARCHITECTURE.html#component-responsibilities",
+    "title": "System Architecture and Data Flow",
+    "section": "",
+    "text": "✅ Call monitoring via update_job_status.sh\n✅ Continue execution regardless of monitoring success/failure\n✅ Provide status updates (running, completed, failed)\n✅ Include progress info (duration, percentage complete)\n\n\n\n\n\n✅ Write status files immediately (no waiting)\n✅ Queue git operations via locked_git_sync.sh\n✅ Never fail (always exit 0)\n✅ Handle missing directories gracefully\n\n\n\n\n\n✅ Serialize git operations using file locks\n✅ Handle lock timeouts (max 30 seconds)\n✅ Clean up stale locks (&gt; 5 minutes old)\n✅ Retry failed pushes with rebase\n✅ Preserve data locally if push fails\n\n\n\n\n\n✅ Periodic bulk sync (every 15-30 minutes)\n✅ Use same locking mechanism as individual updates\n✅ Minimal resource usage (512MB RAM, 1 CPU, 5 min max)\n✅ Handle conflicts gracefully\n\n\n\n\n\n✅ Read status files for current state\n✅ Read history files for trends\n✅ Auto-refresh via GitHub Actions\n✅ Handle missing data gracefully"
+  },
+  {
+    "objectID": "ARCHITECTURE.html#race-condition-prevention",
+    "href": "ARCHITECTURE.html#race-condition-prevention",
+    "title": "System Architecture and Data Flow",
+    "section": "",
+    "text": "Multiple projects updating simultaneously\nCron sync during project updates\nGit conflicts from concurrent pushes\nStale locks from crashed processes\n\n\n\n\n\nImmediate file writes - No waiting for git operations\nGit-only locking - Files can be written concurrently\nLock timeouts - Prevent deadlocks\nStale lock cleanup - Handle crashed processes\nGraceful failures - Preserve data even if sync fails"
+  },
+  {
+    "objectID": "ARCHITECTURE.html#performance-characteristics",
+    "href": "ARCHITECTURE.html#performance-characteristics",
+    "title": "System Architecture and Data Flow",
+    "section": "",
+    "text": "Status file writes: &lt; 1 second (no lock contention)\nMultiple projects: Can write simultaneously\nFile size: ~1-2KB per status file\n\n\n\n\n\nLock acquisition: Usually instant, max 30 seconds\nCommit/push time: 5-30 seconds depending on network\nConflict resolution: Automatic via rebase\n\n\n\n\n\nIndividual updates: Minimal overhead\nCron sync: 512MB RAM, 1 CPU core, ~1-2 minutes\nDashboard build: Handled by GitHub Actions (free)"
+  },
+  {
+    "objectID": "ARCHITECTURE.html#configuration-points",
+    "href": "ARCHITECTURE.html#configuration-points",
+    "title": "System Architecture and Data Flow",
+    "section": "",
+    "text": "LOCK_TIMEOUT=30          # Max wait for git lock (seconds)\nLOCK_CHECK_INTERVAL=1    # Check frequency (seconds)\nSTALE_LOCK_AGE=300      # Clean locks older than 5 minutes\n\n\n\n*/15 * * * *  # Every 15 minutes (active development)\n*/30 * * * *  # Every 30 minutes (production)\n\n\n\n#SBATCH --mem=512M       # Memory limit\n#SBATCH --cpus-per-task=1 # CPU limit\n#SBATCH --time=00:05:00  # Time limit"
+  },
+  {
+    "objectID": "ARCHITECTURE.html#monitoring-and-debugging",
+    "href": "ARCHITECTURE.html#monitoring-and-debugging",
+    "title": "System Architecture and Data Flow",
+    "section": "",
+    "text": "# Check if git lock is active\nls -la /path/to/monitor/.git_sync_lock/\n\n# View lock details\ncat /path/to/monitor/.git_sync_lock/pid\ncat /path/to/monitor/.git_sync_lock/operation\n\n\n\n# Recent git operations\ngit log --oneline -10\n\n# Check for conflicts\ngit status\n\n\n\n# Check latest status files\nls -lt data/status/*.json | head -5\n\n# Validate JSON format\njq . data/status/project_name.json\nThis architecture ensures that tracked projects can always update their status immediately while git operations are properly serialized to prevent conflicts and data loss."
+  },
+  {
+    "objectID": "SLURM_SETUP.html",
+    "href": "SLURM_SETUP.html",
+    "title": "SLURM Cron Job Setup for Dashboard Sync",
+    "section": "",
+    "text": "Per Sync Job: - Memory: 512MB (very light) - CPU: 1 core - Time: Maximum 5 minutes (typically 30-60 seconds) - Network: Minimal git operations only\nTotal Daily Load: - If run every 15 minutes: 96 jobs/day × 1-2 minutes = ~2-3 hours total CPU time - If run every 30 minutes: 48 jobs/day × 1-2 minutes = ~1-1.5 hours total CPU time\n\n\n\nAdd to your cluster crontab (crontab -e):\n# Dashboard sync every 15 minutes (recommended for active development)\n*/15 * * * * cd ~/research/mosquito-alert-model-monitor && sbatch scripts/slurm_dashboard_sync.sh\n\n# OR: Dashboard sync every 30 minutes (recommended for production)\n*/30 * * * * cd ~/research/mosquito-alert-model-monitor && sbatch scripts/slurm_dashboard_sync.sh\n\n\n\nMINIMAL LOAD - This is extremely lightweight: - Uses same resources as a simple git operation - Runs for only 1-2 minutes typically - No computational processing - Only file I/O and network operations\nComparison: - Your data prep jobs: ~hours of runtime, GBs of memory - Dashboard sync: ~1 minute runtime, 512MB memory\nRecommendation: Start with 15-minute intervals. If you want to reduce load further, change to 30-minute intervals.\n\n\n\nCheck sync job status:\n# View recent sync jobs\nsqueue -u $USER | grep dashboard_sync\n\n# Check sync logs\ntail -50 ~/research/mosquito-alert-model-monitor/logs/dashboard_sync.log\n\n\n\nIf needed, run sync manually:\ncd ~/research/mosquito-alert-model-monitor\nsbatch scripts/slurm_dashboard_sync.sh"
+  },
+  {
+    "objectID": "SLURM_SETUP.html#resource-usage-analysis",
+    "href": "SLURM_SETUP.html#resource-usage-analysis",
+    "title": "SLURM Cron Job Setup for Dashboard Sync",
+    "section": "",
+    "text": "Per Sync Job: - Memory: 512MB (very light) - CPU: 1 core - Time: Maximum 5 minutes (typically 30-60 seconds) - Network: Minimal git operations only\nTotal Daily Load: - If run every 15 minutes: 96 jobs/day × 1-2 minutes = ~2-3 hours total CPU time - If run every 30 minutes: 48 jobs/day × 1-2 minutes = ~1-1.5 hours total CPU time"
+  },
+  {
+    "objectID": "SLURM_SETUP.html#recommended-crontab-entry",
+    "href": "SLURM_SETUP.html#recommended-crontab-entry",
+    "title": "SLURM Cron Job Setup for Dashboard Sync",
+    "section": "",
+    "text": "Add to your cluster crontab (crontab -e):\n# Dashboard sync every 15 minutes (recommended for active development)\n*/15 * * * * cd ~/research/mosquito-alert-model-monitor && sbatch scripts/slurm_dashboard_sync.sh\n\n# OR: Dashboard sync every 30 minutes (recommended for production)\n*/30 * * * * cd ~/research/mosquito-alert-model-monitor && sbatch scripts/slurm_dashboard_sync.sh"
+  },
+  {
+    "objectID": "SLURM_SETUP.html#load-impact-assessment",
+    "href": "SLURM_SETUP.html#load-impact-assessment",
+    "title": "SLURM Cron Job Setup for Dashboard Sync",
+    "section": "",
+    "text": "MINIMAL LOAD - This is extremely lightweight: - Uses same resources as a simple git operation - Runs for only 1-2 minutes typically - No computational processing - Only file I/O and network operations\nComparison: - Your data prep jobs: ~hours of runtime, GBs of memory - Dashboard sync: ~1 minute runtime, 512MB memory\nRecommendation: Start with 15-minute intervals. If you want to reduce load further, change to 30-minute intervals."
+  },
+  {
+    "objectID": "SLURM_SETUP.html#monitoring",
+    "href": "SLURM_SETUP.html#monitoring",
+    "title": "SLURM Cron Job Setup for Dashboard Sync",
+    "section": "",
+    "text": "Check sync job status:\n# View recent sync jobs\nsqueue -u $USER | grep dashboard_sync\n\n# Check sync logs\ntail -50 ~/research/mosquito-alert-model-monitor/logs/dashboard_sync.log"
+  },
+  {
+    "objectID": "SLURM_SETUP.html#manual-sync",
+    "href": "SLURM_SETUP.html#manual-sync",
+    "title": "SLURM Cron Job Setup for Dashboard Sync",
+    "section": "",
+    "text": "If needed, run sync manually:\ncd ~/research/mosquito-alert-model-monitor\nsbatch scripts/slurm_dashboard_sync.sh"
+  },
+  {
+    "objectID": "MACHINE_INTEGRATION_SPEC.html#integration_metadata",
+    "href": "MACHINE_INTEGRATION_SPEC.html#integration_metadata",
+    "title": "MACHINE_INTEGRATION_SPEC.md",
+    "section": "INTEGRATION_METADATA",
+    "text": "INTEGRATION_METADATA\ndashboard_repo: \"mosquito-alert-model-monitor\"\ndashboard_path: \"$HOME/research/mosquito-alert-model-monitor\"\nintegration_version: \"3.0_bulletproof\"\ncompatible_with: [\"bash\", \"python\", \"R\", \"SLURM\"]\ngit_conflict_resilient: true"
+  },
+  {
+    "objectID": "MACHINE_INTEGRATION_SPEC.html#architecture_principles",
+    "href": "MACHINE_INTEGRATION_SPEC.html#architecture_principles",
+    "title": "MACHINE_INTEGRATION_SPEC.md",
+    "section": "ARCHITECTURE_PRINCIPLES",
+    "text": "ARCHITECTURE_PRINCIPLES\n\nSEPARATION_OF_CONCERNS\n\nMain projects: Focus on their core mission, fail fast on infrastructure issues\nMonitor project: Handle all dashboard complexity, never fail calling jobs\n\nStatus integration: Simple drop-in calls, always exit 0\n\n\n\nROBUSTNESS_HIERARCHY\n\nCore data collection NEVER fails due to dashboard issues\nStatus updates are best-effort only\nGit conflicts handled gracefully without blocking jobs\nModule loading is required for main scripts, not defensive"
+  },
+  {
+    "objectID": "MACHINE_INTEGRATION_SPEC.html#correct_integration_pattern",
+    "href": "MACHINE_INTEGRATION_SPEC.html#correct_integration_pattern",
+    "title": "MACHINE_INTEGRATION_SPEC.md",
+    "section": "CORRECT_INTEGRATION_PATTERN",
+    "text": "CORRECT_INTEGRATION_PATTERN\n\nFOR_MAIN_PROJECT_SCRIPTS\n# DO THIS: Simple, focused scripts that do their job\n#!/bin/bash\n#SBATCH --job-name=my-job\n\n# Load required modules (MUST succeed or job should fail)\nmodule load R/4.4.2-gfbf-2024a\nmodule load cURL/8.7.1-GCCcore-13.3.0\n\n# Set up job\nJOB_NAME=\"my-job-name\"\nSTATUS_SCRIPT=\"./scripts/update_weather_status.sh\"  # Drop-in wrapper\nSTART_TIME=$(date +%s)\n\n# Status updates (never fail)\n$STATUS_SCRIPT \"$JOB_NAME\" \"running\" 0 5\n\n# Do the actual work\necho \"Starting main work...\"\npython my_main_script.py\n\n# Final status\n$STATUS_SCRIPT \"$JOB_NAME\" \"completed\" $(($(date +%s) - START_TIME)) 100\n\n\nFOR_PROJECT_STATUS_WRAPPER\n#!/bin/bash\n# Drop-in status update script: scripts/update_weather_status.sh\n# This script NEVER fails the calling job\n\nJOB_NAME=\"${1:-project-unknown}\"\nSTATUS=\"${2:-unknown}\"  \nDURATION=\"${3:-0}\"\nPROGRESS=\"${4:-0}\"\nLOG_MESSAGE=\"${5:-Job status update}\"\n\n# Use the robust monitor script if available\nMONITOR_SCRIPT=\"$HOME/research/mosquito-alert-model-monitor/scripts/update_job_status.sh\"\n\nif [ -f \"$MONITOR_SCRIPT\" ]; then\n    echo \"📊 Updating dashboard via monitor project...\"\n    \"$MONITOR_SCRIPT\" \"$JOB_NAME\" \"$STATUS\" \"$DURATION\" \"$PROGRESS\" \"$LOG_MESSAGE\"\nelse\n    echo \"⚠️  Monitor project not found - skipping dashboard update\"\nfi\n\n# ALWAYS exit successfully so calling jobs continue\nexit 0\n~/research/mosquito-alert-model-monitor/scripts/update_job_status.sh “PROJECT_JOB_NAME” “running” $ELAPSED_SECONDS $PROGRESS_PERCENT “Current step description”"
+  },
+  {
+    "objectID": "MACHINE_INTEGRATION_SPEC.html#integration_templates",
+    "href": "MACHINE_INTEGRATION_SPEC.html#integration_templates",
+    "title": "MACHINE_INTEGRATION_SPEC.md",
+    "section": "INTEGRATION_TEMPLATES",
+    "text": "INTEGRATION_TEMPLATES\n\nBASH_SCRIPT_TEMPLATE\n#!/bin/bash\n# Add at beginning of main script:\n\n# Dashboard integration setup\nDASHBOARD_SCRIPT=\"$HOME/research/mosquito-alert-model-monitor/scripts/update_job_status.sh\"\nJOB_NAME=\"PROJECT_JOB_NAME\"  # REPLACE WITH ACTUAL JOB NAME\nSTART_TIME=$(date +%s)\n\n# Job start notification\n$DASHBOARD_SCRIPT \"$JOB_NAME\" \"running\" 0 0 \"Starting PROJECT_DESCRIPTION\"\n\n# Add throughout script for progress:\n# $DASHBOARD_SCRIPT \"$JOB_NAME\" \"running\" $(($(date +%s) - $START_TIME)) PROGRESS_PERCENT \"STEP_DESCRIPTION\"\n\n# Example progress calls:\n$DASHBOARD_SCRIPT \"$JOB_NAME\" \"running\" $(($(date +%s) - $START_TIME)) 25 \"Data loading complete\"\n$DASHBOARD_SCRIPT \"$JOB_NAME\" \"running\" $(($(date +%s) - $START_TIME)) 50 \"Processing data\"\n$DASHBOARD_SCRIPT \"$JOB_NAME\" \"running\" $(($(date +%s) - $START_TIME)) 75 \"Generating outputs\"\n\n# At end of script:\n$DASHBOARD_SCRIPT \"$JOB_NAME\" \"completed\" $(($(date +%s) - $START_TIME)) 100 \"Job completed successfully\"\n\n# Optional log collection:\n$HOME/research/mosquito-alert-model-monitor/scripts/collect_logs.sh \"\" \"PROJECT_NAME\" \"./logs\"\n\n\nPYTHON_SCRIPT_TEMPLATE\nimport subprocess\nimport time\nimport sys\n\n# Dashboard integration\nDASHBOARD_SCRIPT = os.path.expanduser(\"~/research/mosquito-alert-model-monitor/scripts/update_job_status.sh\")\nJOB_NAME = \"PROJECT_JOB_NAME\"  # REPLACE WITH ACTUAL JOB NAME\nstart_time = time.time()\n\ndef update_status(status, progress, message):\n    \"\"\"Update job status in dashboard\"\"\"\n    elapsed = int(time.time() - start_time)\n    try:\n        subprocess.run([DASHBOARD_SCRIPT, JOB_NAME, status, str(elapsed), str(progress), message], \n                      check=False, capture_output=True)\n    except:\n        pass  # Never fail the main job due to dashboard issues\n\n# Job start\nupdate_status(\"running\", 0, \"Starting PROJECT_DESCRIPTION\")\n\n# Progress updates throughout code:\nupdate_status(\"running\", 25, \"Data loading complete\")\nupdate_status(\"running\", 50, \"Processing data\")\nupdate_status(\"running\", 75, \"Generating outputs\")\n\n# Job completion\nupdate_status(\"completed\", 100, \"Job completed successfully\")\n\n\nR_SCRIPT_TEMPLATE\n# Dashboard integration for R scripts\ndashboard_script &lt;- \"~/research/mosquito-alert-model-monitor/scripts/update_job_status.sh\"\njob_name &lt;- \"PROJECT_JOB_NAME\"  # REPLACE WITH ACTUAL JOB NAME\nstart_time &lt;- Sys.time()\n\nupdate_status &lt;- function(status, progress, message) {\n  elapsed &lt;- as.integer(difftime(Sys.time(), start_time, units = \"secs\"))\n  tryCatch({\n    system(paste(dashboard_script, job_name, status, elapsed, progress, shQuote(message)), \n           ignore.stdout = TRUE, ignore.stderr = TRUE)\n  }, error = function(e) {\n    # Never fail the main job due to dashboard issues\n  })\n}\n\n# Job start\nupdate_status(\"running\", 0, \"Starting PROJECT_DESCRIPTION\")\n\n# Progress updates throughout code:\nupdate_status(\"running\", 25, \"Data loading complete\")\nupdate_status(\"running\", 50, \"Processing data\") \nupdate_status(\"running\", 75, \"Generating outputs\")\n\n# Job completion\nupdate_status(\"completed\", 100, \"Job completed successfully\")"
+  },
+  {
+    "objectID": "MACHINE_INTEGRATION_SPEC.html#slurm_integration",
+    "href": "MACHINE_INTEGRATION_SPEC.html#slurm_integration",
+    "title": "MACHINE_INTEGRATION_SPEC.md",
+    "section": "SLURM_INTEGRATION",
+    "text": "SLURM_INTEGRATION\n# Add to SLURM script headers:\n#SBATCH --job-name=PROJECT_JOB_NAME\n\n# Add after SLURM setup, before main work:\nDASHBOARD_SCRIPT=\"$HOME/research/mosquito-alert-model-monitor/scripts/update_job_status.sh\"\nJOB_NAME=\"PROJECT_JOB_NAME\"\nSTART_TIME=$(date +%s)\n\n$DASHBOARD_SCRIPT \"$JOB_NAME\" \"running\" 0 0 \"SLURM job started (ID: $SLURM_JOB_ID)\"\n\n# Add before exit:\n$DASHBOARD_SCRIPT \"$JOB_NAME\" \"completed\" $(($(date +%s) - $START_TIME)) 100 \"SLURM job completed (ID: $SLURM_JOB_ID)\""
+  },
+  {
+    "objectID": "MACHINE_INTEGRATION_SPEC.html#error_handling_pattern",
+    "href": "MACHINE_INTEGRATION_SPEC.html#error_handling_pattern",
+    "title": "MACHINE_INTEGRATION_SPEC.md",
+    "section": "ERROR_HANDLING_PATTERN",
+    "text": "ERROR_HANDLING_PATTERN\n# Robust error handling that doesn't break jobs\nset +e  # Don't exit on dashboard errors\n\n# Wrap main job logic\nmain_job_function() {\n    # Your original job code here\n    return $?\n}\n\n# Call main job with error handling\nif main_job_function; then\n    $DASHBOARD_SCRIPT \"$JOB_NAME\" \"completed\" $(($(date +%s) - $START_TIME)) 100 \"Job completed successfully\"\nelse\n    $DASHBOARD_SCRIPT \"$JOB_NAME\" \"failed\" $(($(date +%s) - $START_TIME)) 50 \"Job failed with error\"\n    exit 1\nfi"
+  },
+  {
+    "objectID": "MACHINE_INTEGRATION_SPEC.html#testing_checklist",
+    "href": "MACHINE_INTEGRATION_SPEC.html#testing_checklist",
+    "title": "MACHINE_INTEGRATION_SPEC.md",
+    "section": "TESTING_CHECKLIST",
+    "text": "TESTING_CHECKLIST\nverify_integration:\n  - status_file_created: \"ls -la ~/research/mosquito-alert-model-monitor/data/status/PROJECT_JOB_NAME.json\"\n  - test_script_manually: \"./scripts/test_dashboard_integration.sh\"\n  - check_dashboard_locally: \"open ~/research/mosquito-alert-model-monitor/docs/index.html\"\n  - verify_no_job_failures: \"Run original job and ensure it completes even if dashboard fails\""
+  },
+  {
+    "objectID": "MACHINE_INTEGRATION_SPEC.html#common_project_types",
+    "href": "MACHINE_INTEGRATION_SPEC.html#common_project_types",
+    "title": "MACHINE_INTEGRATION_SPEC.md",
+    "section": "COMMON_PROJECT_TYPES",
+    "text": "COMMON_PROJECT_TYPES\n\nDAILY_DATA_PROCESSING\ntypical_pattern:\n  job_name: \"project_daily_process\"\n  schedule: \"Daily via cron\"\n  stages: [\"download\", \"process\", \"upload\", \"cleanup\"]\n  progress_points: [0, 25, 50, 75, 100]\n\n\nMODEL_TRAINING\ntypical_pattern:\n  job_name: \"model_training\"\n  schedule: \"Weekly/Monthly\"\n  stages: [\"data_prep\", \"training\", \"validation\", \"deployment\"]\n  progress_points: [0, 20, 60, 90, 100]\n\n\nDATA_COLLECTION\ntypical_pattern:\n  job_name: \"data_collection\"\n  schedule: \"Hourly/Daily\"\n  stages: [\"fetch\", \"validate\", \"store\", \"backup\"]\n  progress_points: [0, 30, 70, 100]"
+  },
+  {
+    "objectID": "MACHINE_INTEGRATION_SPEC.html#implementation_notes",
+    "href": "MACHINE_INTEGRATION_SPEC.html#implementation_notes",
+    "title": "MACHINE_INTEGRATION_SPEC.md",
+    "section": "IMPLEMENTATION_NOTES",
+    "text": "IMPLEMENTATION_NOTES\n\nAll scripts exit with code 0 to prevent job failures\nDashboard updates are “best effort” - job success is priority\nJSON status files use standardized format\nLog collection is optional and safe\nGit operations have timeouts and retries\nSLURM jobs get proper resource allocation\nNo dependencies on external libraries"
   },
   {
     "objectID": "ROBUSTNESS_GUIDE.html",
@@ -70,207 +462,11 @@
     "text": "The robust scripts always exit with code 0 to prevent job failures\nGit operations include retries and conflict resolution\nLog collection is optional and won’t break jobs if it fails\nDashboard updates are “best effort” - job completion is the priority\nManual sync is always available as a fallback\n\nThis approach ensures your critical data processing jobs will NEVER fail due to dashboard integration issues, while still providing comprehensive monitoring when possible."
   },
   {
-    "objectID": "MACHINE_INTEGRATION_SPEC.html#integration_metadata",
-    "href": "MACHINE_INTEGRATION_SPEC.html#integration_metadata",
-    "title": "MACHINE_INTEGRATION_SPEC.md",
-    "section": "INTEGRATION_METADATA",
-    "text": "INTEGRATION_METADATA\ndashboard_repo: \"mosquito-alert-model-monitor\"\ndashboard_path: \"$HOME/research/mosquito-alert-model-monitor\"\nintegration_version: \"2.0_robust\"\ncompatible_with: [\"bash\", \"python\", \"R\", \"SLURM\"]"
-  },
-  {
-    "objectID": "MACHINE_INTEGRATION_SPEC.html#required_files_in_dashboard",
-    "href": "MACHINE_INTEGRATION_SPEC.html#required_files_in_dashboard",
-    "title": "MACHINE_INTEGRATION_SPEC.md",
-    "section": "REQUIRED_FILES_IN_DASHBOARD",
-    "text": "REQUIRED_FILES_IN_DASHBOARD\nscripts_needed:\n  - \"scripts/update_job_status.sh\"           # Main status update (robust version)\n  - \"scripts/update_job_status_and_push.sh\"  # Alternative name (same file)\n  - \"scripts/collect_logs.sh\"                # Log collection\n  - \"scripts/slurm_dashboard_sync.sh\"        # SLURM cron sync\n  \ndirectories_needed:\n  - \"data/status/\"    # Status JSON files\n  - \"data/history/\"   # Historical job data  \n  - \"data/details/\"   # Log excerpts\n  - \"logs/\"          # Dashboard sync logs"
-  },
-  {
-    "objectID": "MACHINE_INTEGRATION_SPEC.html#project_integration_pattern",
-    "href": "MACHINE_INTEGRATION_SPEC.html#project_integration_pattern",
-    "title": "MACHINE_INTEGRATION_SPEC.md",
-    "section": "PROJECT_INTEGRATION_PATTERN",
-    "text": "PROJECT_INTEGRATION_PATTERN\n\nSTEP_1_IDENTIFICATION\nidentify_in_project:\n  main_script_patterns: [\"*.sh\", \"main.py\", \"run_*.py\", \"process_*.sh\"]\n  existing_status_calls: \n    - \"./scripts/update_job_status.sh\"\n    - \"../mosquito-alert-model-monitor/scripts/update_job_status*.sh\"\n  log_directories: [\"logs/\", \"output/\", \"log/\"]\n  schedule_info: [\"crontab\", \"*.sh\", \"README.md\", \"slurm_*.sh\"]\n\n\nSTEP_2_STATUS_INTEGRATION\n# REQUIRED: Replace or add these calls in main project script\n# PATTERN: Call at start, middle (progress updates), and end\n\n# Job start\n~/research/mosquito-alert-model-monitor/scripts/update_job_status.sh \"PROJECT_JOB_NAME\" \"running\" 0 0 \"Job started\"\n\n# Progress updates (throughout script)\n~/research/mosquito-alert-model-monitor/scripts/update_job_status.sh \"PROJECT_JOB_NAME\" \"running\" $ELAPSED_SECONDS $PROGRESS_PERCENT \"Current step description\"\n\n# Job completion (success)\n~/research/mosquito-alert-model-monitor/scripts/update_job_status.sh \"PROJECT_JOB_NAME\" \"completed\" $TOTAL_SECONDS 100 \"Job completed successfully\"\n\n# Job failure (in error handling)\n~/research/mosquito-alert-model-monitor/scripts/update_job_status.sh \"PROJECT_JOB_NAME\" \"failed\" $ELAPSED_SECONDS $PROGRESS_PERCENT \"Error: description\"\n\n\nSTEP_3_LOG_INTEGRATION\n# OPTIONAL: Add at end of main script for log collection\n~/research/mosquito-alert-model-monitor/scripts/collect_logs.sh \"\" \"PROJECT_NAME\" \"PROJECT_LOG_DIR_PATH\"\n\n\nSTEP_4_VARIABLES_TO_REPLACE\nreplacements_needed:\n  PROJECT_JOB_NAME: \n    description: \"Main identifier for this job in dashboard\"\n    examples: [\"prepare_malert_data\", \"weather-forecast\", \"model_training\"]\n    format: \"lowercase_with_underscores_or_hyphens\"\n    \n  PROJECT_NAME:\n    description: \"Short project identifier\"\n    examples: [\"mosquito_model_data_prep\", \"weather\", \"ml_pipeline\"]\n    \n  PROJECT_LOG_DIR_PATH:\n    description: \"Absolute path to project log directory\"\n    examples: [\"$HOME/research/project_name/logs\", \"./logs\", \"/path/to/logs\"]\n    \n  ELAPSED_SECONDS:\n    description: \"Time since job start\"\n    calculation: \"$(($(date +%s) - $START_TIME))\"\n    \n  PROGRESS_PERCENT:\n    description: \"Job completion percentage (0-100)\"\n    examples: [0, 25, 50, 75, 100]\n    \n  TOTAL_SECONDS:\n    description: \"Total job duration at completion\"\n    calculation: \"$(($(date +%s) - $START_TIME))\""
-  },
-  {
-    "objectID": "MACHINE_INTEGRATION_SPEC.html#integration_templates",
-    "href": "MACHINE_INTEGRATION_SPEC.html#integration_templates",
-    "title": "MACHINE_INTEGRATION_SPEC.md",
-    "section": "INTEGRATION_TEMPLATES",
-    "text": "INTEGRATION_TEMPLATES\n\nBASH_SCRIPT_TEMPLATE\n#!/bin/bash\n# Add at beginning of main script:\n\n# Dashboard integration setup\nDASHBOARD_SCRIPT=\"$HOME/research/mosquito-alert-model-monitor/scripts/update_job_status.sh\"\nJOB_NAME=\"PROJECT_JOB_NAME\"  # REPLACE WITH ACTUAL JOB NAME\nSTART_TIME=$(date +%s)\n\n# Job start notification\n$DASHBOARD_SCRIPT \"$JOB_NAME\" \"running\" 0 0 \"Starting PROJECT_DESCRIPTION\"\n\n# Add throughout script for progress:\n# $DASHBOARD_SCRIPT \"$JOB_NAME\" \"running\" $(($(date +%s) - $START_TIME)) PROGRESS_PERCENT \"STEP_DESCRIPTION\"\n\n# Example progress calls:\n$DASHBOARD_SCRIPT \"$JOB_NAME\" \"running\" $(($(date +%s) - $START_TIME)) 25 \"Data loading complete\"\n$DASHBOARD_SCRIPT \"$JOB_NAME\" \"running\" $(($(date +%s) - $START_TIME)) 50 \"Processing data\"\n$DASHBOARD_SCRIPT \"$JOB_NAME\" \"running\" $(($(date +%s) - $START_TIME)) 75 \"Generating outputs\"\n\n# At end of script:\n$DASHBOARD_SCRIPT \"$JOB_NAME\" \"completed\" $(($(date +%s) - $START_TIME)) 100 \"Job completed successfully\"\n\n# Optional log collection:\n$HOME/research/mosquito-alert-model-monitor/scripts/collect_logs.sh \"\" \"PROJECT_NAME\" \"./logs\"\n\n\nPYTHON_SCRIPT_TEMPLATE\nimport subprocess\nimport time\nimport sys\n\n# Dashboard integration\nDASHBOARD_SCRIPT = os.path.expanduser(\"~/research/mosquito-alert-model-monitor/scripts/update_job_status.sh\")\nJOB_NAME = \"PROJECT_JOB_NAME\"  # REPLACE WITH ACTUAL JOB NAME\nstart_time = time.time()\n\ndef update_status(status, progress, message):\n    \"\"\"Update job status in dashboard\"\"\"\n    elapsed = int(time.time() - start_time)\n    try:\n        subprocess.run([DASHBOARD_SCRIPT, JOB_NAME, status, str(elapsed), str(progress), message], \n                      check=False, capture_output=True)\n    except:\n        pass  # Never fail the main job due to dashboard issues\n\n# Job start\nupdate_status(\"running\", 0, \"Starting PROJECT_DESCRIPTION\")\n\n# Progress updates throughout code:\nupdate_status(\"running\", 25, \"Data loading complete\")\nupdate_status(\"running\", 50, \"Processing data\")\nupdate_status(\"running\", 75, \"Generating outputs\")\n\n# Job completion\nupdate_status(\"completed\", 100, \"Job completed successfully\")\n\n\nR_SCRIPT_TEMPLATE\n# Dashboard integration for R scripts\ndashboard_script &lt;- \"~/research/mosquito-alert-model-monitor/scripts/update_job_status.sh\"\njob_name &lt;- \"PROJECT_JOB_NAME\"  # REPLACE WITH ACTUAL JOB NAME\nstart_time &lt;- Sys.time()\n\nupdate_status &lt;- function(status, progress, message) {\n  elapsed &lt;- as.integer(difftime(Sys.time(), start_time, units = \"secs\"))\n  tryCatch({\n    system(paste(dashboard_script, job_name, status, elapsed, progress, shQuote(message)), \n           ignore.stdout = TRUE, ignore.stderr = TRUE)\n  }, error = function(e) {\n    # Never fail the main job due to dashboard issues\n  })\n}\n\n# Job start\nupdate_status(\"running\", 0, \"Starting PROJECT_DESCRIPTION\")\n\n# Progress updates throughout code:\nupdate_status(\"running\", 25, \"Data loading complete\")\nupdate_status(\"running\", 50, \"Processing data\") \nupdate_status(\"running\", 75, \"Generating outputs\")\n\n# Job completion\nupdate_status(\"completed\", 100, \"Job completed successfully\")"
-  },
-  {
-    "objectID": "MACHINE_INTEGRATION_SPEC.html#slurm_integration",
-    "href": "MACHINE_INTEGRATION_SPEC.html#slurm_integration",
-    "title": "MACHINE_INTEGRATION_SPEC.md",
-    "section": "SLURM_INTEGRATION",
-    "text": "SLURM_INTEGRATION\n# Add to SLURM script headers:\n#SBATCH --job-name=PROJECT_JOB_NAME\n\n# Add after SLURM setup, before main work:\nDASHBOARD_SCRIPT=\"$HOME/research/mosquito-alert-model-monitor/scripts/update_job_status.sh\"\nJOB_NAME=\"PROJECT_JOB_NAME\"\nSTART_TIME=$(date +%s)\n\n$DASHBOARD_SCRIPT \"$JOB_NAME\" \"running\" 0 0 \"SLURM job started (ID: $SLURM_JOB_ID)\"\n\n# Add before exit:\n$DASHBOARD_SCRIPT \"$JOB_NAME\" \"completed\" $(($(date +%s) - $START_TIME)) 100 \"SLURM job completed (ID: $SLURM_JOB_ID)\""
-  },
-  {
-    "objectID": "MACHINE_INTEGRATION_SPEC.html#error_handling_pattern",
-    "href": "MACHINE_INTEGRATION_SPEC.html#error_handling_pattern",
-    "title": "MACHINE_INTEGRATION_SPEC.md",
-    "section": "ERROR_HANDLING_PATTERN",
-    "text": "ERROR_HANDLING_PATTERN\n# Robust error handling that doesn't break jobs\nset +e  # Don't exit on dashboard errors\n\n# Wrap main job logic\nmain_job_function() {\n    # Your original job code here\n    return $?\n}\n\n# Call main job with error handling\nif main_job_function; then\n    $DASHBOARD_SCRIPT \"$JOB_NAME\" \"completed\" $(($(date +%s) - $START_TIME)) 100 \"Job completed successfully\"\nelse\n    $DASHBOARD_SCRIPT \"$JOB_NAME\" \"failed\" $(($(date +%s) - $START_TIME)) 50 \"Job failed with error\"\n    exit 1\nfi"
-  },
-  {
-    "objectID": "MACHINE_INTEGRATION_SPEC.html#testing_checklist",
-    "href": "MACHINE_INTEGRATION_SPEC.html#testing_checklist",
-    "title": "MACHINE_INTEGRATION_SPEC.md",
-    "section": "TESTING_CHECKLIST",
-    "text": "TESTING_CHECKLIST\nverify_integration:\n  - status_file_created: \"ls -la ~/research/mosquito-alert-model-monitor/data/status/PROJECT_JOB_NAME.json\"\n  - test_script_manually: \"./scripts/test_dashboard_integration.sh\"\n  - check_dashboard_locally: \"open ~/research/mosquito-alert-model-monitor/docs/index.html\"\n  - verify_no_job_failures: \"Run original job and ensure it completes even if dashboard fails\""
-  },
-  {
-    "objectID": "MACHINE_INTEGRATION_SPEC.html#common_project_types",
-    "href": "MACHINE_INTEGRATION_SPEC.html#common_project_types",
-    "title": "MACHINE_INTEGRATION_SPEC.md",
-    "section": "COMMON_PROJECT_TYPES",
-    "text": "COMMON_PROJECT_TYPES\n\nDAILY_DATA_PROCESSING\ntypical_pattern:\n  job_name: \"project_daily_process\"\n  schedule: \"Daily via cron\"\n  stages: [\"download\", \"process\", \"upload\", \"cleanup\"]\n  progress_points: [0, 25, 50, 75, 100]\n\n\nMODEL_TRAINING\ntypical_pattern:\n  job_name: \"model_training\"\n  schedule: \"Weekly/Monthly\"\n  stages: [\"data_prep\", \"training\", \"validation\", \"deployment\"]\n  progress_points: [0, 20, 60, 90, 100]\n\n\nDATA_COLLECTION\ntypical_pattern:\n  job_name: \"data_collection\"\n  schedule: \"Hourly/Daily\"\n  stages: [\"fetch\", \"validate\", \"store\", \"backup\"]\n  progress_points: [0, 30, 70, 100]"
-  },
-  {
-    "objectID": "MACHINE_INTEGRATION_SPEC.html#implementation_notes",
-    "href": "MACHINE_INTEGRATION_SPEC.html#implementation_notes",
-    "title": "MACHINE_INTEGRATION_SPEC.md",
-    "section": "IMPLEMENTATION_NOTES",
-    "text": "IMPLEMENTATION_NOTES\n\nAll scripts exit with code 0 to prevent job failures\nDashboard updates are “best effort” - job success is priority\nJSON status files use standardized format\nLog collection is optional and safe\nGit operations have timeouts and retries\nSLURM jobs get proper resource allocation\nNo dependencies on external libraries"
-  },
-  {
-    "objectID": "alerts.html",
-    "href": "alerts.html",
-    "title": "Alerts & Monitoring",
-    "section": "",
-    "text": "This page provides automated alerts and monitoring for job failures, performance issues, and system status.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPage last updated: 2025-08-23 12:41:09.895567\nNote: This monitoring system provides basic alerting through the dashboard. For production use, consider integrating with external alerting systems (email, Slack, etc.) for immediate notifications."
-  },
-  {
-    "objectID": "alerts.html#alert-configuration",
-    "href": "alerts.html#alert-configuration",
-    "title": "Alerts & Monitoring",
-    "section": "",
-    "text": "Page last updated: 2025-08-23 12:41:09.895567\nNote: This monitoring system provides basic alerting through the dashboard. For production use, consider integrating with external alerting systems (email, Slack, etc.) for immediate notifications."
-  },
-  {
-    "objectID": "logs.html",
-    "href": "logs.html",
-    "title": "Job Logs",
-    "section": "",
-    "text": "This page provides access to log files and output from monitored jobs. Click on any log file name to view its contents.\n\n\n\n\n\n\n\n\n\n\n&lt;pre id=\"log-content\" style=\"white-space: pre-wrap; max-height: 600px; overflow-y: auto; font-family: monospace; font-size: 12px;\"&gt;&lt;/pre&gt;\n\nClose Log\n\n\n\n\n\n\nFor complete log access from each monitored project:\nmosquito_model_data_prep - Description: Mosquito Alert data preparation pipeline - Local logs: ~/research/mosquito_model_data_prep/logs/ - GitHub logs: View on GitHub\nweather-data-collector-spain - Description: Weather data collection for Spain - Local logs: ~/research/weather-data-collector-spain/logs/ - GitHub logs: View on GitHub\n\n\n\n\n\n\n### Log File Statistics\n\n- **Total log files:** 21\n- **Total size:** 0.1 MB\n- **Most recent:** z5_gmod_post_run_predictions_latest.log\n\n### Error Detection\n\n\n\n\n\n\n\n\n\n\nSince this is a static dashboard, full interactive log viewing requires additional setup. Here are alternative ways to access logs:\n\n\n\nNavigate to the project directories locally\nLog files are typically in logs/ subdirectories\nUse standard text editors or terminal commands (tail, less, etc.)\n\n\n\n\n\nMany projects sync their log directories to GitHub\nUse the GitHub web interface to browse log files\nSearch for specific error patterns using GitHub’s search\n\n\n\n\n\nRecent log excerpts are copied to data/details/\nThese show the last 200 lines of each log file\nUpdated automatically when jobs run\n\n\n\n\nConsider setting up a simple log server that can serve log files over HTTP for easy mobile access."
-  },
-  {
-    "objectID": "logs.html#log-file-viewer",
-    "href": "logs.html#log-file-viewer",
-    "title": "Job Logs",
-    "section": "",
-    "text": "&lt;pre id=\"log-content\" style=\"white-space: pre-wrap; max-height: 600px; overflow-y: auto; font-family: monospace; font-size: 12px;\"&gt;&lt;/pre&gt;\n\nClose Log"
-  },
-  {
-    "objectID": "logs.html#project-log-directories",
-    "href": "logs.html#project-log-directories",
-    "title": "Job Logs",
-    "section": "",
-    "text": "For complete log access from each monitored project:\nmosquito_model_data_prep - Description: Mosquito Alert data preparation pipeline - Local logs: ~/research/mosquito_model_data_prep/logs/ - GitHub logs: View on GitHub\nweather-data-collector-spain - Description: Weather data collection for Spain - Local logs: ~/research/weather-data-collector-spain/logs/ - GitHub logs: View on GitHub"
-  },
-  {
-    "objectID": "logs.html#log-analysis-summary",
-    "href": "logs.html#log-analysis-summary",
-    "title": "Job Logs",
-    "section": "",
-    "text": "### Log File Statistics\n\n- **Total log files:** 21\n- **Total size:** 0.1 MB\n- **Most recent:** z5_gmod_post_run_predictions_latest.log\n\n### Error Detection"
-  },
-  {
-    "objectID": "logs.html#direct-log-access",
-    "href": "logs.html#direct-log-access",
-    "title": "Job Logs",
-    "section": "",
-    "text": "Since this is a static dashboard, full interactive log viewing requires additional setup. Here are alternative ways to access logs:\n\n\n\nNavigate to the project directories locally\nLog files are typically in logs/ subdirectories\nUse standard text editors or terminal commands (tail, less, etc.)\n\n\n\n\n\nMany projects sync their log directories to GitHub\nUse the GitHub web interface to browse log files\nSearch for specific error patterns using GitHub’s search\n\n\n\n\n\nRecent log excerpts are copied to data/details/\nThese show the last 200 lines of each log file\nUpdated automatically when jobs run\n\n\n\n\nConsider setting up a simple log server that can serve log files over HTTP for easy mobile access."
-  },
-  {
-    "objectID": "SLURM_SETUP.html",
-    "href": "SLURM_SETUP.html",
-    "title": "SLURM Cron Job Setup for Dashboard Sync",
-    "section": "",
-    "text": "Per Sync Job: - Memory: 512MB (very light) - CPU: 1 core - Time: Maximum 5 minutes (typically 30-60 seconds) - Network: Minimal git operations only\nTotal Daily Load: - If run every 15 minutes: 96 jobs/day × 1-2 minutes = ~2-3 hours total CPU time - If run every 30 minutes: 48 jobs/day × 1-2 minutes = ~1-1.5 hours total CPU time\n\n\n\nAdd to your cluster crontab (crontab -e):\n# Dashboard sync every 15 minutes (recommended for active development)\n*/15 * * * * cd ~/research/mosquito-alert-model-monitor && sbatch scripts/slurm_dashboard_sync.sh\n\n# OR: Dashboard sync every 30 minutes (recommended for production)\n*/30 * * * * cd ~/research/mosquito-alert-model-monitor && sbatch scripts/slurm_dashboard_sync.sh\n\n\n\nMINIMAL LOAD - This is extremely lightweight: - Uses same resources as a simple git operation - Runs for only 1-2 minutes typically - No computational processing - Only file I/O and network operations\nComparison: - Your data prep jobs: ~hours of runtime, GBs of memory - Dashboard sync: ~1 minute runtime, 512MB memory\nRecommendation: Start with 15-minute intervals. If you want to reduce load further, change to 30-minute intervals.\n\n\n\nCheck sync job status:\n# View recent sync jobs\nsqueue -u $USER | grep dashboard_sync\n\n# Check sync logs\ntail -50 ~/research/mosquito-alert-model-monitor/logs/dashboard_sync.log\n\n\n\nIf needed, run sync manually:\ncd ~/research/mosquito-alert-model-monitor\nsbatch scripts/slurm_dashboard_sync.sh"
-  },
-  {
-    "objectID": "SLURM_SETUP.html#resource-usage-analysis",
-    "href": "SLURM_SETUP.html#resource-usage-analysis",
-    "title": "SLURM Cron Job Setup for Dashboard Sync",
-    "section": "",
-    "text": "Per Sync Job: - Memory: 512MB (very light) - CPU: 1 core - Time: Maximum 5 minutes (typically 30-60 seconds) - Network: Minimal git operations only\nTotal Daily Load: - If run every 15 minutes: 96 jobs/day × 1-2 minutes = ~2-3 hours total CPU time - If run every 30 minutes: 48 jobs/day × 1-2 minutes = ~1-1.5 hours total CPU time"
-  },
-  {
-    "objectID": "SLURM_SETUP.html#recommended-crontab-entry",
-    "href": "SLURM_SETUP.html#recommended-crontab-entry",
-    "title": "SLURM Cron Job Setup for Dashboard Sync",
-    "section": "",
-    "text": "Add to your cluster crontab (crontab -e):\n# Dashboard sync every 15 minutes (recommended for active development)\n*/15 * * * * cd ~/research/mosquito-alert-model-monitor && sbatch scripts/slurm_dashboard_sync.sh\n\n# OR: Dashboard sync every 30 minutes (recommended for production)\n*/30 * * * * cd ~/research/mosquito-alert-model-monitor && sbatch scripts/slurm_dashboard_sync.sh"
-  },
-  {
-    "objectID": "SLURM_SETUP.html#load-impact-assessment",
-    "href": "SLURM_SETUP.html#load-impact-assessment",
-    "title": "SLURM Cron Job Setup for Dashboard Sync",
-    "section": "",
-    "text": "MINIMAL LOAD - This is extremely lightweight: - Uses same resources as a simple git operation - Runs for only 1-2 minutes typically - No computational processing - Only file I/O and network operations\nComparison: - Your data prep jobs: ~hours of runtime, GBs of memory - Dashboard sync: ~1 minute runtime, 512MB memory\nRecommendation: Start with 15-minute intervals. If you want to reduce load further, change to 30-minute intervals."
-  },
-  {
-    "objectID": "SLURM_SETUP.html#monitoring",
-    "href": "SLURM_SETUP.html#monitoring",
-    "title": "SLURM Cron Job Setup for Dashboard Sync",
-    "section": "",
-    "text": "Check sync job status:\n# View recent sync jobs\nsqueue -u $USER | grep dashboard_sync\n\n# Check sync logs\ntail -50 ~/research/mosquito-alert-model-monitor/logs/dashboard_sync.log"
-  },
-  {
-    "objectID": "SLURM_SETUP.html#manual-sync",
-    "href": "SLURM_SETUP.html#manual-sync",
-    "title": "SLURM Cron Job Setup for Dashboard Sync",
-    "section": "",
-    "text": "If needed, run sync manually:\ncd ~/research/mosquito-alert-model-monitor\nsbatch scripts/slurm_dashboard_sync.sh"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Mosquito Alert Model Monitor",
-    "section": "",
-    "text": "Total Jobs: 11\n\n\nRunning: 5\n\n\nCompleted: 5\n\n\nFailed: 1\n\n\n\nLast updated: 2025-08-23 12:58:51"
-  },
-  {
-    "objectID": "index.html#overview",
-    "href": "index.html#overview",
-    "title": "Mosquito Alert Model Monitor",
-    "section": "",
-    "text": "Total Jobs: 11\n\n\nRunning: 5\n\n\nCompleted: 5\n\n\nFailed: 1\n\n\n\nLast updated: 2025-08-23 12:58:51"
-  },
-  {
-    "objectID": "index.html#job-status",
-    "href": "index.html#job-status",
-    "title": "Mosquito Alert Model Monitor",
-    "section": "Job Status",
-    "text": "Job Status"
-  },
-  {
-    "objectID": "index.html#resource-usage",
-    "href": "index.html#resource-usage",
-    "title": "Mosquito Alert Model Monitor",
-    "section": "Resource Usage",
-    "text": "Resource Usage"
-  },
-  {
-    "objectID": "index.html#recent-activity",
-    "href": "index.html#recent-activity",
-    "title": "Mosquito Alert Model Monitor",
-    "section": "Recent Activity",
-    "text": "Recent Activity"
-  },
-  {
-    "objectID": "index.html#performance-summary",
-    "href": "index.html#performance-summary",
-    "title": "Mosquito Alert Model Monitor",
-    "section": "Performance Summary",
-    "text": "Performance Summary"
-  },
-  {
     "objectID": "history.html",
     "href": "history.html",
     "title": "Job History",
     "section": "",
-    "text": "This page shows historical trends and patterns in job execution over time.\n\n\n**Total Records:** 17 \n**Date Range:** 2025-08-21 to 2025-08-23 \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nWarning in RColorBrewer::brewer.pal(n, pal): n too large, allowed maximum for palette Set2 is 8\nReturning the palette you asked for with that many colors\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPage last updated: 2025-08-23 12:41:13.536754"
+    "text": "This page shows historical trends and patterns in job execution over time.\n\n\n**Total Records:** 19 \n**Date Range:** 2025-08-21 to 2025-08-23 \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nWarning in RColorBrewer::brewer.pal(n, pal): n too large, allowed maximum for palette Set2 is 8\nReturning the palette you asked for with that many colors\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPage last updated: 2025-08-23 19:16:33.768851"
   },
   {
     "objectID": "history.html#performance-trends",
@@ -284,13 +480,6 @@
     "href": "history.html#recent-activity-log",
     "title": "Job History",
     "section": "",
-    "text": "Page last updated: 2025-08-23 12:41:13.536754"
-  },
-  {
-    "objectID": "index.html#quick-navigation",
-    "href": "index.html#quick-navigation",
-    "title": "Mosquito Alert Model Monitor",
-    "section": "📚 Quick Navigation",
-    "text": "📚 Quick Navigation\n\n\n\n\n\n\nDocumentation & Resources\n\n\n\n\n📊 Dashboard Pages: Jobs | History | Alerts | Logs\n🛡️ Setup Guides: Robustness Guide | SLURM Setup | Integration API\n🔧 GitHub: Repository | Actions | Issues\n📈 Status:"
+    "text": "Page last updated: 2025-08-23 19:16:33.768851"
   }
 ]
