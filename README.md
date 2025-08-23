@@ -2,6 +2,7 @@
 
 [![Deploy Dashboard](https://github.com/Mosquito-Alert/mosquito-alert-model-monitor/actions/workflows/deploy-dashboard.yml/badge.svg)](https://github.com/Mosquito-Alert/mosquito-alert-model-monitor/actions/workflows/deploy-dashboard.yml)
 [![Deploy Prebuilt](https://github.com/Mosquito-Alert/mosquito-alert-model-monitor/actions/workflows/deploy-prebuilt.yml/badge.svg)](https://github.com/Mosquito-Alert/mosquito-alert-model-monitor/actions/workflows/deploy-prebuilt.yml)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/Mosquito-Alert/mosquito-alert-model-monitor)](https://github.com/Mosquito-Alert/mosquito-alert-model-monitor/releases/latest)
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live-brightgreen)](https://mosquito-alert.github.io/mosquito-alert-model-monitor/)
 [![Last Commit](https://img.shields.io/github/last-commit/Mosquito-Alert/mosquito-alert-model-monitor)](https://github.com/Mosquito-Alert/mosquito-alert-model-monitor/commits/main)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
