@@ -31,3 +31,13 @@ format:
 execute:
   freeze: false
   cache: false
+
+# Include documentation markdown files in render
+render:
+  - "*.qmd"
+  - "README.md"
+  - "ROBUSTNESS_GUIDE.md"
+  - "SLURM_SETUP.md"
+  - "NOTIFICATION_SETUP.md"
+  - "MACHINE_INTEGRATION_SPEC.md"
+  - "RACE_CONDITION_PREVENTION.md"

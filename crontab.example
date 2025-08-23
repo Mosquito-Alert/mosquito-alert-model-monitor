@@ -1,4 +1,4 @@
 # GIT CONFLICT PREVENTION - CRITICAL FOR DASHBOARD RELIABILITY  
 # Sync monitor repository every 30 minutes to prevent git conflicts
 # Uses lightweight SLURM job to respect cluster policies
-*/30 * * * * cd ~/research/weather-data-collector-spain && sbatch monitor_sync_slurm.sh
+*/30 * * * * cd ~/research/mosquito-alert-model-monitor && sbatch monitor_sync_slurm.sh
