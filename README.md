@@ -29,6 +29,7 @@ A Quarto dashboard for monitoring automated data wrangling tasks and models runn
 ### Detailed Guides
 - **🛡️ [Robustness Guide](ROBUSTNESS_GUIDE.md)** - Critical: Make your jobs bulletproof ([HTML](https://mosquito-alert.github.io/mosquito-alert-model-monitor/ROBUSTNESS_GUIDE.html))
 - **🖥️ [SLURM Setup](SLURM_SETUP.md)** - Configure cluster cron jobs ([HTML](https://mosquito-alert.github.io/mosquito-alert-model-monitor/SLURM_SETUP.html))
+- **📞 [Notification Setup](NOTIFICATION_SETUP.md)** - Email and Slack alerts (future feature) ([HTML](https://mosquito-alert.github.io/mosquito-alert-model-monitor/NOTIFICATION_SETUP.html))
 - **🤖 [Machine Integration Spec](MACHINE_INTEGRATION_SPEC.md)** - Complete API reference ([HTML](https://mosquito-alert.github.io/mosquito-alert-model-monitor/MACHINE_INTEGRATION_SPEC.html))
 
 ### Quick Status Check
@@ -262,9 +263,14 @@ Edit the alert logic in `alerts.qmd`:
 - Stale jobs: >24 hours without update triggers medium-severity alert
 
 ### Notifications
-Configure email and Slack notifications in `config/`:
-- `email_config.json`: SMTP settings for email alerts
-- `slack_config.json`: Webhook settings for Slack notifications
+
+> **⚠️ Note**: Notification features are **not currently implemented**. The configuration files are templates for future development.
+
+The dashboard includes placeholder configuration files for future notification features:
+- `email_config.json`: SMTP settings template for email alerts
+- `slack_config.json`: Webhook settings template for Slack notifications
+
+**📞 [Notification Setup Guide](NOTIFICATION_SETUP.md)** - Complete instructions for implementing email and Slack notifications ([HTML](https://mosquito-alert.github.io/mosquito-alert-model-monitor/NOTIFICATION_SETUP.html))
 
 ## File Structure
 
@@ -273,6 +279,7 @@ mosquito-alert-model-monitor/
 ├── README.md                 # Main documentation (this file)
 ├── ROBUSTNESS_GUIDE.md      # 🛡️ Critical: Job safety and error handling
 ├── SLURM_SETUP.md           # 🖥️ HPC cluster cron configuration  
+├── NOTIFICATION_SETUP.md    # 📞 Email and Slack alerts (future feature)
 ├── MACHINE_INTEGRATION_SPEC.md # 🤖 Complete API and integration reference
 ├── 
 ├── index.qmd                 # Main dashboard
@@ -296,21 +303,24 @@ mosquito-alert-model-monitor/
 │   ├── collect_logs.sh      # Log collection from projects
 │   └── example_model_job.sh # Example integration
 ├── config/
-│   ├── email_config.json    # Email notification settings
-│   └── slack_config.json    # Slack notification settings
+│   ├── email_config.json    # 📧 Email notification template (not implemented)
+│   └── slack_config.json    # 📱 Slack notification template (not implemented)
 ├── docs/                    # 🌐 Generated dashboard (GitHub Pages)
 │   ├── index.html           # Live dashboard
 │   ├── ROBUSTNESS_GUIDE.html # Documentation (web format)
+│   ├── NOTIFICATION_SETUP.html # Notification guide (web format)
 │   └── ...                  # Other generated pages
 └── .github/workflows/
     ├── deploy-dashboard.yml  # GitHub Actions: Rebuild from .qmd files
-    └── deploy-prebuilt.yml   # GitHub Actions: Deploy pre-built HTML
+    ├── deploy-prebuilt.yml   # GitHub Actions: Deploy pre-built HTML
+    └── create-release.yml    # GitHub Actions: Automated releases
 ```
 
 ### Key Documentation Files
 - **README.md** (this file): Overview, quick start, basic integration
 - **ROBUSTNESS_GUIDE.md**: Essential for production - prevents job failures
 - **SLURM_SETUP.md**: HPC-specific setup with resource calculations
+- **NOTIFICATION_SETUP.md**: Email/Slack setup guide (future implementation)
 - **MACHINE_INTEGRATION_SPEC.md**: Complete technical reference for developers/AI
 
 ## Suggested Improvements Over Original Specifications
