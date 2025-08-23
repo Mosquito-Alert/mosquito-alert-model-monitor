@@ -36,18 +36,66 @@ conda activate mosquito-alert-monitor
 # conda install -c conda-forge r-base r-dt r-plotly r-jsonlite r-lubridate r-dplyr r-purrr r-stringr r-ggplot2 quarto
 ```
 
-### 2. Configure Your Jobs
+### 2. Setup SLURM Dashboard Sync (RECOMMENDED)
 
-Each job should write status information to JSON files in the `data/status/` directory. Use the provided script:
-
+Add to your cluster crontab (`crontab -e`):
 ```bash
-# From your cronjob or model script
-./scripts/update_job_status.sh "my_job_name" "running" 1800 75
+# Dashboard sync every 15 minutes (lightweight: 512MB RAM, 1 CPU, ~1 min runtime)
+*/15 * * * * cd ~/research/mosquito-alert-model-monitor && sbatch scripts/slurm_dashboard_sync.sh
 ```
 
-### 3. Run the Dashboard Locally
+### 3. Integrate Your Projects
 
+For each project you want to monitor, add these calls to your main scripts:
+
+#### **Bash Scripts:**
 ```bash
+# At the beginning
+DASHBOARD_SCRIPT="$HOME/research/mosquito-alert-model-monitor/scripts/update_job_status.sh"
+JOB_NAME="your_project_name"  # Use descriptive name
+START_TIME=$(date +%s)
+
+$DASHBOARD_SCRIPT "$JOB_NAME" "running" 0 0 "Job started"
+
+# Throughout your script (for progress tracking)
+$DASHBOARD_SCRIPT "$JOB_NAME" "running" $(($(date +%s) - $START_TIME)) 25 "Data loading"
+$DASHBOARD_SCRIPT "$JOB_NAME" "running" $(($(date +%s) - $START_TIME)) 50 "Processing"
+$DASHBOARD_SCRIPT "$JOB_NAME" "running" $(($(date +%s) - $START_TIME)) 75 "Finalizing"
+
+# At the end
+$DASHBOARD_SCRIPT "$JOB_NAME" "completed" $(($(date +%s) - $START_TIME)) 100 "Completed successfully"
+```
+
+#### **Python Scripts:**
+```python
+import subprocess, time, os
+
+DASHBOARD_SCRIPT = os.path.expanduser("~/research/mosquito-alert-model-monitor/scripts/update_job_status.sh")
+JOB_NAME = "your_project_name"
+start_time = time.time()
+
+def update_status(status, progress, message):
+    elapsed = int(time.time() - start_time)
+    subprocess.run([DASHBOARD_SCRIPT, JOB_NAME, status, str(elapsed), str(progress), message], 
+                  check=False, capture_output=True)
+
+update_status("running", 0, "Job started")
+# ... your code ...
+update_status("completed", 100, "Job completed")
+```
+
+### 4. Deploy to GitHub Pages
+
+1. Enable GitHub Pages in your repository settings
+2. Set source to "GitHub Actions"  
+3. Push changes to main branch - the dashboard will automatically deploy
+
+**🔑 KEY FEATURES:**
+- ✅ **Robust Integration**: Jobs NEVER fail due to dashboard issues
+- ✅ **Real-time Updates**: Status changes trigger automatic dashboard rebuilds
+- ✅ **SLURM Compatible**: Proper resource allocation for cluster environments
+- ✅ **Log Access**: View project logs directly from the dashboard
+- ✅ **Mobile Friendly**: Monitor jobs from anywhere via GitHub Pages
 # Render and serve the dashboard
 quarto preview index.qmd
 
