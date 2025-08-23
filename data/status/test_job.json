@@ -1,0 +1,19 @@
+{
+  "job_name": "test_job",
+  "status": "running",
+  "last_updated": "2025-08-23T17:18:08Z",
+  "start_time": "2025-08-23T17:18:08Z",
+  "duration": 60,
+  "progress": 75,
+  "cpu_usage": 0.0,
+  "memory_usage": 1.71875,
+  "next_scheduled_run": "2025-08-24T02:30:00Z",
+  "config": {
+    "project_type": "automated_pipeline",
+    "schedule": "Automated",
+    "cluster": "SLURM cluster"
+  },
+  "log_entries": [
+    "Testing race condition fix"
+  ]
+}
