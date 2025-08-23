@@ -1,24 +1,4 @@
-# Example crontab entries for Mosquito Alert model monitoring
-# Note: Adjust module names/versions to match your HPC system
-
-# Set environment for cron jobs
-SHELL=/bin/bash
-PATH=/usr/local/bin:/usr/bin:/bin
-
-# Run species classification model daily at 8:30 AM
-30 8 * * * module load Miniconda3/24.7.1-0 && conda activate mosquito-alert-monitor && /path/to/mosquito-alert-model-monitor/scripts/example_model_job.sh
-
-# Run data preprocessing pipeline daily at 6:00 AM  
-0 6 * * * module load Miniconda3/24.7.1-0 && conda activate mosquito-alert-monitor && /path/to/your/data_preprocessing_job.sh
-
-# Run risk prediction model twice daily at 10:00 AM and 4:00 PM
-0 10,16 * * * module load Miniconda3/24.7.1-0 && conda activate mosquito-alert-monitor && /path/to/your/risk_prediction_job.sh
-
-# Alternative: Use the wrapper script that handles module loading
-# 30 8 * * * /path/to/mosquito-alert-model-monitor/scripts/run_with_conda.sh /path/to/your/model_script.sh
-
-# For jobs requiring additional modules (adjust as needed):
-# 0 12 * * * module load GCC/12.3.0 && module load Python/3.11.3-GCCcore-12.3.0 && module load Miniconda3/24.7.1-0 && conda activate mosquito-alert-monitor && /path/to/your/compute_intensive_job.sh
-
-# Clean up old log files weekly
-0 2 * * 0 find /path/to/mosquito-alert-model-monitor/data/history -name "*.json" -mtime +30 -delete
+# GIT CONFLICT PREVENTION - CRITICAL FOR DASHBOARD RELIABILITY  
+# Sync monitor repository every 30 minutes to prevent git conflicts
+# Uses lightweight SLURM job to respect cluster policies
+*/30 * * * * cd ~/research/weather-data-collector-spain && sbatch monitor_sync_slurm.sh
