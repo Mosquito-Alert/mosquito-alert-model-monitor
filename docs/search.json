@@ -228,14 +228,14 @@
     "href": "index.html",
     "title": "Mosquito Alert Model Monitor",
     "section": "",
-    "text": "Total Jobs: 11\n\n\nRunning: 5\n\n\nCompleted: 5\n\n\nFailed: 1\n\n\n\nLast updated: 2025-08-23 12:41:11"
+    "text": "Total Jobs: 11\n\n\nRunning: 5\n\n\nCompleted: 5\n\n\nFailed: 1\n\n\n\nLast updated: 2025-08-23 12:58:51"
   },
   {
     "objectID": "index.html#overview",
     "href": "index.html#overview",
     "title": "Mosquito Alert Model Monitor",
     "section": "",
-    "text": "Total Jobs: 11\n\n\nRunning: 5\n\n\nCompleted: 5\n\n\nFailed: 1\n\n\n\nLast updated: 2025-08-23 12:41:11"
+    "text": "Total Jobs: 11\n\n\nRunning: 5\n\n\nCompleted: 5\n\n\nFailed: 1\n\n\n\nLast updated: 2025-08-23 12:58:51"
   },
   {
     "objectID": "index.html#job-status",
@@ -285,5 +285,12 @@
     "title": "Job History",
     "section": "",
     "text": "Page last updated: 2025-08-23 12:41:13.536754"
+  },
+  {
+    "objectID": "index.html#quick-navigation",
+    "href": "index.html#quick-navigation",
+    "title": "Mosquito Alert Model Monitor",
+    "section": "📚 Quick Navigation",
+    "text": "📚 Quick Navigation\n\n\n\n\n\n\nDocumentation & Resources\n\n\n\n\n📊 Dashboard Pages: Jobs | History | Alerts | Logs\n🛡️ Setup Guides: Robustness Guide | SLURM Setup | Integration API\n🔧 GitHub: Repository | Actions | Issues\n📈 Status:"
   }
 ]
