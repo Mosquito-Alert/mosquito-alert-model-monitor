@@ -21,7 +21,7 @@ source("scripts/dashboard_functions.R")
 
 This page shows historical trends and patterns in job execution over time.
 
-```{r load-history}
+```{r load-history, echo=FALSE, message=FALSE, warning=FALSE}
 # Load historical data
 history_files <- list.files("data/history", pattern = "*.json", full.names = TRUE)
 
@@ -60,7 +60,7 @@ if (length(history_files) == 0) {
 
 ## Execution Timeline
 
-```{r timeline}
+```{r timeline, echo=FALSE, message=FALSE, warning=FALSE}
 if (nrow(history_data) > 0) {
   # Create timeline plot
   p_timeline <- history_data %>%
@@ -95,7 +95,7 @@ if (nrow(history_data) > 0) {
 
 ## Daily Job Summary
 
-```{r daily-summary}
+```{r daily-summary, echo=FALSE, message=FALSE, warning=FALSE}
 if (nrow(history_data) > 0) {
   # Daily aggregation
   daily_summary <- history_data %>%
@@ -130,7 +130,7 @@ if (nrow(history_data) > 0) {
 
 ## Performance Trends
 
-```{r performance-trends}
+```{r performance-trends, echo=FALSE, message=FALSE, warning=FALSE}
 if (nrow(history_data) > 0) {
   # Duration trends
   p_duration <- history_data %>%
@@ -152,7 +152,7 @@ if (nrow(history_data) > 0) {
 
 ## Historical Statistics Table
 
-```{r history-table}
+```{r history-table, echo=FALSE, message=FALSE, warning=FALSE}
 if (nrow(history_data) > 0) {
   # Comprehensive statistics
   stats_summary <- history_data %>%
@@ -210,7 +210,7 @@ if (nrow(history_data) > 0) {
 
 ## Recent Activity Log
 
-```{r recent-activity}
+```{r recent-activity, echo=FALSE, message=FALSE, warning=FALSE}
 if (nrow(history_data) > 0) {
   # Show last 50 job executions
   recent_activity <- history_data %>%

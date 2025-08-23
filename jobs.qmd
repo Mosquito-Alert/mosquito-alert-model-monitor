@@ -21,7 +21,7 @@ source("scripts/dashboard_functions.R")
 
 This page provides detailed analysis and configuration information for all monitored jobs.
 
-```{r load-data}
+```{r load-data, echo=FALSE, message=FALSE, warning=FALSE}
 # Load job status data
 jobs_data <- load_job_status()
 
@@ -34,7 +34,7 @@ if (nrow(jobs_data) == 0) {
 
 ## Job Configuration Details
 
-```{r job-configs}
+```{r job-configs, echo=FALSE, message=FALSE, warning=FALSE}
 if (nrow(jobs_data) > 0) {
   # Extract and display job configurations
   config_details <- jobs_data %>%
@@ -72,7 +72,7 @@ if (nrow(jobs_data) > 0) {
 
 ## Resource Usage Analysis
 
-```{r resource-analysis}
+```{r resource-analysis, echo=FALSE, message=FALSE, warning=FALSE}
 if (nrow(jobs_data) > 0) {
   # Resource usage plot
   p_resources <- jobs_data %>%
@@ -108,7 +108,7 @@ if (nrow(jobs_data) > 0) {
 
 ## Job Performance Metrics
 
-```{r performance-metrics}
+```{r performance-metrics, echo=FALSE, message=FALSE, warning=FALSE}
 if (nrow(jobs_data) > 0) {
   # Performance summary
   performance_summary <- jobs_data %>%
@@ -153,7 +153,7 @@ if (nrow(jobs_data) > 0) {
 
 ## Scheduling Information
 
-```{r scheduling-info}
+```{r scheduling-info, echo=FALSE, message=FALSE, warning=FALSE}
 if (nrow(jobs_data) > 0) {
   # Next scheduled runs
   schedule_info <- jobs_data %>%
@@ -193,7 +193,7 @@ if (nrow(jobs_data) > 0) {
 
 ## Log Analysis
 
-```{r log-analysis}
+```{r log-analysis, echo=FALSE, message=FALSE, warning=FALSE}
 if (nrow(jobs_data) > 0) {
   # Recent log entries
   log_data <- jobs_data %>%

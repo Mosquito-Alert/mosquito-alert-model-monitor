@@ -21,7 +21,7 @@ source("scripts/dashboard_functions.R")
 
 This page provides automated alerts and monitoring for job failures, performance issues, and system status.
 
-```{r load-data}
+```{r load-data, echo=FALSE, message=FALSE, warning=FALSE}
 # Load current job status
 jobs_data <- load_job_status()
 
@@ -61,7 +61,7 @@ alerts <- list()
 
 ## 🚨 Active Alerts
 
-```{r active-alerts}
+```{r active-alerts, echo=FALSE, message=FALSE, warning=FALSE}
 if (nrow(jobs_data) > 0) {
   # Check for failed jobs
   failed_jobs <- jobs_data %>% filter(status == "failed")
@@ -195,7 +195,7 @@ if (nrow(jobs_data) > 0) {
 
 ## 📊 System Health Overview
 
-```{r system-health}
+```{r system-health, echo=FALSE, message=FALSE, warning=FALSE}
 if (nrow(jobs_data) > 0) {
   # Calculate system health metrics
   total_jobs <- nrow(jobs_data)
@@ -244,7 +244,7 @@ if (nrow(jobs_data) > 0) {
 
 ## 📈 Performance Monitoring
 
-```{r performance-monitoring}
+```{r performance-monitoring, echo=FALSE, message=FALSE, warning=FALSE}
 if (nrow(history_data) > 0) {
   # Recent performance trends (last 7 days)
   recent_data <- history_data %>%
@@ -286,7 +286,7 @@ if (nrow(history_data) > 0) {
 
 ## 🔧 Maintenance Recommendations
 
-```{r maintenance-recommendations}
+```{r maintenance-recommendations, echo=FALSE, message=FALSE, warning=FALSE}
 recommendations <- data.frame(
   Priority = character(),
   Recommendation = character(),
@@ -378,7 +378,7 @@ if (nrow(recommendations) > 0) {
 
 ## 📧 Alert Configuration
 
-```{r alert-config}
+```{r alert-config, echo=FALSE, message=FALSE, warning=FALSE}
 # Display current alert thresholds
 alert_config <- data.frame(
   Alert_Type = c(
