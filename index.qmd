@@ -62,6 +62,17 @@ if (nrow(jobs_data) == 0) {
 }
 ```
 
+## 📚 Quick Navigation
+
+::: {.callout-note}
+## Documentation & Resources
+
+- **📊 Dashboard Pages**: [Jobs](jobs.html) | [History](history.html) | [Alerts](alerts.html) | [Logs](logs.html)
+- **🛡️ Setup Guides**: [Robustness Guide](ROBUSTNESS_GUIDE.html) | [SLURM Setup](SLURM_SETUP.html) | [Integration API](MACHINE_INTEGRATION_SPEC.html)
+- **🔧 GitHub**: [Repository](https://github.com/Mosquito-Alert/mosquito-alert-model-monitor) | [Actions](https://github.com/Mosquito-Alert/mosquito-alert-model-monitor/actions) | [Issues](https://github.com/Mosquito-Alert/mosquito-alert-model-monitor/issues)
+- **📈 Status**: [![Dashboard](https://github.com/Mosquito-Alert/mosquito-alert-model-monitor/actions/workflows/deploy-dashboard.yml/badge.svg)](https://github.com/Mosquito-Alert/mosquito-alert-model-monitor/actions)
+:::
+
 ## Job Status
 
 ```{r}
