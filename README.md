@@ -40,7 +40,7 @@ A Quarto dashboard for monitoring automated data wrangling tasks and models runn
 
 ## Quick Start
 
-📖 **For detailed system architecture and data flow, see [ARCHITECTURE.md](docs/ARCHITECTURE.html)**
+📖 **For detailed system architecture and data flow, see [ARCHITECTURE.qmd](docs/ARCHITECTURE.html)**
 
 ### 1. Setup Environment on HPC Cluster
 
@@ -320,7 +320,7 @@ mosquito-alert-model-monitor/
 
 ### Key Documentation Files
 - **README.md** (this file): Overview, quick start, basic integration
-- **ARCHITECTURE.md**: Complete system architecture with Mermaid diagrams showing data flow
+- **ARCHITECTURE.qmd**: Complete system architecture with Mermaid diagrams showing data flow
 - **ROBUSTNESS_GUIDE.md**: Essential for production - prevents job failures
 - **SLURM_SETUP.md**: HPC-specific setup with resource calculations
 - **NOTIFICATION_SETUP.md**: Email/Slack setup guide (future implementation)

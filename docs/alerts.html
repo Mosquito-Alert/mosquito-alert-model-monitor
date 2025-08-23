@@ -67,10 +67,6 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({ startOnLoad: true });
-</script>
 <link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
 <script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
 <link href="site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
@@ -123,6 +119,29 @@ ul.task-list li input[type="checkbox"] {
     <a class="nav-link active" href="./alerts.html" aria-current="page"> 
 <span class="menu-text">Alerts</span></a>
   </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-documentation" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Documentation</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-documentation">    
+        <li>
+    <a class="dropdown-item" href="./ARCHITECTURE.html">
+ <span class="dropdown-text">System Architecture</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./ROBUSTNESS_GUIDE.html">
+ <span class="dropdown-text">Robustness Guide</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./SLURM_SETUP.html">
+ <span class="dropdown-text">SLURM Setup</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./NOTIFICATION_SETUP.html">
+ <span class="dropdown-text">Notification Setup</span></a>
+  </li>  
+    </ul>
+  </li>
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
@@ -186,8 +205,8 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="active-alerts">🚨 Active Alerts</h2>
 <div class="cell">
 <div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-0aced14b3071e39bf4a5" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-0aced14b3071e39bf4a5">{"x":{"filter":"none","vertical":false,"caption":"<caption>Active Alerts ( 10 total)<\/caption>","data":[["Job Failure","Overdue Job","Overdue Job","Overdue Job","Overdue Job","High Resource Usage","High Resource Usage","High Resource Usage","High Resource Usage","High Resource Usage"],["weather-aggregation","test_integration","weather-aggregation","weather-forecast","weather-hourly","municipal-forecast-priority","weather-aggregation","weather-forecast","weather-historical","weather-hourly"],["HIGH","MEDIUM","MEDIUM","MEDIUM","MEDIUM","MEDIUM","MEDIUM","MEDIUM","MEDIUM","MEDIUM"],["Job failed at 2025-08-22T10:28:16Z","Job overdue by 0 hours","Job overdue by 0 hours","Job overdue by 0 hours","Job overdue by 0 hours","High resource usage: CPU: 191.9 %","High resource usage: CPU: 199.4 %","High resource usage: CPU: 99 %","High resource usage: CPU: 99.1 %","High resource usage: CPU: 99 %"],["Check logs and restart job","Check job scheduler and system status","Check job scheduler and system status","Check job scheduler and system status","Check job scheduler and system status","Monitor system performance","Monitor system performance","Monitor system performance","Monitor system performance","Monitor system performance"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Alert_Type<\/th>\n      <th>Job_Name<\/th>\n      <th>Severity<\/th>\n      <th>Description<\/th>\n      <th>Action_Required<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"order":[[2,"desc"]],"columnDefs":[{"className":"dt-center","targets":"_all"},{"name":"Alert_Type","targets":0},{"name":"Job_Name","targets":1},{"name":"Severity","targets":2},{"name":"Description","targets":3},{"name":"Action_Required","targets":4}],"autoWidth":false,"orderClasses":false,"rowCallback":"function(row, data, displayNum, displayIndex, dataIndex) {\nvar value=data[2]; $(this.api().cell(row, 2).node()).css({'background-color':value == \"HIGH\" ? \"#ffebee\" : value == \"MEDIUM\" ? \"#fff3e0\" : value == \"LOW\" ? \"#e8f5e8\" : null});\nvar value=data[0]; $(this.api().cell(row, 0).node()).css({'background-color':value == \"Job Failure\" ? \"#ffcdd2\" : value == \"Overdue Job\" ? \"#ffe0b2\" : value == \"Long Running\" ? \"#f8bbd9\" : value == \"High Resource Usage\" ? \"#dcedc1\" : null});\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-38ff6baf80cf18a64fe0" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-38ff6baf80cf18a64fe0">{"x":{"filter":"none","vertical":false,"caption":"<caption>Active Alerts ( 9 total)<\/caption>","data":[["Job Failure","Overdue Job","Overdue Job","Overdue Job","High Resource Usage","High Resource Usage","High Resource Usage","High Resource Usage","High Resource Usage"],["weather-aggregation","weather-aggregation","weather-forecast","weather-hourly","municipal-forecast-priority","weather-aggregation","weather-forecast","weather-historical","weather-hourly"],["HIGH","MEDIUM","MEDIUM","MEDIUM","MEDIUM","MEDIUM","MEDIUM","MEDIUM","MEDIUM"],["Job failed at 2025-08-22T10:28:16Z","Job overdue by 0 hours","Job overdue by 0 hours","Job overdue by 0 hours","High resource usage: CPU: 191.9 %","High resource usage: CPU: 199.4 %","High resource usage: CPU: 99 %","High resource usage: CPU: 99.1 %","High resource usage: CPU: 99 %"],["Check logs and restart job","Check job scheduler and system status","Check job scheduler and system status","Check job scheduler and system status","Monitor system performance","Monitor system performance","Monitor system performance","Monitor system performance","Monitor system performance"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Alert_Type<\/th>\n      <th>Job_Name<\/th>\n      <th>Severity<\/th>\n      <th>Description<\/th>\n      <th>Action_Required<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"order":[[2,"desc"]],"columnDefs":[{"className":"dt-center","targets":"_all"},{"name":"Alert_Type","targets":0},{"name":"Job_Name","targets":1},{"name":"Severity","targets":2},{"name":"Description","targets":3},{"name":"Action_Required","targets":4}],"autoWidth":false,"orderClasses":false,"rowCallback":"function(row, data, displayNum, displayIndex, dataIndex) {\nvar value=data[2]; $(this.api().cell(row, 2).node()).css({'background-color':value == \"HIGH\" ? \"#ffebee\" : value == \"MEDIUM\" ? \"#fff3e0\" : value == \"LOW\" ? \"#e8f5e8\" : null});\nvar value=data[0]; $(this.api().cell(row, 0).node()).css({'background-color':value == \"Job Failure\" ? \"#ffcdd2\" : value == \"Overdue Job\" ? \"#ffe0b2\" : value == \"Long Running\" ? \"#f8bbd9\" : value == \"High Resource Usage\" ? \"#dcedc1\" : null});\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script>
 </div>
 </div>
 </section>
@@ -195,8 +214,8 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="system-health-overview">📊 System Health Overview</h2>
 <div class="cell">
 <div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-0699603369bdde8c99b1" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-0699603369bdde8c99b1">{"x":{"filter":"none","vertical":false,"caption":"<caption>System Health Overview<\/caption>","data":[["Total Jobs","Running","Completed","Failed","Waiting","System Health Score"],["13","5","7","1","0","92.3 %"],["Info","Good","Good","Warning","Info","Excellent"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Metric<\/th>\n      <th>Value<\/th>\n      <th>Status<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"columnDefs":[{"className":"dt-center","targets":"_all"},{"name":"Metric","targets":0},{"name":"Value","targets":1},{"name":"Status","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"rowCallback":"function(row, data, displayNum, displayIndex, dataIndex) {\nvar value=data[2]; $(this.api().cell(row, 2).node()).css({'background-color':value == \"Excellent\" ? \"#e8f5e8\" : value == \"Good\" ? \"#e3f2fd\" : value == \"Warning\" ? \"#fff3e0\" : value == \"Info\" ? \"#f5f5f5\" : null});\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-86c971b351ce370eee18" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-86c971b351ce370eee18">{"x":{"filter":"none","vertical":false,"caption":"<caption>System Health Overview<\/caption>","data":[["Total Jobs","Running","Completed","Failed","Waiting","System Health Score"],["8","2","5","1","0","87.5 %"],["Info","Good","Good","Warning","Info","Good"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Metric<\/th>\n      <th>Value<\/th>\n      <th>Status<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"columnDefs":[{"className":"dt-center","targets":"_all"},{"name":"Metric","targets":0},{"name":"Value","targets":1},{"name":"Status","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"rowCallback":"function(row, data, displayNum, displayIndex, dataIndex) {\nvar value=data[2]; $(this.api().cell(row, 2).node()).css({'background-color':value == \"Excellent\" ? \"#e8f5e8\" : value == \"Good\" ? \"#e3f2fd\" : value == \"Warning\" ? \"#fff3e0\" : value == \"Info\" ? \"#f5f5f5\" : null});\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script>
 </div>
 </div>
 </section>
@@ -207,8 +226,8 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="maintenance-recommendations">🔧 Maintenance Recommendations</h2>
 <div class="cell">
 <div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-2e35f91b6d84ed49818d" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-2e35f91b6d84ed49818d">{"x":{"filter":"none","vertical":false,"caption":"<caption>System Maintenance Recommendations<\/caption>","data":[["Medium","Medium","Medium","Medium","Medium","Medium","Low","Low"],["Check municipal-forecast-priority job status","Check test_integration job status","Check weather-aggregation job status","Check weather-forecast job status","Check weather-historical job status","Check weather-hourly job status","Review log files for any warning messages","Archive old historical data (&gt;30 days)"],["No updates for 0 hours","No updates for 0 hours","No updates for 0 hours","No updates for 0 hours","No updates for 0 hours","No updates for 0 hours","Regular maintenance best practice","Optimize dashboard performance"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Priority<\/th>\n      <th>Recommendation<\/th>\n      <th>Reason<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"columnDefs":[{"className":"dt-center","targets":"_all"},{"name":"Priority","targets":0},{"name":"Recommendation","targets":1},{"name":"Reason","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"rowCallback":"function(row, data, displayNum, displayIndex, dataIndex) {\nvar value=data[0]; $(this.api().cell(row, 0).node()).css({'background-color':value == \"High\" ? \"#ffebee\" : value == \"Medium\" ? \"#fff3e0\" : value == \"Low\" ? \"#e8f5e8\" : null});\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-bfc0e73f9c3d391e1aea" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-bfc0e73f9c3d391e1aea">{"x":{"filter":"none","vertical":false,"caption":"<caption>System Maintenance Recommendations<\/caption>","data":[["Medium","Medium","Medium","Medium","Medium","Medium","Low","Low"],["Check mosquito_model_data_prep job status","Check municipal-forecast-priority job status","Check weather-aggregation job status","Check weather-forecast job status","Check weather-historical job status","Check weather-hourly job status","Review log files for any warning messages","Archive old historical data (&gt;30 days)"],["No updates for 0 hours","No updates for 0 hours","No updates for 0 hours","No updates for 0 hours","No updates for 0 hours","No updates for 0 hours","Regular maintenance best practice","Optimize dashboard performance"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Priority<\/th>\n      <th>Recommendation<\/th>\n      <th>Reason<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"columnDefs":[{"className":"dt-center","targets":"_all"},{"name":"Priority","targets":0},{"name":"Recommendation","targets":1},{"name":"Reason","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"rowCallback":"function(row, data, displayNum, displayIndex, dataIndex) {\nvar value=data[0]; $(this.api().cell(row, 0).node()).css({'background-color':value == \"High\" ? \"#ffebee\" : value == \"Medium\" ? \"#fff3e0\" : value == \"Low\" ? \"#e8f5e8\" : null});\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script>
 </div>
 </div>
 </section>
@@ -216,12 +235,12 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="alert-configuration">📧 Alert Configuration</h2>
 <div class="cell">
 <div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-784bf2207c5d65293b14" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-784bf2207c5d65293b14">{"x":{"filter":"none","vertical":false,"caption":"<caption>Alert Configuration &amp; Thresholds<\/caption>","data":[["Job Failure","Overdue Jobs","Long Running Jobs","High CPU Usage","High Memory Usage","System Health Score"],["Any failed status","&gt; 1 hour past scheduled time","&gt; 2 hours runtime","&gt; 90% CPU usage","&gt; 8GB memory usage","&lt; 70% overall health"],["Display alert in dashboard","Display alert in dashboard","Display alert in dashboard","Display alert in dashboard","Display alert in dashboard","Display alert in dashboard"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Alert_Type<\/th>\n      <th>Threshold<\/th>\n      <th>Current_Action<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"columnDefs":[{"className":"dt-center","targets":"_all"},{"name":"Alert_Type","targets":0},{"name":"Threshold","targets":1},{"name":"Current_Action","targets":2}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-ccc10f467bcce42eaa50" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ccc10f467bcce42eaa50">{"x":{"filter":"none","vertical":false,"caption":"<caption>Alert Configuration &amp; Thresholds<\/caption>","data":[["Job Failure","Overdue Jobs","Long Running Jobs","High CPU Usage","High Memory Usage","System Health Score"],["Any failed status","&gt; 1 hour past scheduled time","&gt; 2 hours runtime","&gt; 90% CPU usage","&gt; 8GB memory usage","&lt; 70% overall health"],["Display alert in dashboard","Display alert in dashboard","Display alert in dashboard","Display alert in dashboard","Display alert in dashboard","Display alert in dashboard"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Alert_Type<\/th>\n      <th>Threshold<\/th>\n      <th>Current_Action<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"columnDefs":[{"className":"dt-center","targets":"_all"},{"name":"Alert_Type","targets":0},{"name":"Threshold","targets":1},{"name":"Current_Action","targets":2}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <hr>
-<p><em>Page last updated: 2025-08-23 19:35:03.439258</em></p>
+<p><em>Page last updated: 2025-08-23 20:15:18.683849</em></p>
 <p><strong>Note</strong>: This monitoring system provides basic alerting through the dashboard. For production use, consider integrating with external alerting systems (email, Slack, etc.) for immediate notifications.</p>
 
 

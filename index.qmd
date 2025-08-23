@@ -32,214 +32,176 @@ source("scripts/dashboard_functions.R")
 jobs_data <- load_job_status()
 ```
 
-## Overview
+## 🎯 **Project Status Overview**
 
 ```{r}
-#| label: overview-stats
+#| label: project-status-overview
 #| results: asis
 
 if (nrow(jobs_data) == 0) {
-  cat("**No Jobs Configured**\n\nNo job status files found in data/status/")
+  cat('<div class="alert alert-warning" role="alert">')
+  cat('<h5>🚀 No Projects Being Tracked</h5>')
+  cat('No project status files found. <a href="ROBUSTNESS_GUIDE.html">Follow the integration guide</a> to start monitoring your jobs.')
+  cat('</div>')
 } else {
-  total_jobs <- nrow(jobs_data)
-  running_jobs <- sum(jobs_data$status == "running", na.rm = TRUE)
-  failed_jobs <- sum(jobs_data$status == "failed", na.rm = TRUE)
-  completed_jobs <- sum(jobs_data$status == "completed", na.rm = TRUE)
+  # Get latest status for each unique project
+  latest_jobs <- jobs_data %>%
+    group_by(job_name) %>%
+    slice_max(order_by = last_updated, n = 1) %>%
+    ungroup()
   
-  # Create formatted output as HTML
-  overview_html <- paste0(
-    "<h3>System Overview</h3>\n",
-    "<ul>\n",
-    "<li><strong>Total Jobs:</strong> ", total_jobs, "</li>\n",
-    "<li><strong>Running:</strong> ", running_jobs, "</li>\n",
-    "<li><strong>Completed:</strong> ", completed_jobs, "</li>\n",
-    "<li><strong>Failed:</strong> ", failed_jobs, "</li>\n",
-    "</ul>\n",
-    "<p><em>Last updated:</em> ", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "</p>\n"
-  )
+  total_projects <- nrow(latest_jobs)
+  running_projects <- sum(latest_jobs$status == "running", na.rm = TRUE)
+  failed_projects <- sum(latest_jobs$status == "failed", na.rm = TRUE)
+  completed_projects <- sum(latest_jobs$status == "completed", na.rm = TRUE)
   
-  cat(overview_html)
+  # Compact status cards
+  cat('<div class="row mb-3">')
+  
+  # Total Projects Card
+  cat('<div class="col-md-3 mb-2">')
+  cat('<div class="card border-primary h-100">')
+  cat('<div class="card-body text-center py-2">')
+  cat('<h4 class="card-title text-primary mb-1">', total_projects, '</h4>')
+  cat('<small class="text-muted">Total Projects</small>')
+  cat('</div></div></div>')
+  
+  # Running Projects Card
+  status_class <- if(running_projects > 0) "success" else "secondary"
+  cat('<div class="col-md-3 mb-2">')
+  cat('<div class="card border-', status_class, ' h-100">')
+  cat('<div class="card-body text-center py-2">')
+  cat('<h4 class="card-title text-', status_class, ' mb-1">🔄 ', running_projects, '</h4>')
+  cat('<small class="text-muted">Running</small>')
+  cat('</div></div></div>')
+  
+  # Completed Projects Card  
+  status_class <- if(completed_projects > 0) "info" else "secondary"
+  cat('<div class="col-md-3 mb-2">')
+  cat('<div class="card border-', status_class, ' h-100">')
+  cat('<div class="card-body text-center py-2">')
+  cat('<h4 class="card-title text-', status_class, ' mb-1">✅ ', completed_projects, '</h4>')
+  cat('<small class="text-muted">Completed</small>')
+  cat('</div></div></div>')
+  
+  # Failed Projects Card
+  status_class <- if(failed_projects > 0) "danger" else "secondary"
+  cat('<div class="col-md-3 mb-2">')
+  cat('<div class="card border-', status_class, ' h-100">')
+  cat('<div class="card-body text-center py-2">')
+  cat('<h4 class="card-title text-', status_class, ' mb-1">❌ ', failed_projects, '</h4>')
+  cat('<small class="text-muted">Failed</small>')
+  cat('</div></div></div>')
+  
+  cat('</div>')
 }
 ```
 
-## 📚 Quick Navigation
-
-::: {.callout-note}
-## Documentation & Resources
-
-- **📊 Dashboard Pages**: [Jobs](jobs.html) | [History](history.html) | [Alerts](alerts.html) | [Logs](logs.html)
-- **🛡️ Setup Guides**: [Robustness Guide](ROBUSTNESS_GUIDE.html) | [SLURM Setup](SLURM_SETUP.html) | [Integration API](MACHINE_INTEGRATION_SPEC.html)
-- **🔧 GitHub**: [Repository](https://github.com/Mosquito-Alert/mosquito-alert-model-monitor) | [Actions](https://github.com/Mosquito-Alert/mosquito-alert-model-monitor/actions) | [Issues](https://github.com/Mosquito-Alert/mosquito-alert-model-monitor/issues)
-- **📈 Status**: [![Dashboard](https://github.com/Mosquito-Alert/mosquito-alert-model-monitor/actions/workflows/deploy-dashboard.yml/badge.svg)](https://github.com/Mosquito-Alert/mosquito-alert-model-monitor/actions)
-:::
-
-## Job Status
+## 📋 **Current Project Status**
 
 ```{r}
-#| label: job-status-table
-
-if (nrow(jobs_data) == 0) {
-  cat("No job data available.")
-} else {
-  # Prepare display data
-  display_data <- jobs_data %>%
-    mutate(
-      Status = toupper(status),
-      Duration = ifelse(!is.na(duration), format_duration(duration), "Unknown"),
-      Progress = ifelse(!is.na(progress), 
-                       paste0(progress, "%"), 
-                       "Unknown"),
-      `Last Updated` = ifelse(!is.na(last_updated) & last_updated != "", 
-                             format(as.POSIXct(last_updated), "%Y-%m-%d %H:%M:%S"), 
-                             "Unknown")
-    ) %>%
-    select(
-      `Job Name` = job_name,
-      Status,
-      Progress,
-      Duration,
-      `Start Time` = start_time,
-      `Last Updated`,
-      `Next Run` = next_scheduled_run
-    )
-  
-  DT::datatable(
-    display_data,
-    options = list(
-      pageLength = 15,
-      dom = 'tip',
-      columnDefs = list(
-        list(className = 'dt-center', targets = c(1, 2, 3))
-      )
-    ),
-    class = "table table-striped table-hover"
-  )
-}
-```
-
-## Resource Usage
-
-```{r}
-#| label: resource-usage
-#| fig-width: 10
-#| fig-height: 6
-
-if (nrow(jobs_data) == 0 || !"cpu_usage" %in% names(jobs_data)) {
-  cat("No resource usage data available.")
-} else {
-  # CPU Usage plot
-  cpu_plot <- plot_ly(
-    data = jobs_data,
-    x = ~job_name,
-    y = ~cpu_usage,
-    type = "bar",
-    name = "CPU %",
-    marker = list(color = "#007bff")
-  ) %>%
-    layout(
-      title = "CPU Usage by Job",
-      xaxis = list(title = "Job Name"),
-      yaxis = list(title = "CPU Usage (%)", range = c(0, 100)),
-      showlegend = FALSE
-    )
-  
-  cpu_plot
-}
-```
-
-## Recent Activity
-
-```{r}
-#| label: recent-activity
-
-if (nrow(jobs_data) == 0 || !"latest_log" %in% names(jobs_data)) {
-  cat("No recent activity data available.")
-} else {
-  # Extract recent log entries
-  recent_logs <- jobs_data %>%
-    filter(!is.na(latest_log)) %>%
-    select(job_name, latest_log, last_updated) %>%
-    mutate(
-      timestamp = ifelse(!is.na(last_updated) & last_updated != "", 
-                        format(as.POSIXct(last_updated), "%H:%M:%S"), 
-                        "Unknown"),
-      message = latest_log
-    ) %>%
-    select(
-      Time = timestamp,
-      Job = job_name,
-      Message = message
-    ) %>%
-    arrange(desc(Job))  # Sort by job name instead of time to avoid issues
-  
-  DT::datatable(
-    recent_logs,
-    options = list(
-      pageLength = 10,
-      dom = 't',
-      order = list(list(0, 'desc'))
-    ),
-    class = "table table-sm"
-  )
-}
-```
-
-## Performance Summary
-
-```{r}
-#| label: performance-summary
+#| label: current-project-table
 
 if (nrow(jobs_data) > 0) {
-  # Create performance summary
-  performance_summary <- jobs_data %>%
-    mutate(
-      status_numeric = case_when(
-        status == "completed" ~ 1,
-        status == "failed" ~ 0,
-        TRUE ~ NA_real_
-      )
-    ) %>%
+  # Get latest status for each project with more details
+  project_status <- jobs_data %>%
     group_by(job_name) %>%
-    summarise(
-      current_status = first(status),
-      avg_duration = round(mean(duration, na.rm = TRUE), 1),
-      cpu_usage = round(mean(cpu_usage, na.rm = TRUE), 1),
-      memory_usage = round(mean(memory_usage, na.rm = TRUE), 1),
-      last_updated = max(last_updated, na.rm = TRUE),
-      .groups = "drop"
+    slice_max(order_by = last_updated, n = 1) %>%
+    ungroup() %>%
+    arrange(desc(last_updated)) %>%
+    select(
+      Project = job_name,
+      Status = status,
+      Progress = progress,
+      Runtime = duration,
+      `Last Updated` = last_updated
     ) %>%
-    arrange(desc(last_updated))
-  
-  # Display the table
-  DT::datatable(
-    performance_summary,
-    colnames = c(
-      "Job Name" = "job_name",
-      "Current Status" = "current_status",
-      "Avg Duration (s)" = "avg_duration",
-      "CPU Usage (%)" = "cpu_usage",
-      "Memory (MB)" = "memory_usage",
-      "Last Updated" = "last_updated"
-    ),
-    options = list(
-      pageLength = 15,
-      dom = 'tip',
-      columnDefs = list(
-        list(className = 'dt-center', targets = c(1:4))
-      )
-    ),
-    class = "table table-striped table-hover"
-  ) %>%
-    DT::formatStyle(
-      "Current Status",
-      backgroundColor = DT::styleEqual(
-        c("running", "completed", "failed", "pending"),
-        c("#d1ecf1", "#d4edda", "#f8d7da", "#fff3cd")
-      )
+    mutate(
+      Status = case_when(
+        Status == "running" ~ "🔄 Running",
+        Status == "completed" ~ "✅ Completed", 
+        Status == "failed" ~ "❌ Failed",
+        TRUE ~ Status
+      ),
+      Progress = paste0(Progress, "%"),
+      Runtime = ifelse(!is.na(Runtime), 
+                      paste0(round(Runtime/60, 1), " min"), 
+                      "—"),
+      `Last Updated` = ifelse(!is.na(`Last Updated`), 
+                             format(as.POSIXct(`Last Updated`, tz="UTC"), "%b %d, %H:%M UTC"),
+                             "Unknown")
     )
   
+  # Create interactive table
+  datatable(
+    project_status,
+    options = list(
+      pageLength = 15,
+      dom = 't',  # Only show table (no search/pagination for this view)
+      columnDefs = list(
+        list(className = 'dt-center', targets = c(1, 2, 3, 4))
+      )
+    ),
+    rownames = FALSE,
+    class = "table table-striped table-hover table-sm"
+  ) %>%
+    formatStyle(
+      "Status",
+      color = styleEqual(
+        c("🔄 Running", "✅ Completed", "❌ Failed"),
+        c("#0d6efd", "#198754", "#dc3545")
+      )
+    )
 } else {
-  cat("No performance data available for summary.")
+  cat('<div class="alert alert-info">')
+  cat('**No projects being tracked.** Add your first project by calling `update_job_status.sh` from your job scripts.')
+  cat('</div>')
 }
 ```
-# Dashboard updated Thu Aug 21 22:59:56 CEST 2025
+
+## ⚡ **Quick Actions & Links**
+
+::: {.panel-tabset}
+
+### System Health
+```{r}
+#| label: system-health
+#| results: asis
+
+if (nrow(jobs_data) > 0) {
+  # Check for any failed projects that need attention
+  latest_jobs <- jobs_data %>%
+    group_by(job_name) %>%
+    slice_max(order_by = last_updated, n = 1) %>%
+    ungroup()
+  
+  failed_projects <- sum(latest_jobs$status == "failed", na.rm = TRUE)
+  
+  # Check for long-running jobs (>60 minutes)
+  long_running <- latest_jobs %>%
+    filter(status == "running" & !is.na(duration) & duration > 3600) %>%
+    nrow()
+  
+  if (failed_projects > 0) {
+    cat('<div class="alert alert-danger">⚠️ <strong>', failed_projects, '</strong> project(s) have failed - check the <a href="alerts.html">Alerts page</a> for details</div>')
+  }
+  
+  if (long_running > 0) {
+    cat('<div class="alert alert-warning">⏱️ <strong>', long_running, '</strong> project(s) have been running for over 1 hour</div>')
+  }
+  
+  if (failed_projects == 0 && long_running == 0) {
+    cat('<div class="alert alert-success">✅ All projects are running normally</div>')
+  }
+} else {
+  cat('<div class="alert alert-info">🚀 No projects configured yet. Start by integrating your first job.</div>')
+}
+```
+
+### Quick Links
+- **📊 Dashboard Pages**: [Jobs](jobs.html) | [History](history.html) | [Alerts](alerts.html) | [Logs](logs.html)
+- **🛡️ Setup Guides**: [Robustness Guide](ROBUSTNESS_GUIDE.html) | [SLURM Setup](SLURM_SETUP.html)
+- **🔧 GitHub**: [Repository](https://github.com/Mosquito-Alert/mosquito-alert-model-monitor) | [Actions](https://github.com/Mosquito-Alert/mosquito-alert-model-monitor/actions)
+- **📈 Status**: [![Dashboard](https://github.com/Mosquito-Alert/mosquito-alert-model-monitor/actions/workflows/deploy-dashboard.yml/badge.svg)](https://github.com/Mosquito-Alert/mosquito-alert-model-monitor/actions)
+
+:::

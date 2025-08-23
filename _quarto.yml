@@ -16,6 +16,16 @@ website:
         text: Logs
       - href: alerts.qmd
         text: Alerts
+      - text: "Documentation"
+        menu:
+          - href: ARCHITECTURE.qmd
+            text: "System Architecture"
+          - href: ROBUSTNESS_GUIDE.md
+            text: "Robustness Guide"
+          - href: SLURM_SETUP.md
+            text: "SLURM Setup"
+          - href: NOTIFICATION_SETUP.md
+            text: "Notification Setup"
     right:
       - icon: github
         href: https://github.com/Mosquito-Alert/mosquito-alert-model-monitor
@@ -43,4 +53,3 @@ render:
   - "NOTIFICATION_SETUP.md"
   - "MACHINE_INTEGRATION_SPEC.md"
   - "RACE_CONDITION_PREVENTION.md"
-  - "ARCHITECTURE.md"
