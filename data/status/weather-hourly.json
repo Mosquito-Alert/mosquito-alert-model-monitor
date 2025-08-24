@@ -1,9 +1,9 @@
 {
   "job_name": "weather-hourly",
-  "status": "running",
-  "last_updated": "2025-08-24T00:00:18Z",
-  "start_time": "2025-08-24T00:00:18Z",
-  "duration": 15,
+  "status": "failed",
+  "last_updated": "2025-08-24T00:00:20Z",
+  "start_time": "2025-08-24T00:00:20Z",
+  "duration": 17,
   "progress": 50,
   "cpu_usage": 0.0,
   "memory_usage": 3.125,
