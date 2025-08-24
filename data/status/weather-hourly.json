@@ -1,12 +1,12 @@
 {
   "job_name": "weather-hourly",
   "status": "running",
-  "last_updated": "2025-08-24T00:00:10Z",
-  "start_time": "2025-08-24T00:00:10Z",
-  "duration": 7,
-  "progress": 20,
+  "last_updated": "2025-08-24T00:00:18Z",
+  "start_time": "2025-08-24T00:00:18Z",
+  "duration": 15,
+  "progress": 50,
   "cpu_usage": 0.0,
-  "memory_usage": 3,
+  "memory_usage": 3.125,
   "next_scheduled_run": "2025-08-25T02:30:00Z",
   "config": {
     "project_type": "automated_pipeline",
