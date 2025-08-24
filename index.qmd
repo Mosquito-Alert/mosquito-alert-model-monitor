@@ -29,14 +29,20 @@ load_status_files <- function() {
   for (file in status_files) {
     tryCatch({
       data <- jsonlite::fromJSON(file, flatten = TRUE)
+      
+      # Safely extract fields
+      job_name <- if(!is.null(data$job_name)) data$job_name else basename(file)
+      status <- if(!is.null(data$status)) data$status else "unknown"
+      last_updated <- if(!is.null(data$last_updated)) data$last_updated else ""
+      
       all_data <- rbind(all_data, data.frame(
-        job_name = data$job_name %||% basename(file),
-        status = data$status %||% "unknown",
-        last_updated = data$last_updated %||% "",
+        job_name = job_name,
+        status = status,
+        last_updated = last_updated,
         stringsAsFactors = FALSE
       ))
     }, error = function(e) {
-      message("Error reading file: ", file)
+      message("Error reading file: ", file, " - ", e$message)
     })
   }
   
