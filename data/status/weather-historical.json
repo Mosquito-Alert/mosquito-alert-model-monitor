@@ -1,12 +1,12 @@
 {
   "job_name": "weather-historical",
-  "status": "failed",
-  "last_updated": "2025-08-24T00:00:25Z",
-  "start_time": "2025-08-24T00:00:25Z",
-  "duration": 22,
+  "status": "running",
+  "last_updated": "2025-08-24T00:49:27Z",
+  "start_time": "2025-08-24T00:49:27Z",
+  "duration": 75,
   "progress": 70,
   "cpu_usage": 0.0,
-  "memory_usage": 3,
+  "memory_usage": 3.875,
   "next_scheduled_run": "2025-08-25T02:30:00Z",
   "config": {
     "project_type": "automated_pipeline",
