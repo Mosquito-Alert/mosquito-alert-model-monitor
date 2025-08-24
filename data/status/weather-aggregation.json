@@ -1,18 +1,19 @@
 {
   "job_name": "weather-aggregation",
   "status": "failed",
-  "last_updated": "2025-08-22T10:28:16Z",
-  "start_time": "2025-08-22T10:28:16Z",
-  "duration": 451,
+  "last_updated": "2025-08-24T00:00:29Z",
+  "start_time": "2025-08-24T00:00:29Z",
+  "duration": 26,
   "progress": 90,
-  "cpu_usage": 199.4,
-  "memory_usage": 168.96,
-  "next_scheduled_run": "2025-08-22T16:28:16Z",
+  "cpu_usage": 0.0,
+  "memory_usage": 3.125,
+  "next_scheduled_run": "2025-08-25T02:30:00Z",
   "config": {
-    "project_type": "weather_data_collection",
-    "data_source": "AEMET OpenData API",
-    "collection_scope": "Spain",
-    "script": "update_weather_status.sh",
+    "project_type": "automated_pipeline",
+    "schedule": "Automated",
     "cluster": "SLURM cluster"
-  }
+  },
+  "log_entries": [
+    "Weather job status update"
+  ]
 }
