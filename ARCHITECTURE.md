@@ -87,7 +87,7 @@ graph TB
 
 ### **1. Job Status Updates (Real-time)**
 
-```{mermaid}
+```mermaid
 sequenceDiagram
     participant PA as ProjectA
     participant PB as ProjectB

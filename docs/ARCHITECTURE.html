@@ -371,7 +371,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     
     Note over LGS: Release git lock acquire for B
     
-    LGS-&gt;&gt;+GIT: git add commit push A and B changes
+    UJS-&gt;&gt;+LGS: Now process B sync
+    LGS-&gt;&gt;GIT: git add commit push A and B changes
     LGS--&gt;&gt;-UJS: Sync complete B
     UJS--&gt;&gt;-PB: Status update complete
 </pre>
