@@ -1,12 +1,12 @@
 {
   "job_name": "weather-aggregation",
-  "status": "failed",
-  "last_updated": "2025-08-24T00:00:29Z",
-  "start_time": "2025-08-24T00:00:29Z",
-  "duration": 26,
+  "status": "running",
+  "last_updated": "2025-08-24T04:30:53Z",
+  "start_time": "2025-08-24T04:30:53Z",
+  "duration": 51,
   "progress": 90,
   "cpu_usage": 0.0,
-  "memory_usage": 3.125,
+  "memory_usage": 2.875,
   "next_scheduled_run": "2025-08-25T02:30:00Z",
   "config": {
     "project_type": "automated_pipeline",
