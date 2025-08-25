@@ -1,12 +1,12 @@
 {
   "job_name": "prepare_malert_data",
   "status": "running",
-  "last_updated": "2025-08-25T00:31:17Z",
-  "start_time": "2025-08-25T00:31:17Z",
-  "duration": 74,
-  "progress": 60,
+  "last_updated": "2025-08-25T00:31:19Z",
+  "start_time": "2025-08-25T00:31:19Z",
+  "duration": 76,
+  "progress": 65,
   "cpu_usage": 0.0,
-  "memory_usage": 3,
+  "memory_usage": 3.125,
   "next_scheduled_run": "2025-08-26T02:30:00Z",
   "config": {
     "project_type": "mosquito_data_preparation",
@@ -18,6 +18,6 @@
     "project": "mosquito_model_data_prep"
   },
   "log_entries": [
-    "Processing user locations"
+    "Processing user locations small cell"
   ]
 }
