@@ -1,9 +1,9 @@
 {
   "job_name": "weather-aggregation",
-  "status": "running",
-  "last_updated": "2025-08-25T04:30:54Z",
-  "start_time": "2025-08-25T04:30:54Z",
-  "duration": 52,
+  "status": "failed",
+  "last_updated": "2025-08-25T04:31:04Z",
+  "start_time": "2025-08-25T04:31:04Z",
+  "duration": 62,
   "progress": 90,
   "cpu_usage": 0.0,
   "memory_usage": 2.875,
