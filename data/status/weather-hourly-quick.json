@@ -1,12 +1,12 @@
 {
   "job_name": "weather-hourly-quick",
-  "status": "failed",
-  "last_updated": "2025-08-25T03:05:25Z",
-  "start_time": "2025-08-25T03:05:25Z",
-  "duration": 20,
-  "progress": 50,
+  "status": "completed",
+  "last_updated": "2025-08-25T03:05:35Z",
+  "start_time": "2025-08-25T03:05:35Z",
+  "duration": 31,
+  "progress": 100,
   "cpu_usage": 0.0,
-  "memory_usage": 2.875,
+  "memory_usage": 3,
   "next_scheduled_run": "2025-08-26T02:30:00Z",
   "config": {
     "project_type": "automated_pipeline",
