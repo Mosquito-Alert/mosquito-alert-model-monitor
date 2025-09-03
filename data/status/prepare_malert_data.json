@@ -1,10 +1,10 @@
 {
   "job_name": "prepare_malert_data",
   "status": "running",
-  "last_updated": "2025-09-03T00:31:19Z",
-  "start_time": "2025-09-03T00:31:19Z",
-  "duration": 77,
-  "progress": 50,
+  "last_updated": "2025-09-03T00:31:22Z",
+  "start_time": "2025-09-03T00:31:22Z",
+  "duration": 80,
+  "progress": 55,
   "cpu_usage": 0.0,
   "memory_usage": 3,
   "next_scheduled_run": "2025-09-04T02:30:00Z",
@@ -18,6 +18,6 @@
     "project": "mosquito_model_data_prep"
   },
   "log_entries": [
-    "Processing cleaned reports"
+    "Processing raw reports"
   ]
 }
