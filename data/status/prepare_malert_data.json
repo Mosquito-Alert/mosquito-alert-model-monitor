@@ -1,10 +1,10 @@
 {
   "job_name": "prepare_malert_data",
   "status": "running",
-  "last_updated": "2025-09-06T20:19:59Z",
-  "start_time": "2025-09-06T20:19:59Z",
-  "duration": 9835,
-  "progress": 85,
+  "last_updated": "2025-09-06T20:20:37Z",
+  "start_time": "2025-09-06T20:20:37Z",
+  "duration": 9874,
+  "progress": 90,
   "cpu_usage": 0.0,
   "memory_usage": 4.125,
   "next_scheduled_run": "2025-09-07T02:30:00Z",
@@ -18,6 +18,6 @@
     "project": "mosquito_model_data_prep"
   },
   "log_entries": [
-    "Uploading biting model results"
+    "Committing results to git"
   ]
 }
