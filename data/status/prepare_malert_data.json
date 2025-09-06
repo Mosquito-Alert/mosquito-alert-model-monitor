@@ -1,12 +1,12 @@
 {
   "job_name": "prepare_malert_data",
   "status": "running",
-  "last_updated": "2025-09-06T18:32:34Z",
-  "start_time": "2025-09-06T18:32:34Z",
-  "duration": 3391,
-  "progress": 65,
+  "last_updated": "2025-09-06T18:35:09Z",
+  "start_time": "2025-09-06T18:35:09Z",
+  "duration": 3546,
+  "progress": 70,
   "cpu_usage": 0.0,
-  "memory_usage": 4,
+  "memory_usage": 4.125,
   "next_scheduled_run": "2025-09-07T02:30:00Z",
   "config": {
     "project_type": "mosquito_data_preparation",
@@ -18,6 +18,6 @@
     "project": "mosquito_model_data_prep"
   },
   "log_entries": [
-    "Processing user locations small cell"
+    "Cleaning photos"
   ]
 }
