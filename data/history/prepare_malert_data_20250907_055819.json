@@ -1,0 +1,23 @@
+{
+  "job_name": "prepare_malert_data",
+  "status": "completed",
+  "last_updated": "2025-09-07T03:58:16Z",
+  "start_time": "2025-09-07T03:58:16Z",
+  "duration": 12494,
+  "progress": 100,
+  "cpu_usage": 0.0,
+  "memory_usage": 4.125,
+  "next_scheduled_run": "2025-09-08T02:30:00Z",
+  "config": {
+    "project_type": "mosquito_data_preparation",
+    "data_source": "Mosquito Alert Database",
+    "collection_scope": "Global reports processing",
+    "script": "prepare_malert_data.sh",
+    "schedule": "Daily at 2:30 AM",
+    "cluster": "SLURM cluster",
+    "project": "mosquito_model_data_prep"
+  },
+  "log_entries": [
+    "Data preparation pipeline completed successfully"
+  ]
+}
