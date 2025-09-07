@@ -1,12 +1,12 @@
 {
   "job_name": "prepare_malert_data",
   "status": "running",
-  "last_updated": "2025-09-07T01:29:24Z",
-  "start_time": "2025-09-07T01:29:24Z",
-  "duration": 3562,
-  "progress": 75,
+  "last_updated": "2025-09-07T01:29:38Z",
+  "start_time": "2025-09-07T01:29:38Z",
+  "duration": 3576,
+  "progress": 80,
   "cpu_usage": 0.0,
-  "memory_usage": 4,
+  "memory_usage": 4.125,
   "next_scheduled_run": "2025-09-08T02:30:00Z",
   "config": {
     "project_type": "mosquito_data_preparation",
@@ -18,6 +18,6 @@
     "project": "mosquito_model_data_prep"
   },
   "log_entries": [
-    "Uploading clean photos to API endpoint"
+    "Processing remaining analysis scripts"
   ]
 }
