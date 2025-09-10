@@ -1,12 +1,12 @@
 {
   "job_name": "prepare_malert_data",
-  "status": "running",
-  "last_updated": "2025-09-10T03:15:41Z",
-  "start_time": "2025-09-10T03:15:41Z",
-  "duration": 9940,
-  "progress": 95,
+  "status": "completed",
+  "last_updated": "2025-09-10T03:58:28Z",
+  "start_time": "2025-09-10T03:58:28Z",
+  "duration": 12507,
+  "progress": 100,
   "cpu_usage": 0.0,
-  "memory_usage": 3.875,
+  "memory_usage": 4.125,
   "next_scheduled_run": "2025-09-11T02:30:00Z",
   "config": {
     "project_type": "mosquito_data_preparation",
@@ -18,6 +18,6 @@
     "project": "mosquito_model_data_prep"
   },
   "log_entries": [
-    "Generating daily participation report"
+    "Data preparation pipeline completed successfully"
   ]
 }
