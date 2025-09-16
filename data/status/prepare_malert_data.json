@@ -1,12 +1,12 @@
 {
   "job_name": "prepare_malert_data",
   "status": "running",
-  "last_updated": "2025-09-16T00:31:01Z",
-  "start_time": "2025-09-16T00:31:01Z",
-  "duration": 60,
-  "progress": 30,
+  "last_updated": "2025-09-16T00:31:25Z",
+  "start_time": "2025-09-16T00:31:25Z",
+  "duration": 84,
+  "progress": 40,
   "cpu_usage": 0.0,
-  "memory_usage": 4.0625,
+  "memory_usage": 3.90625,
   "next_scheduled_run": "2025-09-17T02:30:00Z",
   "config": {
     "project_type": "mosquito_data_preparation",
@@ -18,6 +18,6 @@
     "project": "mosquito_model_data_prep"
   },
   "log_entries": [
-    "Extracting data files"
+    "Updating git repository"
   ]
 }
